@@ -1,5 +1,5 @@
 {
   "name": "goegefietst",
   "app_id": "",
-  "gulpStartupTasks": ["index", "watch"]
+  "gulpStartupTasks": ["wiredep", "inject", "watch"]
 }

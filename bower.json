@@ -1,7 +1,18 @@
 {
   "name": "HelloIonic",
+  "author": "Pieter-Jan Vandenberghe <pieterjan.vandenberghe.t6365@student.hogent.be>",
   "private": "true",
   "devDependencies": {
     "ionic": "driftyco/ionic-bower#1.2.4"
+  },
+  "dependencies": {
+    "angular": "~1.4.8",
+    "ngCordova": "~0.1.23-alpha",
+    "angular-resource": "~1.4.8",
+    "ionic": "~1.2.1",
+    "ui-leaflet": "^1.0.0"
+  },
+  "resolutions": {
+    "angular": "1.4.8"
   }
 }
