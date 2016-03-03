@@ -89,6 +89,7 @@
       "angular" : false,
       "cordova" : false,
       "StatusBar" : false,
-      "require" : false
+      "require" : false,
+      "L" : false
       }        // additional predefined global variables
 }
