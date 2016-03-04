@@ -15,10 +15,30 @@
 
         .state('tab.performance', {
         url: '/performance',
+        abstract: true,
         views: {
           'tab-performance': {
-            templateUrl: 'app/performance/performance.template.html',
-            controller: 'PerformanceController'
+            templateUrl: 'app/performance/performance.template.html'
+          }
+        }
+      })
+
+      .state('tab.performance.personal', {
+        url: '/personal',
+        views: {
+          'prestaties-page': {
+            templateUrl: 'app/performance/performance-personal.template.html',
+            controller: 'PersonalPerformanceController'
+          }
+        }
+      })
+
+      .state('tab.performance.group', {
+        url: '/group',
+        views: {
+          'prestaties-page': {
+            templateUrl: 'app/performance/performance-group.template.html',
+            controller: 'GroupPerformanceController'
           }
         }
       });

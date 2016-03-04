@@ -3,7 +3,7 @@
 
   angular
     .module('app.performance')
-    .controller('PerformanceController', Controller);
+    .controller('PersonalPerformanceController', Controller);
 
   Controller.$inject = []; //dependencies
 
