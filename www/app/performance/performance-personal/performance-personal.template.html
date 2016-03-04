@@ -12,9 +12,9 @@
 
   <ion-content class="padding has-tabs-top ion-content-personal">
     <div class="button-bar">
-      <a class="button">Dag</a>
-      <a class="button">Week</a>
-      <a class="button">Jaar</a>
+      <a class="button" ng-click="personal.day()">Dag</a>
+      <a class="button" ng-click="personal.week()">Week</a>
+      <a class="button" ng-click="personal.month()">Maand</a>
     </div>
 
     <ul class="list padding">
@@ -38,8 +38,8 @@
 
   </ion-content>
   <ion-footer-bar>
-    <button class="button button-clear ion-chevron-left"></button>
+    <button class="button button-clear ion-chevron-left"  ng-click="personal.previous()"></button>
     <div class="title">Maandag 29 januari</div>
-    <button class="button button-clear ion-chevron-right"></button>
+    <button class="button button-clear ion-chevron-right" ng-click="personal.next()"></button>
   </ion-footer-bar>
 </ion-view>
