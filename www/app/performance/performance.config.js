@@ -28,7 +28,7 @@
         views: {
           'prestaties-page': {
             templateUrl: 'app/performance/performance-personal/performance-personal.template.html',
-            controller: 'PersonalPerformanceController'
+            controller: 'PersonalPerformanceController as personal'
           }
         }
       })

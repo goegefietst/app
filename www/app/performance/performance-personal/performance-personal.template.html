@@ -10,7 +10,36 @@
     </div>
   </div>
 
-  <ion-content class="padding has-tabs-top">
-    Persoonlijke prestaties
+  <ion-content class="padding has-tabs-top ion-content-personal">
+    <div class="button-bar">
+      <a class="button" ng-click="personal.day()">Dag</a>
+      <a class="button" ng-click="personal.week()">Week</a>
+      <a class="button" ng-click="personal.month()">Maand</a>
+    </div>
+
+    <ul class="list padding">
+      <li class="item item-button-right">
+        15,4 km
+        <button class="button ion-chevron-right"></button>
+      </li>
+      <li class="item item-button-right">
+        01:05:23
+        <button class="button ion-chevron-right"></button>
+      </li>
+      <li class="item item-button-right">
+        05,3 km/u
+        <button class="button ion-chevron-right"></button>
+      </li>
+      <li class="item item-button-right">
+        50 kcal
+        <button class="button ion-chevron-right"></button>
+      </li>
+    </ul>
+
   </ion-content>
+  <ion-footer-bar>
+    <button class="button button-clear ion-chevron-left"  ng-click="personal.previous()"></button>
+    <div class="title">Maandag 29 januari</div>
+    <button class="button button-clear ion-chevron-right" ng-click="personal.next()"></button>
+  </ion-footer-bar>
 </ion-view>
