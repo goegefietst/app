@@ -18,6 +18,7 @@
     }
 
     vm.timespan = 'day';
+    vm.chartData = 'distance'
 
     vm.day = function day() {
       //change timespan to day
@@ -35,6 +36,30 @@
       //change timespan to month
       vm.timespan = 'month'
       console.log('test timespan changed to ' + vm.timespan);
+    }
+
+    vm.distance = function distance() {
+      //change chart data to distance
+      vm.chartData = 'distance';
+      console.log('test chartData changed to ' + vm.chartData);
+    }
+
+    vm.time = function time() {
+      //change chart data to time
+      vm.chartData = 'time';
+      console.log('test chartData changed to ' + vm.chartData);
+    }
+
+    vm.speed = function speed() {
+      //change chart data to speed
+      vm.chartData = 'speed';
+      console.log('test chartData changed to ' + vm.chartData);
+    }
+
+    vm.calories = function calories() {
+      //change chart data to calories
+      vm.chartData = 'calories';
+      console.log('test chartData changed to ' + vm.chartData);
     }
 
     vm.previous = function previous() {
