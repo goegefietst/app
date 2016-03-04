@@ -17,19 +17,24 @@
 
     }
 
+    vm.timespan = 'day';
+
     vm.day = function day() {
       //change timespan to day
-      console.log('test timespan changed to day');
+      vm.timespan = 'day';
+      console.log('test timespan changed to ' + vm.timespan);
     }
 
     vm.week = function week() {
-      //change timespan to week
-      console.log('test timespan changed to week');
+      //change timespan to week$
+      vm.timespan = 'week';
+      console.log('test timespan changed to ' + vm.timespan);
     }
 
     vm.month = function month() {
       //change timespan to month
-      console.log('test timespan changed to month');
+      vm.timespan = 'month'
+      console.log('test timespan changed to ' + vm.timespan);
     }
 
     vm.previous = function previous() {
