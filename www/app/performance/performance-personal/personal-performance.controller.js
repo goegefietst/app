@@ -18,8 +18,13 @@
     }
 
     vm.timespan = 'day';
-    vm.chartData = 'distance'
+    vm.chartData = 'distance';
 
+    vm.dis = 15.4;
+    vm.tim = '01:05:23';
+    vm.spe = 5.3;
+    vm.cal = 50;
+    
     vm.day = function day() {
       //change timespan to day
       vm.timespan = 'day';
