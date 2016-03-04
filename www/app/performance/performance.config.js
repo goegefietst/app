@@ -27,7 +27,7 @@
         url: '/personal',
         views: {
           'prestaties-page': {
-            templateUrl: 'app/performance/performance-personal.template.html',
+            templateUrl: 'app/performance/performance-personal/performance-personal.template.html',
             controller: 'PersonalPerformanceController'
           }
         }
@@ -37,7 +37,7 @@
         url: '/group',
         views: {
           'prestaties-page': {
-            templateUrl: 'app/performance/performance-group.template.html',
+            templateUrl: 'app/performance/performance-group/performance-group.template.html',
             controller: 'GroupPerformanceController'
           }
         }
