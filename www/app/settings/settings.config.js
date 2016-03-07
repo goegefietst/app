@@ -18,7 +18,7 @@ angular
       views: {
         'tab-settings': {
           templateUrl: 'app/settings/settings.template.html',
-          controller: 'SettingsController'
+          controller: 'SettingsController as settings'
         }
       }
     });

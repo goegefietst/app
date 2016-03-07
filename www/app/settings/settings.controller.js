@@ -16,5 +16,7 @@
     function activate() {
 
     }
+
+    vm.showDelete = false;
   }
 })();

@@ -1,9 +1,21 @@
-<ion-view view-title="Instellingen">
+<ion-view view-title="Reminders">
+  <ion-nav-buttons side="left" ng-show="false">
+    <button class="button button-icon icon ion-ios-minus-outline" ng-click="settings.showDelete = !settings.showDelete;"></button>
+  </ion-nav-buttons>
+  <ion-nav-buttons side="right" ng-show="false">
+    <label class="toggle">
+      <input type="checkbox">
+      <div class="track">
+        <div class="handle"></div>
+      </div>
+    </label>
+  </ion-nav-buttons>
   <ion-content>
-    <ion-list>
-    <ion-toggle  ng-model="settings.enableFriends">
-        Enable Friends
-    </ion-toggle>
+    <ion-list class="has-subheader" show-delete="settings.showDelete">
+      <ion-item class="item  item-remove-animate item-toggle">
+        Reminder 1
+        <ion-delete-button class="ion-minus-circled"></ion-delete-button>
+      </ion-item>
     </ion-list>
   </ion-content>
 </ion-view>
