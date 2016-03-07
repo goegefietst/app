@@ -38,11 +38,19 @@
       }
     ];
 
-    vm.toggleDelete = function toggleDelete(){
+    vm.toggleDelete = function toggleDelete() {
       if(vm.testReminders.length == 0){
         vm.showDelete = false;
       } else {
         vm.showDelete = !vm.showDelete;
+      }
+    }
+
+    vm.toggleEdit = function toggleEdit() {
+      if(vm.testReminders.length == 0){
+        vm.showEdit = false;
+      } else {
+        vm.showEdit = !vm.showEdit;
       }
     }
 
@@ -64,6 +72,7 @@
     vm.onItemEdit = function onItemEdit(reminder) {
       console.log('test edit');
       console.log(reminder);
+
     }
   }
 })();
