@@ -38,6 +38,14 @@
       }
     ];
 
+    vm.toggleDelete = function toggleDelete(){
+      if(vm.testReminders.length == 0){
+        vm.showDelete = false;
+      } else {
+        vm.showDelete = !vm.showDelete;
+      }
+    }
+
     vm.add = function add() {
       console.log('test add');
     }
@@ -47,7 +55,10 @@
       console.log(reminder);
       console.log(vm.testReminders.indexOf(reminder));
       vm.testReminders.splice(vm.testReminders.indexOf(reminder),1);
-      
+      console.log(vm.testReminders.length);
+      if(vm.testReminders.length == 0){
+        vm.showDelete = false;
+      }
     }
 
     vm.onItemEdit = function onItemEdit(reminder) {
