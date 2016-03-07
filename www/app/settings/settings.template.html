@@ -1,6 +1,7 @@
 <ion-view view-title="Reminders">
   <ion-nav-buttons side="left" ng-show="false">
     <button class="button button-icon icon ion-ios-minus-outline" ng-click="settings.showDelete = !settings.showDelete;"></button>
+    <button class="button button-icon icon ion-ios-plus-outline" ng-click="settings.test()" ng-show="!settings.showDelete"></button>
   </ion-nav-buttons>
   <ion-nav-buttons side="right" ng-show="false">
     <label class="toggle">

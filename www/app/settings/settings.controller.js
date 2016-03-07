@@ -31,7 +31,7 @@
       }
     ];
     vm.test = function test() {
-      console.log('test edit');
+      console.log('test add');
     }
 
 
