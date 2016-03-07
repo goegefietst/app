@@ -21,10 +21,10 @@
               <div class="handle"></div>
             </div>
           </label>
-        <ion-delete-button class="ion-minus-circled"></ion-delete-button>
-        <ion-reorder-button class="ion-ios-gear"></ion-option-button>
+        <ion-delete-button class="ion-minus-circled" ng-click="settings.onItemDelete(reminder)"></ion-delete-button>
+        <ion-reorder-button class="ion-ios-gear" ng-click="settings.onItemEdit(reminder)"></ion-option-button>
       </ion-item>
-      <ion-item ng-click="settings.test()">
+      <ion-item ng-click="settings.add()">
         Voeg nieuwe reminder toe
       </ion-item>
     </ion-list>
