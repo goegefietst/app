@@ -20,6 +20,7 @@
     vm.showDelete = false;
     vm.showEdit = false;
     vm.masterCheck = true;
+
     vm.testReminders = [
       {
         id: 0,
@@ -47,19 +48,11 @@
     vm.onItemDelete = function onItemDelete(reminder) {
       console.log('test delete');
       console.log(reminder.id);
-      
     }
 
     vm.onItemEdit = function onItemEdit(reminder) {
       console.log('test edit');
       console.log(reminder);
     }
-
-    vm.printReminders = function printReminders(){
-      for(var i = testReminders.length - 1; i >= 0; i--) {
-        console.log(testReminders[i].id);
-      }
-    }
-
   }
 })();
