@@ -23,11 +23,11 @@
     vm.testReminders = [
       {
         check: true,
-        days: 'every day',
+        days: 'iedere dag',
         time: '7:20'
       },{
         check: false,
-        days: 'Saterday',
+        days: 'Zaterdag',
         time: '12:00'
       }
     ];

@@ -4,7 +4,7 @@
     <button class="button button-icon icon ion-ios-gear-outline" ng-click="settings.showEdit = !settings.showEdit;"></button>
   </ion-nav-buttons>
   <ion-nav-buttons side="right" ng-show="false">
-    <label class="toggle">
+    <label class="toggle toggle-calm">
       <input type="checkbox" ng-model="settings.masterCheck">
       <div class="track">
         <div class="handle"></div>
@@ -16,7 +16,7 @@
       <ion-item class="item item-remove-animate item-toggle" ng-repeat="reminder in settings.testReminders">
          {{reminder.time}} - {{reminder.days}}
          <button class="button button-clear button-small">Bewerk</button>
-          <label class="toggle" ng-show="settings.masterCheck && !settings.showDelete">
+          <label class="toggle toggle-calm" ng-show="settings.masterCheck && !settings.showDelete">
             <input type="checkbox" ng-model="reminder.check">
             <div class="track">
               <div class="handle"></div>
