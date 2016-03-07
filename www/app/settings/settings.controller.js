@@ -23,18 +23,15 @@
 
     vm.testReminders = [
       {
-        id: 0,
         check: true,
         days: 'iedere dag',
         time: '7:20'
       },{
-        id: 1,
         check: false,
         days: 'zaterdag',
         time: '12:00'
       }
       ,{
-        id: 2,
         check: true,
         days: 'iedere dag',
         time: '12:30'
@@ -47,7 +44,10 @@
 
     vm.onItemDelete = function onItemDelete(reminder) {
       console.log('test delete');
-      console.log(reminder.id);
+      console.log(reminder);
+      console.log(vm.testReminders.indexOf(reminder));
+      vm.testReminders.splice(vm.testReminders.indexOf(reminder),1);
+      
     }
 
     vm.onItemEdit = function onItemEdit(reminder) {
