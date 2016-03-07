@@ -6,10 +6,11 @@
     'app.tracker',
     'app.performance',
     'app.settings',
-    'app.layout'
+    'app.layout',
+    'app.geolocation'
   ])
 
-  .run(function($ionicPlatform) {
+  .run(function($ionicPlatform, BackgroundGeolocationService) {
     $ionicPlatform.ready(function() {
       // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
       // for form inputs)
@@ -22,6 +23,7 @@
         // org.apache.cordova.statusbar required
         StatusBar.styleDefault();
       }
+      BackgroundGeolocationService.init();
     });
   });
 })();

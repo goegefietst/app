@@ -90,6 +90,7 @@
       "cordova" : false,
       "StatusBar" : false,
       "require" : false,
-      "L" : false
+      "L" : false,
+      "backgroundGeoLocation" : false
       }        // additional predefined global variables
 }
