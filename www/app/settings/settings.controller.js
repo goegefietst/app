@@ -18,6 +18,7 @@
     }
 
     vm.showDelete = false;
+    vm.showEdit = false;
     vm.masterCheck = true;
     vm.testReminders = [
       {
