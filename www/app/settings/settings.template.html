@@ -1,9 +1,32 @@
-<ion-view view-title="Instellingen">
+<ion-view view-title="Reminders">
+  <ion-nav-buttons side="left" ng-show="false">
+    <button class="button button-icon icon ion-ios-minus-outline" ng-click="settings.showDelete = !settings.showDelete;"></button>
+    <button class="button button-icon icon ion-ios-gear-outline" ng-click="settings.showEdit = !settings.showEdit;"></button>
+  </ion-nav-buttons>
+  <ion-nav-buttons side="right" ng-show="false">
+    <label class="toggle toggle-calm">
+      <input type="checkbox" ng-model="settings.masterCheck">
+      <div class="track">
+        <div class="handle"></div>
+      </div>
+    </label>
+  </ion-nav-buttons>
   <ion-content>
-    <ion-list>
-    <ion-toggle  ng-model="settings.enableFriends">
-        Enable Friends
-    </ion-toggle>
+    <ion-list class="has-subheader" show-delete="settings.showDelete" show-reorder="settings.showEdit">
+      <ion-item class="item item-remove-animate item-toggle" ng-repeat="reminder in settings.testReminders" ng-click="settings.test()">
+         {{reminder.time}} - {{reminder.days}}
+          <label class="toggle toggle-calm" ng-show="settings.masterCheck && !settings.showDelete">
+            <input type="checkbox" ng-model="reminder.check">
+            <div class="track">
+              <div class="handle"></div>
+            </div>
+          </label>
+        <ion-delete-button class="ion-minus-circled"></ion-delete-button>
+        <ion-reorder-button class="ion-ios-gear"></ion-option-button>
+      </ion-item>
+      <ion-item ng-click="settings.test()">
+        Voeg nieuwe reminder toe
+      </ion-item>
     </ion-list>
   </ion-content>
 </ion-view>
