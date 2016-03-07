@@ -27,7 +27,7 @@
         time: '7:20'
       },{
         check: false,
-        days: 'Zaterdag',
+        days: 'zaterdag',
         time: '12:00'
       }
     ];

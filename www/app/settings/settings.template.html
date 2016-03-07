@@ -13,9 +13,8 @@
   </ion-nav-buttons>
   <ion-content>
     <ion-list class="has-subheader" show-delete="settings.showDelete" show-reorder="settings.showEdit">
-      <ion-item class="item item-remove-animate item-toggle" ng-repeat="reminder in settings.testReminders">
+      <ion-item class="item item-remove-animate item-toggle" ng-repeat="reminder in settings.testReminders" ng-click="settings.test()">
          {{reminder.time}} - {{reminder.days}}
-         <button class="button button-clear button-small">Bewerk</button>
           <label class="toggle toggle-calm" ng-show="settings.masterCheck && !settings.showDelete">
             <input type="checkbox" ng-model="reminder.check">
             <div class="track">
@@ -25,9 +24,8 @@
         <ion-delete-button class="ion-minus-circled"></ion-delete-button>
         <ion-reorder-button class="ion-ios-gear"></ion-option-button>
       </ion-item>
-      <ion-item class="item item-button-right">
+      <ion-item ng-click="settings.test()">
         Voeg nieuwe reminder toe
-        <button class="button button-icon icon ion-ios-plus-outline" ng-click="settings.test()"</button>
       </ion-item>
     </ion-list>
   </ion-content>
