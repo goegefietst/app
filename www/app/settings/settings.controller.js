@@ -18,5 +18,22 @@
     }
 
     vm.showDelete = false;
+    vm.masterCheck = true;
+    vm.testReminders = [
+      {
+        check: true,
+        days: 'every day',
+        time: '7:20'
+      },{
+        check: false,
+        days: 'Saterday',
+        time: '12:00'
+      }
+    ];
+    vm.test = function test() {
+      console.log('test edit');
+    }
+
+
   }
 })();
