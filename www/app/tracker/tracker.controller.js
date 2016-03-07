@@ -16,6 +16,13 @@
         lng: 3.733,
         zoom: 10
       },
+      tiles: {
+        url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        options: {
+          attribution: '&copy; <a href="http://www.openstreetmap.org/' +
+          'copyright">OpenStreetMap</a> contributors'
+        }
+      },
       markers: []
     });
 
