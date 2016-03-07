@@ -4,7 +4,8 @@ geolocation.factory('BackgroundGeolocationService', ['$q', function($q) {
   'use strict';
 
   var callbackFn = function(location) {
-    console.log(location);
+    //console.log(location);
+    logLocation(location);
     //$http({
     //request options to send data to server
     //});
@@ -21,14 +22,14 @@ geolocation.factory('BackgroundGeolocationService', ['$q', function($q) {
     window.localStorage.setItem('bgGPS', 1);
     backgroundGeoLocation.configure(callbackFn, failureFn, {
       desiredAccuracy: 10,
-      stationaryRadius: 20,
-      distanceFilter: 0,
+      stationaryRadius: 1,
+      distanceFilter: 1,
+      locationTimeout: 1,
       locationService: backgroundGeoLocation.service.ANDROID_DISTANCE_FILTER,
-      debug: true,
+      debug: false,
       stopOnTerminate: false,
-      interval: 5000,
-      fastestInterval: 5000,
-      activitiesInterval: 5000
+      fastestInterval: 1000,
+      activitiesInterval: 10000
     });
 
     backgroundGeoLocation.start();
@@ -42,7 +43,6 @@ geolocation.factory('BackgroundGeolocationService', ['$q', function($q) {
       var bgGPS = window.localStorage.getItem('bgGPS');
 
       if (bgGPS == 1 || bgGPS == null) {
-        alert('Test init');
         start();
       }
     },
@@ -54,3 +54,15 @@ geolocation.factory('BackgroundGeolocationService', ['$q', function($q) {
     }
   };
 }]);
+
+function logLocation(location) {
+  'use strict';
+  var date = new Date(0);
+  date.setTime(location.time);
+  console.log(
+    date.getHours() + ':' +
+    date.getMinutes() + ':' +
+    date.getSeconds() +
+    ' lat: ' + location.latitude +
+    ' lng: ' + location.longitude);
+}
