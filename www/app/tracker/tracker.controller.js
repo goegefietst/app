@@ -5,12 +5,20 @@
     .module('app.tracker')
     .controller('TrackerController', Controller);
 
-  Controller.$inject = ['$scope', '$http', 'leafletData']; //dependencies
+  Controller.$inject = ['$scope', '$http', 'leafletData', 'BackgroundGeolocationService']; //dependencies
 
   /* @ngInject */
-  function Controller($scope, $http, leafletData) {
+  function Controller($scope, $http, leafletData, BackgroundGeolocationService) {
     var vm = this;
+    BackgroundGeolocationService.subscribe($scope, function dataUpdated() {
+      console.log('Data updated!');
+      vm.drawRoute(BackgroundGeolocationService.locations);
+    });
     angular.extend($scope, {
+      defaults: { //todo: check configurations
+        touchZoom: true,
+        scrollWheelZoom: true
+      },
       gent: {
         lat: 51.050,
         lng: 3.733,
@@ -20,10 +28,11 @@
         url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
         options: {
           attribution: '&copy; <a href="http://www.openstreetmap.org/' +
-          'copyright">OpenStreetMap</a> contributors'
+            'copyright">OpenStreetMap</a> contributors'
         }
       },
-      markers: []
+      markers: [],
+      paths: {}
     });
 
     vm.loadRoute = function() {
@@ -87,7 +96,37 @@
       vm.setView(lastPoint);
     };
 
-    vm.loadRoute();
-    //drawRoutes(routes);
+    vm.drawRoute = function(route) {
+      if (!route) {
+        return;
+      }
+
+      vm.clearRoutes();
+      vm.clearMarkers();
+
+      var path = {
+        type: 'polyline',
+        weight: 4,
+        color: 'red',
+        opacity: 0.5,
+        latlngs: route
+        //latlngs: [[51.050, 3.733], [52.050, 4.733]]
+      };
+      $scope.paths.path = path;
+
+      if (route.length > 0) {
+        var lastPoint = {
+          lat: route[route.length - 1][0],
+          lng: route[route.length - 1][1]
+        };
+        vm.addMarker(lastPoint);
+        vm.setView(lastPoint);
+      }
+
+    };
+
+    //vm.drawRoute('test');
+    //vm.loadRoute();
+    //vm.drawRoutes(routes);
   }
 })();

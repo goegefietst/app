@@ -2,5 +2,5 @@
   'use strict';
 
   angular
-    .module('app.tracker', ['ui-leaflet']);
+    .module('app.tracker', ['geolocation', 'ui-leaflet']);
 })();

@@ -6,8 +6,7 @@
     'app.tracker',
     'app.performance',
     'app.settings',
-    'app.layout',
-    'app.geolocation'
+    'app.layout'
   ])
 
   .run(function($ionicPlatform, BackgroundGeolocationService) {
