@@ -7,7 +7,8 @@
     'app.performance',
     'app.settings',
     'app.layout',
-    'app.geolocation'
+    'app.geolocation',
+    'ionic-timepicker'
   ])
 
   .run(function($ionicPlatform, BackgroundGeolocationService) {

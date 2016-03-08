@@ -14,19 +14,24 @@
   <ion-content>
     <ion-list class="has-subheader" show-delete="settings.showDelete" show-reorder="settings.showEdit">
       <ion-item class="item item-remove-animate item-toggle" ng-repeat="reminder in settings.testReminders" ng-click="settings.test()">
-         {{reminder.time}} - {{reminder.days}}
-          <label class="toggle toggle-calm" ng-show="settings.masterCheck && !settings.showDelete">
-            <input type="checkbox" ng-model="reminder.check">
-            <div class="track">
-              <div class="handle"></div>
-            </div>
-          </label>
+        {{reminder.time}}
+        -
+        {{reminder.days}}
+        <label class="toggle toggle-calm" ng-show="settings.masterCheck && !settings.showDelete">
+          <input type="checkbox" ng-model="reminder.check">
+          <div class="track">
+            <div class="handle"></div>
+          </div>
+        </label>
         <ion-delete-button class="ion-minus-circled" ng-click="settings.onItemDelete(reminder)"></ion-delete-button>
         <ion-reorder-button class="ion-ios-gear" ng-click="settings.onItemEdit(reminder)"></ion-option-button>
       </ion-item>
-      <ion-item ng-click="settings.add()">
-        Voeg nieuwe reminder toe
-      </ion-item>
     </ion-list>
+    <ionic-timepicker input-obj="settings.timePickerObject">
+      <button class="button button-block overflowShow">
+        <standard-time-meridian etime='timePickerObject.inputEpochTime'></standard-time-meridian>
+        Voeg nieuwe reminder toe
+      </button>
+    </ionic-timepicker>
   </ion-content>
 </ion-view>
