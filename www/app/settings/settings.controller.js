@@ -24,21 +24,21 @@
     vm.templatePopup = '<ion-list><ion-checkbox ng-model="data.monday">maandag</ion-checkbox><ion-checkbox ng-model="data.tuesday">dinsdag</ion-checkbox><ion-checkbox ng-model="data.wednesday">woensdag</ion-checkbox><ion-checkbox ng-model="data.thursday">donderdag</ion-checkbox><ion-checkbox ng-model="data.friday">vrijdag</ion-checkbox><ion-checkbox ng-model="data.saturday">zaterdag</ion-checkbox><ion-checkbox ng-model="data.sunday">zondag</ion-checkbox></ion-list>';
     vm.testReminders = [{
       check: true,
-      days: ["maandag","dinsdag","woensdag","donderdag","vrijdag","zaterdag","zondag"],
+      days: ["maandag", "dinsdag", "woensdag", "donderdag", "vrijdag", "zaterdag", "zondag"],
       time: {
         hours: '7',
         minutes: '20'
       }
     }, {
       check: false,
-      days: ["maandag","dinsdag","woensdag","donderdag","vrijdag"],
+      days: ["maandag", "dinsdag", "woensdag", "donderdag", "vrijdag"],
       time: {
         hours: '12',
         minutes: '00'
       }
     }, {
       check: false,
-      days: ["zaterdag","zondag"],
+      days: ["zaterdag", "zondag"],
       time: {
         hours: '16',
         minutes: '45'
@@ -57,49 +57,35 @@
       callback: function(val) { //Mandatory
         vm.timePickerCallback(val);
       }
-    }
+    };
 
     vm.timePickerCallback = function timePickerCallback(val) {
       if (typeof(val) === 'undefined') {
-        console.log('Time not selected');
-        console.log(vm.selectedTime);
+        console.log('User didn\'t select a time');
       } else {
         var time = new Date(val * 1000);
-        console.log(time.getUTCMinutes());
         vm.selectedTime.hours = time.getUTCHours();
-        if(time.getUTCMinutes() == 0){
-          console.log('true');
-          vm.selectedTime.minutes = "00";
+        if (time.getUTCMinutes() == 0) {
+          vm.selectedTime.minutes = '00';
         } else {
-          console.log('false');
           vm.selectedTime.minutes = time.getUTCMinutes();
         }
-        console.log(vm.selectedTime);
         vm.add();
       }
     }
 
     vm.toggleDelete = function toggleDelete() {
-      if (vm.testReminders.length == 0) {
-        vm.showDelete = false;
-      } else {
         vm.showDelete = !vm.showDelete;
-      }
-    }
+
+    };
 
     vm.toggleEdit = function toggleEdit() {
-      if (vm.testReminders.length == 0) {
-        vm.showEdit = false;
-      } else {
-        vm.showEdit = !vm.showEdit;
-      }
-    }
+      vm.showEdit = !vm.showEdit;
+    };
 
     vm.add = function add() {
+      $scope.data = {};
 
-      $scope.data = {}
-
-      // An elaborate, custom popup
       var myPopup = $ionicPopup.show({
         template: vm.templatePopup,
         title: 'Kies de dag(en)',
@@ -125,13 +111,22 @@
           }
         }, ]
       });
+
       myPopup.then(function(res) {
-        if(res != undefined){
-          vm.testReminders.push({
+        if (res != undefined) {
+          //user did select day/days
+          var newReminder = {
             check: true,
             days: res,
             time: vm.selectedTime
-          });
+          };
+          vm.testReminders.push(newReminder);
+          console.log('User added a reminder: ');
+          console.log(newReminder)
+
+        } else {
+          //user didn't select one or more days of the week
+          console.log('User didn\'t select any days of the week');
         };
         vm.selectedTime = {};
       });
@@ -152,19 +147,25 @@
 
     vm.mapDays = function mapDays(input) {
       var result = [];
-      if(input.monday) {
+      if (input.monday) {
         result.push("maandag");
-      } if(input.tuesday) {
+      }
+      if (input.tuesday) {
         result.push("dinsdag");
-      } if(input.wednesday) {
+      }
+      if (input.wednesday) {
         result.push("woensdag");
-      } if(input.thursday) {
+      }
+      if (input.thursday) {
         result.push("donderdag");
-      } if(input.friday) {
+      }
+      if (input.friday) {
         result.push("vrijdag");
-      } if(input.saturday) {
+      }
+      if (input.saturday) {
         result.push("zaterdag");
-      } if(input.sunday){
+      }
+      if (input.sunday) {
         result.push("zondag");
       }
       return result;
