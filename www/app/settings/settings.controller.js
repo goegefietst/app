@@ -21,7 +21,7 @@
     vm.showEdit = false;
     vm.masterCheck = true;
     vm.selectedTime = {};
-
+    vm.templatePopup = '<ion-list><ion-checkbox ng-model="data.monday">maandag</ion-checkbox><ion-checkbox ng-model="data.tuesday">dinsdag</ion-checkbox><ion-checkbox ng-model="data.wednesday">woensdag</ion-checkbox><ion-checkbox ng-model="data.thursday">donderdag</ion-checkbox><ion-checkbox ng-model="data.friday">vrijdag</ion-checkbox><ion-checkbox ng-model="data.saturday">zaterdag</ion-checkbox><ion-checkbox ng-model="data.sunday">zondag</ion-checkbox></ion-list>';
     vm.testReminders = [{
       check: true,
       days: ["maandag","dinsdag","woensdag","donderdag","vrijdag","zaterdag","zondag"],
@@ -101,7 +101,7 @@
 
       // An elaborate, custom popup
       var myPopup = $ionicPopup.show({
-        template: '<ion-list><ion-checkbox ng-model="data.monday">maandag</ion-checkbox><ion-checkbox ng-model="data.tuesday">dinsdag</ion-checkbox><ion-checkbox ng-model="data.wednesday">woensdag</ion-checkbox><ion-checkbox ng-model="data.thursday">donderdag</ion-checkbox><ion-checkbox ng-model="data.friday">vrijdag</ion-checkbox><ion-checkbox ng-model="data.saturday">zaterdag</ion-checkbox><ion-checkbox ng-model="data.sunday">zondag</ion-checkbox></ion-list>',
+        template: vm.templatePopup,
         title: 'Kies de dag(en)',
         scope: $scope,
         buttons: [{
@@ -120,27 +120,25 @@
               //don't allow the user to close unless he enters wifi password
               e.preventDefault();
             } else {
-
               return vm.mapDays($scope.data);
             }
           }
         }, ]
       });
       myPopup.then(function(res) {
-        vm.testReminders.push({
-          check: true,
-          days: res,
-          time: vm.selectedTime
-        })
+        if(res != undefined){
+          vm.testReminders.push({
+            check: true,
+            days: res,
+            time: vm.selectedTime
+          });
+        };
+        vm.selectedTime = {};
       });
     };
 
     vm.onItemDelete = function onItemDelete(reminder) {
-      console.log('test delete');
-      console.log(reminder);
-      console.log(vm.testReminders.indexOf(reminder));
       vm.testReminders.splice(vm.testReminders.indexOf(reminder), 1);
-      console.log(vm.testReminders.length);
       if (vm.testReminders.length == 0) {
         vm.showDelete = false;
       }
