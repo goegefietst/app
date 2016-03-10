@@ -132,8 +132,13 @@
       for (var j = 0; j < reminder.days.length; j++) {
         var day = reminder.days[j];
         var result = vm.returnDateObject(reminder.time, day);
-        console.log('result = ' + result);
-
+        alert(result);
+        cordova.plugins.notification.local.schedule({
+          id: 1,
+          text: 'Vergeet niet je route te tracken!',
+          firstAt: result,
+          every: 'week',
+        });
       }
     };
 
