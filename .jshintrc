@@ -91,6 +91,7 @@
       "StatusBar" : false,
       "require" : false,
       "L" : false,
-      "backgroundGeoLocation" : false
+      "backgroundGeoLocation" : false,
+      "db" : false
       }        // additional predefined global variables
 }
