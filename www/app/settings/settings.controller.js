@@ -21,29 +21,16 @@
     vm.showEdit = false;
     vm.masterCheck = true;
     vm.selectedTime = {};
-    vm.templatePopup = '<ion-list><ion-checkbox ng-model="data.monday">maandag</ion-checkbox><ion-checkbox ng-model="data.tuesday">dinsdag</ion-checkbox><ion-checkbox ng-model="data.wednesday">woensdag</ion-checkbox><ion-checkbox ng-model="data.thursday">donderdag</ion-checkbox><ion-checkbox ng-model="data.friday">vrijdag</ion-checkbox><ion-checkbox ng-model="data.saturday">zaterdag</ion-checkbox><ion-checkbox ng-model="data.sunday">zondag</ion-checkbox></ion-list>';
-    vm.testReminders = [{
-      check: true,
-      days: ["maandag", "dinsdag", "woensdag", "donderdag", "vrijdag", "zaterdag", "zondag"],
-      time: {
-        hours: '7',
-        minutes: '20'
-      }
-    }, {
-      check: false,
-      days: ["maandag", "dinsdag", "woensdag", "donderdag", "vrijdag"],
-      time: {
-        hours: '12',
-        minutes: '00'
-      }
-    }, {
-      check: false,
-      days: ["zaterdag", "zondag"],
-      time: {
-        hours: '16',
-        minutes: '45'
-      }
-    }];
+    vm.templatePopup =
+      '<ion-list><ion-checkbox ng-model="data.monday">maandag</ion-checkbox>' +
+      '<ion-checkbox ng-model="data.tuesday">dinsdag</ion-checkbox>' +
+      '<ion-checkbox ng-model="data.wednesday">woensdag</ion-checkbox>' +
+      '<ion-checkbox ng-model="data.thursday">donderdag</ion-checkbox>' +
+      '<ion-checkbox ng-model="data.friday">vrijdag</ion-checkbox>' +
+      '<ion-checkbox ng-model="data.saturday">zaterdag</ion-checkbox>' +
+      '<ion-checkbox ng-model="data.sunday">zondag</ion-checkbox></ion-list>';
+
+    vm.testReminders = [];
 
     vm.timePickerObject = {
       inputEpochTime: ((new Date()).getHours() * 60 * 60), //Optional
@@ -65,18 +52,17 @@
       } else {
         var time = new Date(val * 1000);
         vm.selectedTime.hours = time.getUTCHours();
-        if (time.getUTCMinutes() == 0) {
+        if (time.getUTCMinutes() === 0) {
           vm.selectedTime.minutes = '00';
         } else {
           vm.selectedTime.minutes = time.getUTCMinutes();
         }
         vm.add();
       }
-    }
+    };
 
     vm.toggleDelete = function toggleDelete() {
-        vm.showDelete = !vm.showDelete;
-
+      vm.showDelete = !vm.showDelete;
     };
 
     vm.toggleEdit = function toggleEdit() {
@@ -109,32 +95,51 @@
               return vm.mapDays($scope.data);
             }
           }
-        }, ]
+        },]
       });
 
       myPopup.then(function(res) {
-        if (res != undefined) {
+        if (res !== undefined) {
+          var ids = window.localStorage['counterIds'];
+          if (ids === undefined) {
+            ids = 1;
+          } else {
+            ids++;
+          }
+          window.localStorage['counterIds'] = ids;
           //user did select day/days
           var newReminder = {
+            id: ids,
             check: true,
             days: res,
             time: vm.selectedTime
           };
+          //configure notification with id
+          vm.configureNotification(newReminder);
+          //add notification to db
           vm.testReminders.push(newReminder);
-          console.log('User added a reminder: ');
-          console.log(newReminder)
 
         } else {
           //user didn't select one or more days of the week
           console.log('User didn\'t select any days of the week');
-        };
+        }
         vm.selectedTime = {};
       });
     };
 
+    vm.configureNotification = function configureNotification(reminder) {
+
+      for (var j = 0; j < reminder.days.length; j++) {
+        var day = reminder.days[j];
+        var result = vm.returnDateObject(reminder.time, day);
+        console.log('result = ' + result);
+
+      }
+    };
+
     vm.onItemDelete = function onItemDelete(reminder) {
       vm.testReminders.splice(vm.testReminders.indexOf(reminder), 1);
-      if (vm.testReminders.length == 0) {
+      if (vm.testReminders.length === 0) {
         vm.showDelete = false;
       }
     };
@@ -148,26 +153,81 @@
     vm.mapDays = function mapDays(input) {
       var result = [];
       if (input.monday) {
-        result.push("maandag");
+        result.push('maandag');
       }
       if (input.tuesday) {
-        result.push("dinsdag");
+        result.push('dinsdag');
       }
       if (input.wednesday) {
-        result.push("woensdag");
+        result.push('woensdag');
       }
       if (input.thursday) {
-        result.push("donderdag");
+        result.push('donderdag');
       }
       if (input.friday) {
-        result.push("vrijdag");
+        result.push('vrijdag');
       }
       if (input.saturday) {
-        result.push("zaterdag");
+        result.push('zaterdag');
       }
       if (input.sunday) {
-        result.push("zondag");
+        result.push('zondag');
       }
+      return result;
+    };
+
+    vm.returnDateObject = function returnDateObject(time, day) {
+      var now = new Date();
+      var result = new Date();
+      var dayOfWeek = now.getDay();
+      var date;
+
+      if (day === 'maandag') {
+        date = now.getDate() + 8 - dayOfWeek;
+      }
+
+      if (day === 'dinsdag') {
+        date = now.getDate() + 9 - dayOfWeek;
+      }
+
+      if (day === 'woensdag') {
+        date = now.getDate() + 10 - dayOfWeek;
+      }
+
+      if (day === 'donderdag') {
+        date = now.getDate() + 11 - dayOfWeek;
+      }
+
+      if (day === 'vrijdag') {
+        date = now.getDate() + 12 - dayOfWeek;
+      }
+
+      if (day === 'zaterdag') {
+        date = now.getDate() + 13 - dayOfWeek;
+      }
+
+      if (day === 'zondag') {
+        date = now.getDate() + 14 - dayOfWeek;
+      }
+
+      var diff = (date - now.getDate());
+      if (diff > 7) {
+        date = date - 7;
+      } else if (diff === 7) {
+        if (time.hours > now.getHours()) {
+          date = date - 7;
+        } else if (time.hours === now.getHours()) {
+          if (time.minutes > now.getMinutes()) {
+            date = date - 7;
+          }
+        }
+      }
+
+      result.setDate(date);
+      result.setHours(time.hours);
+      result.setMinutes(time.minutes);
+      result.setSeconds(0);
+
       return result;
     };
   }
