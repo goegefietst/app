@@ -157,8 +157,12 @@
     };
 
     vm.toggleReminder = function toggleReminder(reminder) {
-      alert(reminder.id);
-    }
+      if (reminder.check) {
+        vm.configureNotification(reminder);
+      } else {
+        vm.cancelNotification(reminder);
+      }
+    };
 
     vm.toggleMasterCheck = function toggleMasterCheck() {
       if (vm.masterCheck) {
@@ -167,9 +171,15 @@
         }
       } else {
         cordova.plugins.notification.local.cancelAll(function() {
-          alert('done');
+          console.log('cancel all notifications');
         });
       }
+    };
+
+    vm.cancelNotification = function cancelNotification(reminder) {
+      cordova.plugins.notification.local.cancel(reminder.id, function() {
+        console.log('cancel notification with id ' + reminder.id);
+      });
     };
 
     vm.mapDays = function mapDays(input) {
