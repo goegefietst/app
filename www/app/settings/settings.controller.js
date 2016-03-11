@@ -145,6 +145,7 @@
 
     vm.onItemDelete = function onItemDelete(reminder) {
       vm.testReminders.splice(vm.testReminders.indexOf(reminder), 1);
+      vm.cancelNotification(reminder);
       if (vm.testReminders.length === 0) {
         vm.showDelete = false;
       }
