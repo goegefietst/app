@@ -1,5 +1,10 @@
 {
   "name": "goegefietst",
   "app_id": "",
-  "gulpStartupTasks": ["wiredep", "inject", "watch"]
+  "gulpStartupTasks": [
+    "wiredep",
+    "inject",
+    "watch"
+  ],
+  "defaultBrowser": "Chrome"
 }

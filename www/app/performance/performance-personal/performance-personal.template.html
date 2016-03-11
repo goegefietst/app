@@ -19,7 +19,8 @@
 
     <ul class="list padding">
       <li class="item item-button-right">
-        {{personal.dis}} km
+        {{personal.dis}}
+        km
         <button class="button ion-chevron-right" ng-click="personal.distance()"></button>
       </li>
       <li class="item item-button-right">
@@ -27,18 +28,20 @@
         <button class="button ion-chevron-right" ng-click="personal.time()"></button>
       </li>
       <li class="item item-button-right">
-        {{personal.spe}} km/u
+        {{personal.spe}}
+        km/u
         <button class="button ion-chevron-right" ng-click="personal.speed()"></button>
       </li>
       <li class="item item-button-right">
-        {{personal.cal}} kcal
+        {{personal.cal}}
+        kcal
         <button class="button ion-chevron-right" ng-click="personal.calories()"></button>
       </li>
     </ul>
-
+    <canvas id="line" class="chart chart-line" chart-data="data" chart-labels="labels" chart-legend="true" chart-series="series" chart-click="onClick"></canvas>
   </ion-content>
   <ion-footer-bar>
-    <button class="button button-clear ion-chevron-left"  ng-click="personal.previous()"></button>
+    <button class="button button-clear ion-chevron-left" ng-click="personal.previous()"></button>
     <div class="title">Maandag 29 januari</div>
     <button class="button button-clear ion-chevron-right" ng-click="personal.next()"></button>
   </ion-footer-bar>

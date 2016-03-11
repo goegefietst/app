@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
-    <meta http-equiv="Content-Security-Policy" content="default-src *;
+    <meta http-equiv="Content-Security-Policy-Report-Only: policy" content="default-src *;
                 script-src 'self' 'unsafe-inline' 'unsafe-eval'
                            127.0.0.1:*
                            http://*.gstatic.com
@@ -25,6 +25,7 @@
     <!-- bower:css -->
     <link rel="stylesheet" href="lib/ionic/css/ionic.css" />
     <link rel="stylesheet" href="lib/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="lib/angular-chart.js/dist/angular-chart.css" />
     <!-- endbower -->
 
     <!-- inject:css -->
@@ -48,6 +49,8 @@
     <script src="lib/leaflet/dist/leaflet-src.js"></script>
     <script src="lib/ui-leaflet/dist/ui-leaflet.js"></script>
     <script src="lib/ionic-timepicker/dist/ionic-timepicker.bundle.min.js"></script>
+    <script src="lib/Chart.js/Chart.js"></script>
+    <script src="lib/angular-chart.js/dist/angular-chart.js"></script>
     <!-- endbower -->
 
     <!-- cordova script (this will be a 404 during development) -->
@@ -62,6 +65,12 @@
 
     <script src="app/performance/performance-group/group-performance.controller.js"></script>
 
+    <script src="app/settings/settings.module.js"></script>
+
+    <script src="app/settings/settings.controller.js"></script>
+
+    <script src="app/settings/settings.config.js"></script>
+
     <script src="app/tracker/tracker.module.js"></script>
 
     <script src="app/tracker/tracker.controller.js"></script>
@@ -69,12 +78,6 @@
     <script src="app/tracker/tracker.config.js"></script>
 
     <script src="app/tracker/routes.temp.js"></script>
-
-    <script src="app/settings/settings.module.js"></script>
-
-    <script src="app/settings/settings.controller.js"></script>
-
-    <script src="app/settings/settings.config.js"></script>
 
     <script src="app/performance/performance.config.js"></script>
 
