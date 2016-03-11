@@ -95,7 +95,7 @@
               return vm.mapDays($scope.data);
             }
           }
-        },]
+        }, ]
       });
 
       myPopup.then(function(res) {
@@ -132,9 +132,8 @@
       for (var j = 0; j < reminder.days.length; j++) {
         var day = reminder.days[j];
         var result = vm.returnDateObject(reminder.time, day);
-        alert(result);
         cordova.plugins.notification.local.schedule({
-          id: 1,
+          id: reminder.id,
           text: 'Vergeet niet je route te tracken!',
           firstAt: result,
           every: 'week',
@@ -153,6 +152,18 @@
       console.log('test edit');
       console.log(reminder);
 
+    };
+
+    vm.toggleMasterCheck = function toggleMasterCheck() {
+      if (vm.masterCheck) {
+        for (var i = 0; i < vm.testReminders.length; i++) {
+          vm.configureNotification(vm.testReminders[i]);
+        }
+      } else {
+        cordova.plugins.notification.local.cancelAll(function() {
+          alert('done');
+        });
+      }
     };
 
     vm.mapDays = function mapDays(input) {
