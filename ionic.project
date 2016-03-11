@@ -5,6 +5,5 @@
     "wiredep",
     "inject",
     "watch"
-  ],
-  "defaultBrowser": "Chrome"
+  ]
 }
