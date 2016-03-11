@@ -17,8 +17,7 @@
     angular.extend($scope, {
       defaults: { //todo: check configurations
         touchZoom: true,
-        scrollWheelZoom: true,
-        zoomControl: false
+        scrollWheelZoom: true
       },
       gent: {
         lat: 51.050,
