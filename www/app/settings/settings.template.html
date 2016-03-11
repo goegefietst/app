@@ -1,7 +1,7 @@
 <ion-view view-title="Reminders">
   <ion-nav-buttons side="left" ng-show="false">
     <button class="button button-icon icon ion-ios-minus-outline" ng-click="settings.toggleDelete()"></button>
-    <button class="button button-icon icon ion-ios-gear-outline" ng-click="settings.toggleEdit()"></button>
+    <!--<button class="button button-icon icon ion-ios-gear-outline" ng-click="settings.toggleEdit()"></button>-->
   </ion-nav-buttons>
   <ion-nav-buttons side="right" ng-show="false">
     <label class="toggle toggle-calm">
@@ -22,11 +22,11 @@
           </div>
         </label>
         <ion-delete-button class="ion-minus-circled" ng-click="settings.onItemDelete(reminder)"></ion-delete-button>
-        <ion-reorder-button class="ion-ios-gear" ng-click="settings.onItemEdit(reminder)"></ion-option-button>
+        <!--<ion-reorder-button class="ion-ios-gear" ng-click="settings.onItemEdit(reminder)"></ion-option-button>-->
       </ion-item>
     </ion-list>
     <ionic-timepicker input-obj="settings.timePickerObject">
-      <button class="button button-block overflowShow">
+      <button class="button button-block overflowShow" id="timepicker">
         <standard-time-meridian etime='timePickerObject.inputEpochTime'></standard-time-meridian>
         Voeg nieuwe reminder toe
       </button>

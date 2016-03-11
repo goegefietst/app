@@ -130,16 +130,17 @@
     };
 
     vm.configureNotification = function configureNotification(reminder) {
-
-      for (var j = 0; j < reminder.days.length; j++) {
-        var day = reminder.days[j];
-        var result = vm.returnDateObject(reminder.time, day);
-        cordova.plugins.notification.local.schedule({
-          id: reminder.id,
-          text: 'Vergeet niet je route te tracken!',
-          firstAt: result,
-          every: 'week',
-        });
+      if (reminder.check) {
+        for (var j = 0; j < reminder.days.length; j++) {
+          var day = reminder.days[j];
+          var result = vm.returnDateObject(reminder.time, day);
+          cordova.plugins.notification.local.schedule({
+            id: reminder.id,
+            text: 'Vergeet niet je route te tracken!',
+            firstAt: result,
+            every: 'week',
+          });
+        }
       }
     };
 
@@ -152,9 +153,7 @@
     };
 
     vm.onItemEdit = function onItemEdit(reminder) {
-      console.log('test edit');
-      console.log(reminder);
-
+      //TO DO
     };
 
     vm.toggleReminder = function toggleReminder(reminder) {
