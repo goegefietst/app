@@ -95,7 +95,7 @@
               return vm.mapDays($scope.data);
             }
           }
-        }, ]
+        },]
       });
 
       myPopup.then(function(res) {
@@ -114,8 +114,10 @@
             days: res,
             time: vm.selectedTime
           };
-          //configure notification with id
-          vm.configureNotification(newReminder);
+          if (vm.masterCheck) {
+            //configure notification with id
+            vm.configureNotification(newReminder);
+          }
           //add notification to db
           vm.testReminders.push(newReminder);
 
@@ -153,6 +155,10 @@
       console.log(reminder);
 
     };
+
+    vm.toggleReminder = function toggleReminder(reminder) {
+      alert(reminder.id);
+    }
 
     vm.toggleMasterCheck = function toggleMasterCheck() {
       if (vm.masterCheck) {
