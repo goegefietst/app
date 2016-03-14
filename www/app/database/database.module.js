@@ -23,6 +23,13 @@ var db;
         $cordovaSQLite.execute(db,
           'CREATE TABLE IF NOT EXISTS routes ' +
           '(id integer primary key)');
+        $cordovaSQLite.execute(db,
+          'CREATE TABLE IF NOT EXISTS reminders ' +
+          '(id integer primary key, active integer,' +
+          ' hour integer, minutes integer,' +
+          ' mon integer, tue integer, wed integer, thu integer, fri integer' +
+          ', sat integer, sun integer)'
+        );
       });
     });
 })();

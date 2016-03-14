@@ -2,19 +2,51 @@
   'use strict';
 
   angular
-    .module('app.settings', ['ionic-timepicker'])
+    .module('app.settings', ['ionic-timepicker', 'database'])
     .controller('SettingsController', Controller);
 
-  Controller.$inject = ['$ionicPopup', '$scope']; //dependencies
+  Controller.$inject = ['$ionicPopup', '$scope', 'Database']; //dependencies
 
   /* @ngInject */
-  function Controller($ionicPopup, $scope) {
+  function Controller($ionicPopup, $scope, Database) {
     var vm = this;
 
     activate();
 
     function activate() {
+      //FOR TESTING PURPOSES
+      /*Database.insertReminder({
+        id: 0,
+        active: true,
+        hour: 11,
+        minutes: 55,
+        days: [true, true, true, true, true, true, true]
+      });*/
+      Database.deleteReminder({
+        id: 0
+      });
+      Database.selectReminders(log);
+      Database.insertRoute([{
+        latitude: 12,
+        longitude: 34,
+        altitude: 123,
+        accuracy: 10,
+        speed: 5.5,
+        time: 1234567890
+      }, {
+        latitude: 13,
+        longitude: 35,
+        altitude: 124,
+        accuracy: 10,
+        speed: 5.0,
+        time: 1234567980
+      }]);
+      Database.selectRoutes(log);
+      Database.selectPoints(log, 5);
+    }
 
+    function log(object) {
+      console.log(object);
     }
 
     vm.showDelete = false;
@@ -95,7 +127,7 @@
               return vm.mapDays($scope.data);
             }
           }
-        },]
+        }]
       });
 
       myPopup.then(function(res) {
