@@ -83,12 +83,8 @@
         console.log('User didn\'t select a time');
       } else {
         var time = new Date(val * 1000);
-        vm.selectedTime.hours = time.getUTCHours();
-        if (time.getUTCMinutes() === 0) {
-          vm.selectedTime.minutes = '00';
-        } else {
-          vm.selectedTime.minutes = time.getUTCMinutes();
-        }
+        vm.selectedTime.hours = format(time.getUTCHours());
+        vm.selectedTime.minutes = format(time.getUTCMinutes());
         vm.add();
       }
     };
@@ -214,6 +210,10 @@
       });
     };
 
+    function format(number) {
+      return number > 9 ? '' + number : '0' + number;
+    }
+
     vm.mapDays = function mapDays(input) {
       var result = [];
       if (input.monday) {
@@ -278,18 +278,18 @@
       if (diff > 7) {
         date = date - 7;
       } else if (diff === 7) {
-        if (time.hours > now.getHours()) {
+        if (parseInt(time.hours) > now.getHours()) {
           date = date - 7;
-        } else if (time.hours === now.getHours()) {
-          if (time.minutes > now.getMinutes()) {
+        } else if (parseInt(time.hours) === now.getHours()) {
+          if (parseInt(time.minutes) > now.getMinutes()) {
             date = date - 7;
           }
         }
       }
 
       result.setDate(date);
-      result.setHours(time.hours);
-      result.setMinutes(time.minutes);
+      result.setHours(parseInt(time.hours));
+      result.setMinutes(parseInt(time.minutes));
       result.setSeconds(0);
 
       return result;
