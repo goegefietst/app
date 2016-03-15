@@ -11,6 +11,8 @@
   function Controller($ionicPopup, $scope, Database) {
     var vm = this;
 
+    vm.reminders = [];
+
     activate();
 
     function activate() {
@@ -21,7 +23,7 @@
         hour: 11,
         minutes: 55,
         days: [true, true, true, true, true, true, true]
-      });*/
+      });
       Database.deleteReminder({
         id: 0
       });
@@ -42,11 +44,21 @@
         time: 1234567980
       }]);
       Database.selectRoutes(log);
-      Database.selectPoints(log, 5);
-    }
+      Database.selectPoints(log, 5);*/
+      Database.selectReminders(map);
 
-    function log(object) {
-      console.log(object);
+      function map(object) {
+        for (var i = 0; i < object.length; i++) {
+          var reminder = {
+            id: object[i].id,
+            active: object[i].active === 'true',
+            hour: format(object[i].hour),
+            minutes: format(object[i].minutes),
+            days: object[i].days
+          };
+          vm.reminders.push(reminder);
+        }
+      }
     }
 
     vm.showDelete = false;
@@ -61,8 +73,6 @@
       '<ion-checkbox ng-model="data.friday">vrijdag</ion-checkbox>' +
       '<ion-checkbox ng-model="data.saturday">zaterdag</ion-checkbox>' +
       '<ion-checkbox ng-model="data.sunday">zondag</ion-checkbox></ion-list>';
-
-    vm.testReminders = [];
 
     vm.timePickerObject = {
       inputEpochTime: ((new Date()).getHours() * 60 * 60), //Optional
@@ -83,8 +93,8 @@
         console.log('User didn\'t select a time');
       } else {
         var time = new Date(val * 1000);
-        vm.selectedTime.hours = format(time.getUTCHours());
-        vm.selectedTime.minutes = format(time.getUTCMinutes());
+        vm.selectedTime.hours = time.getUTCHours();
+        vm.selectedTime.minutes = time.getUTCMinutes();
         vm.add();
       }
     };
@@ -131,24 +141,33 @@
           var ids = window.localStorage['counterIds'];
           if (ids === undefined) {
             ids = 1;
+            console.log(ids);
           } else {
             ids++;
+            console.log(ids);
           }
           window.localStorage['counterIds'] = ids;
           //user did select day/days
           var newReminder = {
             id: ids,
-            check: true,
-            days: res,
-            time: vm.selectedTime
+            active: true,
+            hour: parseInt(vm.selectedTime.hours),
+            minutes: parseInt(vm.selectedTime.minutes),
+            days: res
           };
           if (vm.masterCheck) {
             //configure notification with id
             vm.configureNotification(newReminder);
           }
           //add notification to db
-          vm.testReminders.push(newReminder);
-
+          vm.reminders.push(newReminder);
+          Database.insertReminder({
+            id: newReminder.id,
+            active: newReminder.active,
+            hour: parseInt(vm.selectedTime.hours),
+            minutes: parseInt(vm.selectedTime.minutes),
+            days: [res[0], res[1], res[2], res[3], res[4], res[5], res[6]]
+          });
         } else {
           //user didn't select one or more days of the week
           console.log('User didn\'t select any days of the week');
@@ -158,26 +177,32 @@
     };
 
     vm.configureNotification = function configureNotification(reminder) {
-      if (reminder.check) {
+      if (reminder.active) {
         for (var j = 0; j < reminder.days.length; j++) {
-          var day = reminder.days[j];
-          var result = vm.returnDateObject(reminder.time, day);
-          cordova.plugins.notification.local.schedule({
-            id: reminder.id,
-            text: 'Vergeet niet je route te tracken!',
-            firstAt: result,
-            every: 'week',
-          });
+          if (reminder.days[j]) {
+            var result =
+            vm.returnDateObject(reminder.hour, reminder.minutes, j);
+            cordova.plugins.notification.local.schedule({
+              id: reminder.id,
+              text: 'Vergeet niet je route te tracken!',
+              firstAt: result,
+              every: 'week',
+            });
+          }
         }
       }
     };
 
     vm.onItemDelete = function onItemDelete(reminder) {
-      vm.testReminders.splice(vm.testReminders.indexOf(reminder), 1);
+      vm.reminders.splice(vm.reminders.indexOf(reminder), 1);
+      Database.deleteReminder(reminder);
       vm.cancelNotification(reminder);
-      if (vm.testReminders.length === 0) {
+      if (vm.reminders.length === 0) {
         vm.showDelete = false;
       }
+      Database.selectReminders(function(object) {
+        console.log(object);
+      });
     };
 
     vm.onItemEdit = function onItemEdit(reminder) {
@@ -185,9 +210,11 @@
     };
 
     vm.toggleReminder = function toggleReminder(reminder) {
-      if (reminder.check) {
+      if (reminder.active) {
+        console.log(reminder.active);
         vm.configureNotification(reminder);
       } else {
+        console.log(reminder.active);
         vm.cancelNotification(reminder);
       }
     };
@@ -217,60 +244,74 @@
     vm.mapDays = function mapDays(input) {
       var result = [];
       if (input.monday) {
-        result.push('maandag');
+        result.push(true);
+      } else {
+        result.push(false);
       }
       if (input.tuesday) {
-        result.push('dinsdag');
+        result.push(true);
+      } else {
+        result.push(false);
       }
       if (input.wednesday) {
-        result.push('woensdag');
+        result.push(true);
+      } else {
+        result.push(false);
       }
       if (input.thursday) {
-        result.push('donderdag');
+        result.push(true);
+      } else {
+        result.push(false);
       }
       if (input.friday) {
-        result.push('vrijdag');
+        result.push(true);
+      } else {
+        result.push(false);
       }
       if (input.saturday) {
-        result.push('zaterdag');
+        result.push(true);
+      } else {
+        result.push(false);
       }
       if (input.sunday) {
-        result.push('zondag');
+        result.push(true);
+      } else {
+        result.push(false);
       }
       return result;
     };
 
-    vm.returnDateObject = function returnDateObject(time, day) {
+    vm.returnDateObject = function returnDateObject(hours, minutes, j) {
       var now = new Date();
       var result = new Date();
       var dayOfWeek = now.getDay();
       var date;
 
-      if (day === 'maandag') {
+      if (j === 0) {
         date = now.getDate() + 8 - dayOfWeek;
       }
 
-      if (day === 'dinsdag') {
+      if (j === 1) {
         date = now.getDate() + 9 - dayOfWeek;
       }
 
-      if (day === 'woensdag') {
+      if (j === 2) {
         date = now.getDate() + 10 - dayOfWeek;
       }
 
-      if (day === 'donderdag') {
+      if (j === 3) {
         date = now.getDate() + 11 - dayOfWeek;
       }
 
-      if (day === 'vrijdag') {
+      if (j === 4) {
         date = now.getDate() + 12 - dayOfWeek;
       }
 
-      if (day === 'zaterdag') {
+      if (j === 5) {
         date = now.getDate() + 13 - dayOfWeek;
       }
 
-      if (day === 'zondag') {
+      if (j === 6) {
         date = now.getDate() + 14 - dayOfWeek;
       }
 
@@ -278,18 +319,18 @@
       if (diff > 7) {
         date = date - 7;
       } else if (diff === 7) {
-        if (parseInt(time.hours) > now.getHours()) {
+        if (parseInt(hours) > now.getHours()) {
           date = date - 7;
-        } else if (parseInt(time.hours) === now.getHours()) {
-          if (parseInt(time.minutes) > now.getMinutes()) {
+        } else if (parseInt(hours) === now.getHours()) {
+          if (parseInt(minutes) > now.getMinutes()) {
             date = date - 7;
           }
         }
       }
 
       result.setDate(date);
-      result.setHours(parseInt(time.hours));
-      result.setMinutes(parseInt(time.minutes));
+      result.setHours(parseInt(hours));
+      result.setMinutes(parseInt(minutes));
       result.setSeconds(0);
 
       return result;
