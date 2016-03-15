@@ -5,10 +5,10 @@
     .module('app.tracker')
     .controller('TrackerController', Controller);
 
-  Controller.$inject = ['$scope', '$http', 'leafletData', 'BackgroundGeolocationService']; //dependencies
+  Controller.$inject = ['$scope', '$http', '$window', 'leafletData', 'BackgroundGeolocationService']; //dependencies
 
   /* @ngInject */
-  function Controller($scope, $http, leafletData, BackgroundGeolocationService) {
+  function Controller($scope, $http, $window, leafletData, BackgroundGeolocationService) {
     var vm = this;
     BackgroundGeolocationService.subscribe($scope, function dataUpdated() {
       console.log('Data updated!');
@@ -33,7 +33,8 @@
         }
       },
       markers: [],
-      paths: {}
+      paths: {},
+      height: ($window.innerHeight - 105) / 1.6
     });
 
     vm.loadRoute = function() {
@@ -111,7 +112,7 @@
         color: 'red',
         opacity: 0.5,
         latlngs: route
-        //latlngs: [[51.050, 3.733], [52.050, 4.733]]
+          //latlngs: [[51.050, 3.733], [52.050, 4.733]]
       };
       $scope.paths.path = path;
 
