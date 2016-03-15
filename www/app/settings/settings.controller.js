@@ -2,7 +2,7 @@
   'use strict';
 
   angular
-    .module('app.settings', ['ionic-timepicker', 'database'])
+    .module('app.settings')
     .controller('SettingsController', Controller);
 
   Controller.$inject = ['$ionicPopup', '$scope', 'Database']; //dependencies

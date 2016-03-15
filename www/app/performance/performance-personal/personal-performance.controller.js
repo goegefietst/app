@@ -21,6 +21,10 @@
     vm.spe = 5.3;
     vm.cal = 50;
 
+    vm.isActive = function isActive(value) {
+      return vm.timespan === value;
+    };
+
     vm.day = function day() {
       //change timespan to day
       vm.timespan = 'day';

@@ -2,5 +2,5 @@
   'use strict';
 
   angular
-    .module('app.settings', []);
+    .module('app.settings', ['ionic-timepicker', 'database']);
 })();

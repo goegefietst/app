@@ -12,9 +12,9 @@
 
   <ion-content class="padding has-tabs-top ion-content-personal">
     <div class="button-bar">
-      <a class="button" ng-click="personal.day()">Dag</a>
-      <a class="button" ng-click="personal.week()">Week</a>
-      <a class="button" ng-click="personal.month()">Maand</a>
+      <a class="button" ng-class="{'button-positive': personal.isActive('day')}" ng-click="personal.day()">Dag</a>
+      <a class="button" ng-class="{'button-positive': personal.isActive('week')}" ng-click="personal.week()">Week</a>
+      <a class="button" ng-class="{'button-positive': personal.isActive('month')}" ng-click="personal.month()">Maand</a>
     </div>
 
     <ul class="list padding">
