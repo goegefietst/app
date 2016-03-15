@@ -14,7 +14,7 @@
   <ion-content>
     <ion-list class="has-subheader" show-delete="settings.showDelete" show-reorder="settings.showEdit">
       <ion-item class="item item-remove-animate item-toggle" ng-repeat="reminder in settings.reminders" ng-click="settings.test()">
-        <span>{{reminder.hour}}:{{reminder.minutes}}</span> - <span ng-repeat="day in reminder.days">{{day}} </span>
+        <span>{{reminder.hour}}:{{reminder.minutes}}</span> - <span ng-repeat="day in reminder.daysString">{{day}} </span>
         <label class="toggle toggle-calm" ng-show="settings.masterCheck && !settings.showDelete" ng-click="settings.toggleReminder(reminder)">
           <input type="checkbox" ng-model="reminder.active">
           <div class="track">

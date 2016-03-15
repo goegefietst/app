@@ -148,12 +148,14 @@
           }
           window.localStorage['counterIds'] = ids;
           //user did select day/days
+          console.log(vm.daysToString(res));
           var newReminder = {
             id: ids,
             active: true,
-            hour: parseInt(vm.selectedTime.hours),
-            minutes: parseInt(vm.selectedTime.minutes),
-            days: res
+            hour: vm.selectedTime.hours,
+            minutes: vm.selectedTime.minutes,
+            days: res,
+            daysString: vm.daysToString(res)
           };
           if (vm.masterCheck) {
             //configure notification with id
@@ -178,19 +180,26 @@
 
     vm.configureNotification = function configureNotification(reminder) {
       if (reminder.active) {
+        console.log(reminder.days.length);
+        console.log(reminder.days);
         for (var j = 0; j < reminder.days.length; j++) {
           if (reminder.days[j]) {
             var result =
-            vm.returnDateObject(reminder.hour, reminder.minutes, j);
+              vm.returnDateObject(reminder.hour, reminder.minutes, j);
+            console.log(result);
             cordova.plugins.notification.local.schedule({
               id: reminder.id,
               text: 'Vergeet niet je route te tracken!',
-              firstAt: result,
+              at: result,
               every: 'week',
             });
           }
         }
       }
+      cordova.plugins.notification.local.get(reminder.id,
+         function(notification) {
+        console.log(notification.at);
+      });
     };
 
     vm.onItemDelete = function onItemDelete(reminder) {
@@ -221,12 +230,18 @@
 
     vm.toggleMasterCheck = function toggleMasterCheck() {
       if (vm.masterCheck) {
-        for (var i = 0; i < vm.testReminders.length; i++) {
-          vm.configureNotification(vm.testReminders[i]);
+        for (var i = 0; i < vm.reminders.length; i++) {
+          vm.configureNotification(vm.reminders[i]);
         }
+        cordova.plugins.notification.local.getAllIds(function(ids) {
+          console.log(ids);
+        });
       } else {
         cordova.plugins.notification.local.cancelAll(function() {
           console.log('cancel all notifications');
+        });
+        cordova.plugins.notification.local.getAllIds(function(ids) {
+          console.log(ids);
         });
       }
     };
@@ -240,6 +255,38 @@
     function format(number) {
       return number > 9 ? '' + number : '0' + number;
     }
+
+    vm.daysToString = function daysToString(days) {
+      var daysString = [];
+      for (var i = 0; i < days.length; i++) {
+        if (days[i]) {
+          switch (i) {
+            case 0:
+              daysString.push('ma');
+              break;
+            case 1:
+              daysString.push('di');
+              break;
+            case 2:
+              daysString.push('wo');
+              break;
+            case 3:
+              daysString.push('do');
+              break;
+            case 4:
+              daysString.push('vr');
+              break;
+            case 5:
+              daysString.push('za');
+              break;
+            case 6:
+              daysString.push('zo');
+              break;
+          }
+        }
+      }
+      return daysString;
+    };
 
     vm.mapDays = function mapDays(input) {
       var result = [];
