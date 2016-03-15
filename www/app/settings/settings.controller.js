@@ -21,31 +21,41 @@
         hour: 11,
         minutes: 55,
         days: [true, true, true, true, true, true, true]
-      });*/
+      });
       Database.deleteReminder({
         id: 0
       });
-      Database.selectReminders(log);
+      Database.selectReminders(log);*/
       Database.insertRoute([{
-        latitude: 12,
-        longitude: 34,
+        latitude: 66,
+        longitude: 66,
         altitude: 123,
         accuracy: 10,
         speed: 5.5,
-        time: 1234567890
+        time: 1457961614000
       }, {
-        latitude: 13,
-        longitude: 35,
+        latitude: 45,
+        longitude: 45,
         altitude: 124,
         accuracy: 10,
         speed: 5.0,
-        time: 1234567980
+        time: 1457961614000
       }]);
-      Database.selectRoutes(log);
-      Database.selectPoints(log, 5);
+      Database.selectRoutes(log, {day: 2, message: 'BY DAY'});
+      Database.selectRoutes(log, {day: 2, month: 2, year: year(2016), message: 'BY DATE'});
+      Database.selectRoutes(log, {month: 2, year: year(2016), message: 'BY MONTH AND YEAR'});
+      Database.selectRoutes(log, {time: 1458046159000, message: 'BY TIME'});
+      //Database.selectPoints(log, 5);
     }
 
-    function log(object) {
+    function year(year) {
+      return year - 1900;
+    }
+
+    function log(object, message) {
+      if (message) {
+        console.log(message);
+      }
       console.log(object);
     }
 

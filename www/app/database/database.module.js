@@ -22,7 +22,7 @@ var db;
           'alt decimal, acc real, speed real, time integer)');
         $cordovaSQLite.execute(db,
           'CREATE TABLE IF NOT EXISTS routes ' +
-          '(id integer primary key)');
+          '(id integer primary key, time integer)');
         $cordovaSQLite.execute(db,
           'CREATE TABLE IF NOT EXISTS reminders ' +
           '(id integer primary key, active integer,' +

@@ -78,9 +78,15 @@
       };
 
       var insertRoute = function(route) {
-        var query = 'INSERT INTO routes DEFAULT VALUES';
-        $cordovaSQLite.execute(db, query).then(function(result) {
-          console.log('INSERT ROUTE ID -> ' + result.insertId);
+        if (route.length < 1) {
+          console.error('Can\'t store route, it is empty');
+          return;
+        }
+        var point = route[route.length - 1];
+        var query = 'INSERT INTO routes (time)' +
+          'VALUES (?)';
+        $cordovaSQLite.execute(db, query, [point.time]).then(function(result) {
+          console.log('INSERT ROUTE ID -> ' + result.insertId + ' TIME -> ' + result.time);
           for (var i = 0; i < route.length; i++) {
             insertPoint(result.insertId, route[i]);
           }
@@ -90,22 +96,50 @@
         });
       };
 
-      var selectRoutes = function(callback) {
-        var query = 'SELECT id FROM routes';
+      var selectRoutes = function(callback, options) {
+        var query = 'SELECT id, time FROM routes';
         var routes = [];
-        $cordovaSQLite.execute(db, query).then(function(result) {
-          if (result.rows.length > 0) {
-            for (var i = 0; i < result.rows.length; i++) {
-              //console.log('Route ' + i + '=' + result.rows.item(i));
-              routes.push(result.rows.item(i));
+        $cordovaSQLite.execute(db, query)
+          .then(function(result) {
+            if (result.rows.length > 0) {
+              for (var i = 0; i < result.rows.length; i++) {
+                //console.log('Route ' + i + '=' + result.rows.item(i));
+                var route = result.rows.item(i);
+                var date = new Date(route.time);
+                if (!options) { // NO OPTIONS = RETURN ALL ROUTES
+                  routes.push(route);
+                } else if (options.day && options.month && options.year) { // OPTIONS.DATE = RETURN ALL ROUTES WITH A GIVEN DATE
+                  if (options.year === date.getYear() &&
+                    options.month === date.getMonth() &&
+                    options.day === date.getDay()) {
+                    routes.push(route);
+                  }
+                } else if (options.day) { // OPTIONS.DAY = RETURN ALL ROUTES WITH A GIVEN DAY
+                  if (options.day === date.getDay()) {
+                    routes.push(route);
+                  }
+                } else if (options.month && options.year) { // OPTIONS.MONTH = RETURN ALL ROUTES WITH A GIVEN MONTH AND YEAR
+                  if (options.month === date.getMonth() &&
+                    options.year === date.getYear()) {
+                    routes.push(route);
+                  }
+                } else if (options.time) { // OPTIONS.TIME = RETURN ALL ROUTES IN LAST 7 DAYS
+                  if (
+                    Math.floor(
+                      (new Date(options.time) - new Date(route.time)) /
+                      (1000 * 60 * 60 * 24)) < 7
+                  ) {
+                    routes.push(route);
+                  }
+                }
+              }
+              callback(routes, options.message);
+            } else {
+              console.log('No results found');
             }
-            callback(routes);
-          } else {
-            console.log('No results found');
-          }
-        }, function(err) {
-          console.error(err);
-        });
+          }, function(err) {
+            console.error(err);
+          });
       };
 
       var selectPoints = function(callback, routeId) {
