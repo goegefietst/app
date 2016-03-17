@@ -2,5 +2,5 @@
   'use strict';
 
   angular
-    .module('app.performance', ['chart.js']);
+    .module('app.performance', ['chart.js', 'database']);
 })();

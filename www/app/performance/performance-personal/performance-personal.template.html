@@ -38,7 +38,7 @@
         <button class="button ion-chevron-right" ng-click="personal.calories()"></button>
       </li>
     </ul>
-    <canvas id="line" class="chart chart-line" chart-data="data" chart-labels="labels" chart-legend="true" chart-series="series" chart-click="onClick"></canvas>
+    <canvas id="line" height="100" class="chart chart-line" chart-data="personal.data" chart-labels="personal.labels" chart-legend="true" chart-series="personal.series" chart-options="personal.options" chart-click="onClick"></canvas>
   </ion-content>
   <ion-footer-bar>
     <button class="button button-clear ion-chevron-left" ng-click="personal.previous()"></button>
