@@ -3,14 +3,20 @@
 
   angular
     .module('geolocation')
-    .factory('BackgroundGeolocationService',
-     ['$q', '$rootScope', function($q, $rootScope) {
+    .factory('BackgroundGeolocationService', ['$q', '$rootScope', function($q, $rootScope) {
       var locations = [];
 
       var callbackFn = function(location) {
-        //console.log(location);
+        console.log(location);
         logLocation(location);
-        locations.push([location.latitude, location.longitude]);
+        locations.push({
+          latitude: location.latitude,
+          longitude: location.longitude,
+          altitude: location.altitude,
+          accuracy: location.accuracy,
+          speed: location.speed,
+          time: location.time
+        });
         //$http({
         //request options to send data to server
         //});
@@ -25,14 +31,14 @@
       //Enable background geolocation
       var start = function() {
         //save settings (background tracking is enabled) in local storage
+        locations = [];
         window.localStorage.setItem('bgGPS', 1);
         backgroundGeoLocation.configure(callbackFn, failureFn, {
           desiredAccuracy: 10,
           stationaryRadius: 1,
           distanceFilter: 1,
           locationTimeout: 1,
-          locationService:
-          backgroundGeoLocation.service.ANDROID_DISTANCE_FILTER,
+          locationService: backgroundGeoLocation.service.ANDROID_DISTANCE_FILTER,
           debug: false,
           stopOnTerminate: false,
           fastestInterval: 1000,
@@ -59,6 +65,7 @@
           window.localStorage.setItem('bgGPS', 0);
           backgroundGeoLocation.stop();
           console.log('stopped tracking');
+          return locations;
         },
 
         subscribe: function(scope, callback) {

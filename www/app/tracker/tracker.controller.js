@@ -6,20 +6,27 @@
     .controller('TrackerController', Controller);
   //dependencies
   Controller.$inject =
-  ['$scope', '$http', '$window', 'leafletData', 'BackgroundGeolocationService'];
+  ['$scope', '$http', '$window', 'leafletData', 'BackgroundGeolocationService', 'Database'];
 
   /* @ngInject */
   function Controller($scope,
     $http,
     $window,
     leafletData,
-    BackgroundGeolocationService) {
+    BackgroundGeolocationService,
+    Database) {
     var vm = this;
     vm.tracking = false;
 
     BackgroundGeolocationService.subscribe($scope, function dataUpdated() {
       console.log('Data updated!');
-      vm.drawRoute(BackgroundGeolocationService.locations);
+
+      var latlngs = [];
+      for (var i = 0; i < BackgroundGeolocationService.locations.length; i++) {
+        var point = BackgroundGeolocationService.locations[i];
+        latlngs.push([point.latitude, point.longitude]);
+      }
+      vm.drawRoute(latlngs);
     });
     angular.extend($scope, {
       defaults: { //todo: check configurations
@@ -49,6 +56,12 @@
         console.log('app starts tracking');
         BackgroundGeolocationService.start();
         vm.tracking = true;
+      } else {
+        console.log('app stops tracking');
+        var route = BackgroundGeolocationService.stop();
+        console.log(route);
+        vm.tracking = false;
+        Database.insertRoute(route);
       }
     };
 
@@ -108,7 +121,8 @@
       routes.opacity = 0.5;
       $scope.paths.multiPolyline = routes;
 
-      var lastPoint = routes.latlngs[0][routes.latlngs[0].length - 1];
+      var lastPoint = routes.latlngs[routes.latlngs[0].length - 1];
+
       vm.addMarker(lastPoint);
       vm.setView(lastPoint);
     };
