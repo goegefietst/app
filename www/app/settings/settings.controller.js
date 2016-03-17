@@ -49,7 +49,6 @@
 
       function map(object) {
         for (var i = 0; i < object.length; i++) {
-          console.log(object[i]);
           var days = [];
           days.push(object[i].mon === 'true');
           days.push(object[i].tue === 'true');
@@ -59,7 +58,8 @@
           days.push(object[i].sat === 'true');
           days.push(object[i].sun === 'true');
 
-          console.log(days);
+          console.log(format(object[i].hour));
+          console.log(format(object[i].minutes));
           var reminder = {
             id: object[i].id,
             active: object[i].active === 'true',
@@ -68,7 +68,6 @@
             days: days,
             daysString: vm.daysToString(days)
           };
-
           vm.reminders.push(reminder);
         }
       }
@@ -159,25 +158,18 @@
           }
           window.localStorage['counterIds'] = ids;
           //user did select day/days
-          console.log(vm.daysToString(res));
           var newReminder = {
             id: ids,
             active: true,
-            hour: vm.selectedTime.hours,
-            minutes: vm.selectedTime.minutes,
+            hour: format(vm.selectedTime.hours),
+            minutes: format(vm.selectedTime.minutes),
             days: res,
             daysString: vm.daysToString(res)
           };
           if (vm.masterCheck) {
-            if (newReminder.active) {
-              //configure notification with id
-              for (var j = 0; j < newReminder.days.length; j++) {
-                if (newReminder.days[j]) {
-                  vm.configureNotification(newReminder, j);
-                }
-              }
-            }
+            vm.configureNotification(newReminder);
           }
+
           //add notification to db
           vm.reminders.push(newReminder);
           Database.insertReminder({
@@ -195,16 +187,23 @@
       });
     };
 
-    vm.configureNotification = function configureNotification(reminder, j) {
-      var result =
-        vm.returnDateObject(reminder.hour, reminder.minutes, j);
-      console.log(result);
-      cordova.plugins.notification.local.schedule({
-        id: reminder.id,
-        text: 'Vergeet niet je route te tracken!',
-        at: result,
-        every: 'week',
-      });
+    vm.configureNotification = function configureNotification(reminder) {
+      if (reminder.active) {
+        //configure notification with id
+        for (var j = 0; j < reminder.days.length; j++) {
+          if (reminder.days[j]) {
+            var result =
+              vm.returnDateObject(reminder.hour, reminder.minutes, j);
+            console.log(result);
+            cordova.plugins.notification.local.schedule({
+              id: reminder.id,
+              text: 'Vergeet niet je route te tracken!',
+              at: result,
+              every: 'week',
+            });
+          }
+        }
+      }
     };
 
     vm.onItemDelete = function onItemDelete(reminder) {
@@ -236,7 +235,8 @@
     vm.toggleMasterCheck = function toggleMasterCheck() {
       if (vm.masterCheck) {
         for (var i = 0; i < vm.reminders.length; i++) {
-          vm.configureNotification(vm.reminders[i]);
+          var reminder = vm.reminders[i];
+          vm.configureNotification(reminder);
         }
         cordova.plugins.notification.local.getAllIds(function(ids) {
           console.log(ids);
@@ -343,31 +343,24 @@
       if (j === 0) {
         date = now.getDate() + 8 - dayOfWeek;
       }
-
       if (j === 1) {
         date = now.getDate() + 9 - dayOfWeek;
       }
-
       if (j === 2) {
         date = now.getDate() + 10 - dayOfWeek;
       }
-
       if (j === 3) {
         date = now.getDate() + 11 - dayOfWeek;
       }
-
       if (j === 4) {
         date = now.getDate() + 12 - dayOfWeek;
       }
-
       if (j === 5) {
         date = now.getDate() + 13 - dayOfWeek;
       }
-
       if (j === 6) {
         date = now.getDate() + 14 - dayOfWeek;
       }
-
       var diff = (date - now.getDate());
       if (diff > 7) {
         date = date - 7;
