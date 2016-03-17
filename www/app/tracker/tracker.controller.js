@@ -4,15 +4,29 @@
   angular
     .module('app.tracker')
     .controller('TrackerController', Controller);
-
-  Controller.$inject = ['$scope', '$http', '$window', 'leafletData', 'BackgroundGeolocationService']; //dependencies
+  //dependencies
+  Controller.$inject =
+  ['$scope', '$http', '$window', 'leafletData', 'BackgroundGeolocationService', 'Database'];
 
   /* @ngInject */
-  function Controller($scope, $http, $window, leafletData, BackgroundGeolocationService) {
+  function Controller($scope,
+    $http,
+    $window,
+    leafletData,
+    BackgroundGeolocationService,
+    Database) {
     var vm = this;
+    vm.tracking = false;
+
     BackgroundGeolocationService.subscribe($scope, function dataUpdated() {
       console.log('Data updated!');
-      vm.drawRoute(BackgroundGeolocationService.locations);
+
+      var latlngs = [];
+      for (var i = 0; i < BackgroundGeolocationService.locations.length; i++) {
+        var point = BackgroundGeolocationService.locations[i];
+        latlngs.push([point.latitude, point.longitude]);
+      }
+      vm.drawRoute(latlngs);
     });
     angular.extend($scope, {
       defaults: { //todo: check configurations
@@ -36,6 +50,20 @@
       paths: {},
       height: ($window.innerHeight - 105) / 1.6
     });
+
+    vm.toggle = function toggle() {
+      if (!vm.tracking) {
+        console.log('app starts tracking');
+        BackgroundGeolocationService.start();
+        vm.tracking = true;
+      } else {
+        console.log('app stops tracking');
+        var route = BackgroundGeolocationService.stop();
+        console.log(route);
+        vm.tracking = false;
+        Database.insertRoute(route);
+      }
+    };
 
     vm.loadRoute = function() {
       $http.get('route.geo.json').success(function(data, status) {
@@ -93,7 +121,8 @@
       routes.opacity = 0.5;
       $scope.paths.multiPolyline = routes;
 
-      var lastPoint = routes.latlngs[0][routes.latlngs[0].length - 1];
+      var lastPoint = routes.latlngs[routes.latlngs[0].length - 1];
+
       vm.addMarker(lastPoint);
       vm.setView(lastPoint);
     };
@@ -112,7 +141,7 @@
         color: 'red',
         opacity: 0.5,
         latlngs: route
-          //latlngs: [[51.050, 3.733], [52.050, 4.733]]
+        //latlngs: [[51.050, 3.733], [52.050, 4.733]]
       };
       $scope.paths.path = path;
 
