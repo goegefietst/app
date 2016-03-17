@@ -3,7 +3,8 @@
 
   angular
     .module('geolocation')
-    .factory('BackgroundGeolocationService', ['$q', '$rootScope', function($q, $rootScope) {
+    .factory('BackgroundGeolocationService',
+     ['$q', '$rootScope', function($q, $rootScope) {
       var locations = [];
 
       var callbackFn = function(location) {
@@ -30,7 +31,8 @@
           stationaryRadius: 1,
           distanceFilter: 1,
           locationTimeout: 1,
-          locationService: backgroundGeoLocation.service.ANDROID_DISTANCE_FILTER,
+          locationService:
+          backgroundGeoLocation.service.ANDROID_DISTANCE_FILTER,
           debug: false,
           stopOnTerminate: false,
           fastestInterval: 1000,
@@ -47,7 +49,7 @@
         init: function() {
           var bgGPS = window.localStorage.getItem('bgGPS');
 
-          if (bgGPS == 1 || bgGPS == null) {
+          if (bgGPS === 1) {
             start();
           }
         },
@@ -56,6 +58,7 @@
         stop: function() {
           window.localStorage.setItem('bgGPS', 0);
           backgroundGeoLocation.stop();
+          console.log('stopped tracking');
         },
 
         subscribe: function(scope, callback) {
