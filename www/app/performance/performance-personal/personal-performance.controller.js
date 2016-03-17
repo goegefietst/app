@@ -22,45 +22,83 @@
 
     vm.loadData = function loadData(options) {
       //temporary for testing purposes, should load from db later
-      vm.routes = [
-        [{
-          latitude: 66,
-          longitude: 66,
-          altitude: 123,
-          accuracy: 10,
-          speed: 5.5,
-          time: Date.now() - 4 * 60 * 60 * 1000
-        }, {
-          latitude: 66.2,
-          longitude: 66.3,
-          altitude: 124,
-          accuracy: 10,
-          speed: 5.0,
-          time: Date.now() - 3 * 60 * 60 * 1000
-        }],
-        [{
-          latitude: 66.2,
-          longitude: 66.3,
-          altitude: 123,
-          accuracy: 10,
-          speed: 5.5,
-          time: Date.now() - 1 * 60 * 60 * 1000
-        }, {
-          latitude: 66.1,
-          longitude: 66.2,
-          altitude: 124,
-          accuracy: 10,
-          speed: 5.0,
-          time: Date.now()
-        }]
-      ];
+      //test routes for day
+      if (options.day && options.month && options.year) {
+        console.log('loading day data');
+        vm.routes = [
+          [{
+            latitude: 66,
+            longitude: 66,
+            altitude: 123,
+            accuracy: 10,
+            speed: 5.5,
+            time: Date.now() - 4 * 60 * 60 * 1000
+          }, {
+            latitude: 66.2,
+            longitude: 66.3,
+            altitude: 124,
+            accuracy: 10,
+            speed: 5.0,
+            time: Date.now() - 3 * 60 * 60 * 1000
+          }],
+          [{
+            latitude: 66.2,
+            longitude: 66.3,
+            altitude: 123,
+            accuracy: 10,
+            speed: 5.5,
+            time: Date.now() - 1 * 60 * 60 * 1000
+          }, {
+            latitude: 66.1,
+            longitude: 66.2,
+            altitude: 124,
+            accuracy: 10,
+            speed: 5.0,
+            time: Date.now()
+          }]
+        ];
+      } else if (options.time) {
+        //test routes for week
+        console.log('loading week data');
+        vm.routes = [
+          [{
+            latitude: 23,
+            longitude: 23,
+            altitude: 123,
+            accuracy: 10,
+            speed: 5.5,
+            time: Date.now() - 49 * 60 * 60 * 1000
+          }, {
+            latitude: 26,
+            longitude: 26,
+            altitude: 124,
+            accuracy: 10,
+            speed: 5.0,
+            time: Date.now() - 48 * 60 * 60 * 1000
+          }],
+          [{
+            latitude: 26,
+            longitude: 26,
+            altitude: 123,
+            accuracy: 10,
+            speed: 5.5,
+            time: Date.now() - 1 * 60 * 60 * 1000
+          }, {
+            latitude: 27,
+            longitude: 27,
+            altitude: 124,
+            accuracy: 10,
+            speed: 5.0,
+            time: Date.now()
+          }]
+        ];
+      }
+
       var distances = calculateDistances(vm.routes);
       var distance = distances.reduce(function add(a, b) {
         return a + b.distance;
       }, 0);
-      vm.dis = distance.toFixed(1);/*Math.round(distances.reduce(function add(a, b) {
-        return a + b.distance;
-      }, 0) * 10) / 10;*/
+      vm.dis = distance.toFixed(1);
       var duration = getDuration(vm.routes);
       vm.tim = msToTime(duration);
       vm.spe = (distance / duration * 1000 * 60 * 60).toFixed(1);
@@ -107,23 +145,31 @@
           format(i) + ':' + format(0)
         );
       }
-      vm.series = ['test serie'];
+      vm.series = ['Per uur', 'Cumulatief'];
       var data = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
       for (var j = 0; j < distances.length; j++) {
         var hour = new Date(distances[j].time).getHours();
         data[hour] += distances[j].distance;
       }
-      vm.data = [cumulative(data)];
+      vm.data = [data, cumulative(data)];
     };
 
     vm.loadWeekChart = function loadWeekChart(distances) {
       console.log('Loading week chart');
       vm.options = {
-        scaleSteps: 7,
+        scaleSteps: 6,
         scaleStepWidth: 1,
         scaleStartValue: 0,
+        bezierCurve: false
       };
-      // TODO
+      vm.labels = ['Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag', 'Zaterdag', 'Zondag'];
+      vm.series = ['Per dag', 'Cumulatief'];
+      var data = [0, 0, 0, 0, 0, 0, 0];
+      for (var j = 0; j < distances.length; j++) {
+        var day = new Date(distances[j].time).getDay();
+        data[mondayFirstDay(day)] += distances[j].distance;
+      }
+      vm.data = [data, cumulative(data)];
     };
 
     vm.loadYearChart = function loadYearChart(distances) {
@@ -133,8 +179,11 @@
         scaleStepWidth: 1,
         scaleStartValue: 0,
       };
-      // TODO
     };
+
+    function mondayFirstDay(day) {
+      return day === 0 ? 6 : --day;
+    }
 
     function calculateDistances(routes) {
       var distances = [];
@@ -199,11 +248,12 @@
 
     function cumulative(array) {
       var sum = 0;
-      for (var i = 0; i < array.length; i++) {
-        array[i] += sum;
-        sum = array[i];
+      var cumul = array.slice();
+      for (var i = 0; i < cumul.length; i++) {
+        cumul[i] += sum;
+        sum = cumul[i];
       }
-      return array;
+      return cumul;
     }
 
     vm.isActive = function isActive(value) {

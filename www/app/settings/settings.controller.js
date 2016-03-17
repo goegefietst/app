@@ -65,31 +65,30 @@
       //Database.selectPoints(log, 5);
     }
 
-      Database.selectReminders(map);
+    Database.selectReminders(map);
 
-      function map(object) {
-        for (var i = 0; i < object.length; i++) {
-          var days = [];
-          days.push(object[i].mon === 'true');
-          days.push(object[i].tue === 'true');
-          days.push(object[i].wed === 'true');
-          days.push(object[i].thu === 'true');
-          days.push(object[i].fri === 'true');
-          days.push(object[i].sat === 'true');
-          days.push(object[i].sun === 'true');
+    function map(object) {
+      for (var i = 0; i < object.length; i++) {
+        var days = [];
+        days.push(object[i].mon === 'true');
+        days.push(object[i].tue === 'true');
+        days.push(object[i].wed === 'true');
+        days.push(object[i].thu === 'true');
+        days.push(object[i].fri === 'true');
+        days.push(object[i].sat === 'true');
+        days.push(object[i].sun === 'true');
 
-          console.log(format(object[i].hour));
-          console.log(format(object[i].minutes));
-          var reminder = {
-            id: object[i].id,
-            active: object[i].active === 'true',
-            hour: format(object[i].hour),
-            minutes: format(object[i].minutes),
-            days: days,
-            daysString: vm.daysToString(days)
-          };
-          vm.reminders.push(reminder);
-        }
+        console.log(format(object[i].hour));
+        console.log(format(object[i].minutes));
+        var reminder = {
+          id: object[i].id,
+          active: object[i].active === 'true',
+          hour: format(object[i].hour),
+          minutes: format(object[i].minutes),
+          days: days,
+          daysString: vm.daysToString(days)
+        };
+        vm.reminders.push(reminder);
       }
     }
 
