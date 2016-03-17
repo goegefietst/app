@@ -11,6 +11,8 @@
   function Controller($ionicPopup, $scope, Database) {
     var vm = this;
 
+    vm.reminders = [];
+
     activate();
 
     function activate() {
@@ -26,37 +28,33 @@
         id: 0
       });
       Database.selectReminders(log);*/
-      Database.insertRoute([{
-        latitude: 66,
-        longitude: 66,
-        altitude: 123,
-        accuracy: 10,
-        speed: 5.5,
-        time: 1457961614000
-      }, {
-        latitude: 45,
-        longitude: 45,
-        altitude: 124,
-        accuracy: 10,
-        speed: 5.0,
-        time: 1457961614000
-      }]);
-      Database.selectRoutes(log, {day: 2, message: 'BY DAY'});
-      Database.selectRoutes(log, {day: 2, month: 2, year: year(2016), message: 'BY DATE'});
-      Database.selectRoutes(log, {month: 2, year: year(2016), message: 'BY MONTH AND YEAR'});
-      Database.selectRoutes(log, {time: 1458046159000, message: 'BY TIME'});
-      //Database.selectPoints(log, 5);
-    }
 
-    function year(year) {
-      return year - 1900;
-    }
+      Database.selectReminders(map);
 
-    function log(object, message) {
-      if (message) {
-        console.log(message);
+      function map(object) {
+        for (var i = 0; i < object.length; i++) {
+          var days = [];
+          days.push(object[i].mon === 'true');
+          days.push(object[i].tue === 'true');
+          days.push(object[i].wed === 'true');
+          days.push(object[i].thu === 'true');
+          days.push(object[i].fri === 'true');
+          days.push(object[i].sat === 'true');
+          days.push(object[i].sun === 'true');
+
+          console.log(format(object[i].hour));
+          console.log(format(object[i].minutes));
+          var reminder = {
+            id: object[i].id,
+            active: object[i].active === 'true',
+            hour: format(object[i].hour),
+            minutes: format(object[i].minutes),
+            days: days,
+            daysString: vm.daysToString(days)
+          };
+          vm.reminders.push(reminder);
+        }
       }
-      console.log(object);
     }
 
     vm.showDelete = false;
@@ -71,8 +69,6 @@
       '<ion-checkbox ng-model="data.friday">vrijdag</ion-checkbox>' +
       '<ion-checkbox ng-model="data.saturday">zaterdag</ion-checkbox>' +
       '<ion-checkbox ng-model="data.sunday">zondag</ion-checkbox></ion-list>';
-
-    vm.testReminders = [];
 
     vm.timePickerObject = {
       inputEpochTime: ((new Date()).getHours() * 60 * 60), //Optional
@@ -93,8 +89,8 @@
         console.log('User didn\'t select a time');
       } else {
         var time = new Date(val * 1000);
-        vm.selectedTime.hours = format(time.getUTCHours());
-        vm.selectedTime.minutes = format(time.getUTCMinutes());
+        vm.selectedTime.hours = time.getUTCHours();
+        vm.selectedTime.minutes = time.getUTCMinutes();
         vm.add();
       }
     };
@@ -148,17 +144,25 @@
           //user did select day/days
           var newReminder = {
             id: ids,
-            check: true,
+            active: true,
+            hour: format(vm.selectedTime.hours),
+            minutes: format(vm.selectedTime.minutes),
             days: res,
-            time: vm.selectedTime
+            daysString: vm.daysToString(res)
           };
           if (vm.masterCheck) {
-            //configure notification with id
             vm.configureNotification(newReminder);
           }
-          //add notification to db
-          vm.testReminders.push(newReminder);
 
+          //add notification to db
+          vm.reminders.push(newReminder);
+          Database.insertReminder({
+            id: newReminder.id,
+            active: newReminder.active,
+            hour: parseInt(vm.selectedTime.hours),
+            minutes: parseInt(vm.selectedTime.minutes),
+            days: [res[0], res[1], res[2], res[3], res[4], res[5], res[6]]
+          });
         } else {
           //user didn't select one or more days of the week
           console.log('User didn\'t select any days of the week');
@@ -168,26 +172,34 @@
     };
 
     vm.configureNotification = function configureNotification(reminder) {
-      if (reminder.check) {
+      if (reminder.active) {
+        //configure notification with id
         for (var j = 0; j < reminder.days.length; j++) {
-          var day = reminder.days[j];
-          var result = vm.returnDateObject(reminder.time, day);
-          cordova.plugins.notification.local.schedule({
-            id: reminder.id,
-            text: 'Vergeet niet je route te tracken!',
-            firstAt: result,
-            every: 'week',
-          });
+          if (reminder.days[j]) {
+            var result =
+              vm.returnDateObject(reminder.hour, reminder.minutes, j);
+            console.log(result);
+            cordova.plugins.notification.local.schedule({
+              id: reminder.id,
+              text: 'Vergeet niet je route te tracken!',
+              at: result,
+              every: 'week',
+            });
+          }
         }
       }
     };
 
     vm.onItemDelete = function onItemDelete(reminder) {
-      vm.testReminders.splice(vm.testReminders.indexOf(reminder), 1);
+      vm.reminders.splice(vm.reminders.indexOf(reminder), 1);
+      Database.deleteReminder(reminder);
       vm.cancelNotification(reminder);
-      if (vm.testReminders.length === 0) {
+      if (vm.reminders.length === 0) {
         vm.showDelete = false;
       }
+      Database.selectReminders(function(object) {
+        console.log(object);
+      });
     };
 
     vm.onItemEdit = function onItemEdit(reminder) {
@@ -195,21 +207,30 @@
     };
 
     vm.toggleReminder = function toggleReminder(reminder) {
-      if (reminder.check) {
+      if (reminder.active) {
+        console.log(reminder.active);
         vm.configureNotification(reminder);
       } else {
+        console.log(reminder.active);
         vm.cancelNotification(reminder);
       }
     };
 
     vm.toggleMasterCheck = function toggleMasterCheck() {
       if (vm.masterCheck) {
-        for (var i = 0; i < vm.testReminders.length; i++) {
-          vm.configureNotification(vm.testReminders[i]);
+        for (var i = 0; i < vm.reminders.length; i++) {
+          var reminder = vm.reminders[i];
+          vm.configureNotification(reminder);
         }
+        cordova.plugins.notification.local.getAllIds(function(ids) {
+          console.log(ids);
+        });
       } else {
         cordova.plugins.notification.local.cancelAll(function() {
           console.log('cancel all notifications');
+        });
+        cordova.plugins.notification.local.getAllIds(function(ids) {
+          console.log(ids);
         });
       }
     };
@@ -224,82 +245,122 @@
       return number > 9 ? '' + number : '0' + number;
     }
 
+    vm.daysToString = function daysToString(days) {
+      var daysString = [];
+      for (var i = 0; i < days.length; i++) {
+        if (days[i]) {
+          switch (i) {
+            case 0:
+              daysString.push('ma');
+              break;
+            case 1:
+              daysString.push('di');
+              break;
+            case 2:
+              daysString.push('wo');
+              break;
+            case 3:
+              daysString.push('do');
+              break;
+            case 4:
+              daysString.push('vr');
+              break;
+            case 5:
+              daysString.push('za');
+              break;
+            case 6:
+              daysString.push('zo');
+              break;
+          }
+        }
+      }
+      console.log(daysString);
+      return daysString;
+    };
+
     vm.mapDays = function mapDays(input) {
       var result = [];
       if (input.monday) {
-        result.push('maandag');
+        result.push(true);
+      } else {
+        result.push(false);
       }
       if (input.tuesday) {
-        result.push('dinsdag');
+        result.push(true);
+      } else {
+        result.push(false);
       }
       if (input.wednesday) {
-        result.push('woensdag');
+        result.push(true);
+      } else {
+        result.push(false);
       }
       if (input.thursday) {
-        result.push('donderdag');
+        result.push(true);
+      } else {
+        result.push(false);
       }
       if (input.friday) {
-        result.push('vrijdag');
+        result.push(true);
+      } else {
+        result.push(false);
       }
       if (input.saturday) {
-        result.push('zaterdag');
+        result.push(true);
+      } else {
+        result.push(false);
       }
       if (input.sunday) {
-        result.push('zondag');
+        result.push(true);
+      } else {
+        result.push(false);
       }
       return result;
     };
 
-    vm.returnDateObject = function returnDateObject(time, day) {
+    vm.returnDateObject = function returnDateObject(hours, minutes, j) {
       var now = new Date();
       var result = new Date();
       var dayOfWeek = now.getDay();
       var date;
 
-      if (day === 'maandag') {
+      if (j === 0) {
         date = now.getDate() + 8 - dayOfWeek;
       }
-
-      if (day === 'dinsdag') {
+      if (j === 1) {
         date = now.getDate() + 9 - dayOfWeek;
       }
-
-      if (day === 'woensdag') {
+      if (j === 2) {
         date = now.getDate() + 10 - dayOfWeek;
       }
-
-      if (day === 'donderdag') {
+      if (j === 3) {
         date = now.getDate() + 11 - dayOfWeek;
       }
-
-      if (day === 'vrijdag') {
+      if (j === 4) {
         date = now.getDate() + 12 - dayOfWeek;
       }
-
-      if (day === 'zaterdag') {
+      if (j === 5) {
         date = now.getDate() + 13 - dayOfWeek;
       }
-
-      if (day === 'zondag') {
+      if (j === 6) {
         date = now.getDate() + 14 - dayOfWeek;
       }
-
       var diff = (date - now.getDate());
       if (diff > 7) {
         date = date - 7;
       } else if (diff === 7) {
-        if (parseInt(time.hours) > now.getHours()) {
+        if (parseInt(hours) > now.getHours()) {
           date = date - 7;
-        } else if (parseInt(time.hours) === now.getHours()) {
-          if (parseInt(time.minutes) > now.getMinutes()) {
+        } else if (parseInt(hours) === now.getHours()) {
+          if (parseInt(minutes) > now.getMinutes()) {
             date = date - 7;
           }
         }
       }
 
       result.setDate(date);
-      result.setHours(parseInt(time.hours));
-      result.setMinutes(parseInt(time.minutes));
+      result.setHours(parseInt(hours));
+      result.setMinutes(parseInt(minutes));
       result.setSeconds(0);
 
       return result;
