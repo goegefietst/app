@@ -46,7 +46,6 @@
         var reminders = [];
         $cordovaSQLite.execute(db, query).then(function(result) {
           if (result.rows.length > 0) {
-            //console.log(result.rows.item(2));
             for (var i = 0; i < result.rows.length; i++) {
               reminders.push(result.rows.item(i));
             }

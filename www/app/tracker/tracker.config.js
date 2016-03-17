@@ -18,7 +18,7 @@ angular
       views: {
         'tab-tracker': {
           templateUrl: 'app/tracker/tracker.template.html',
-          controller: 'TrackerController'
+          controller: 'TrackerController as tracker'
         }
       }
     });
