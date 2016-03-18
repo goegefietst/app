@@ -87,7 +87,8 @@
         var query = 'INSERT INTO routes (time)' +
           'VALUES (?)';
         $cordovaSQLite.execute(db, query, [point.time]).then(function(result) {
-          console.log('INSERT ROUTE ID -> ' + result.insertId + ' TIME -> ' + result.time);
+          console.log(result);
+          console.log('INSERT ROUTE ID -> ' + result.insertId + ' TIME -> ' + point.time);
           for (var i = 0; i < route.length; i++) {
             insertPoint(result.insertId, route[i]);
           }
