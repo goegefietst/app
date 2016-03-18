@@ -12,37 +12,37 @@
 
   <ion-content class="padding has-tabs-top ion-content-personal">
     <div class="button-bar">
-      <a class="button" ng-class="{'button-positive': personal.isActive('day')}" ng-click="personal.day()">Dag</a>
-      <a class="button" ng-class="{'button-positive': personal.isActive('week')}" ng-click="personal.week()">Week</a>
-      <a class="button" ng-class="{'button-positive': personal.isActive('month')}" ng-click="personal.month()">Maand</a>
+      <a class="button" ng-class="{'button-positive': personal.isActive('day')}" ng-click="personal.goToDay()">Dag</a>
+      <a class="button" ng-class="{'button-positive': personal.isActive('week')}" ng-click="personal.goToWeek()">Week</a>
+      <a class="button" ng-class="{'button-positive': personal.isActive('year')}" ng-click="personal.goToYear()">Jaar</a>
     </div>
 
     <ul class="list padding">
       <li class="item item-button-right">
         {{personal.dis}}
         km
-        <button class="button ion-chevron-right" ng-click="personal.distance()"></button>
+        <button class="button ion-chevron-right" ng-click="personal.goToDistance()"></button>
       </li>
       <li class="item item-button-right">
         {{personal.tim}}
-        <button class="button ion-chevron-right" ng-click="personal.time()"></button>
+        <button class="button ion-chevron-right" ng-click="personal.goToTime()"></button>
       </li>
       <li class="item item-button-right">
         {{personal.spe}}
         km/u
-        <button class="button ion-chevron-right" ng-click="personal.speed()"></button>
+        <button class="button ion-chevron-right" ng-click="personal.goToSpeed()"></button>
       </li>
       <li class="item item-button-right">
         {{personal.cal}}
         kcal
-        <button class="button ion-chevron-right" ng-click="personal.calories()"></button>
+        <button class="button ion-chevron-right" ng-click="personal.goToCalories()"></button>
       </li>
     </ul>
     <canvas id="line" height="100" class="chart chart-line" chart-data="personal.data" chart-labels="personal.labels" chart-legend="true" chart-series="personal.series" chart-options="personal.options" chart-click="onClick"></canvas>
   </ion-content>
   <ion-footer-bar>
-    <button class="button button-clear ion-chevron-left" ng-click="personal.previous()"></button>
+    <button class="button button-clear ion-chevron-left" ng-click="personal.goToPrevious()"></button>
     <div class="title">Maandag 29 januari</div>
-    <button class="button button-clear ion-chevron-right" ng-click="personal.next()"></button>
+    <button class="button button-clear ion-chevron-right" ng-click="personal.goToNext()"></button>
   </ion-footer-bar>
 </ion-view>

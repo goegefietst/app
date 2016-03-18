@@ -125,6 +125,10 @@
                     options.year === date.getYear()) {
                     routes.push(route);
                   }
+                } else if (options.year) {
+                  if (options.year === date.getYear()) {
+                    routes.push(route);
+                  }
                 } else if (options.time) { // OPTIONS.TIME = RETURN ALL ROUTES IN LAST 7 DAYS
                   if (
                     Math.floor(
