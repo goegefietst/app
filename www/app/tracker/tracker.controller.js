@@ -82,6 +82,13 @@
 
     vm.stopStopwatch = function stopStopwatch() {
       running = false;
+      console.log('User tracked for ' +
+      vm.stopwatch.hours + ':' +
+      vm.stopwatch.minutes + ':' +
+      vm.stopwatch.seconds);
+      vm.stopwatch.hours = '00';
+      vm.stopwatch.minutes = '00';
+      vm.stopwatch.seconds = '00';
     };
 
     function timecounter() {
@@ -96,7 +103,9 @@
 
         setTimeout(function() {
           timecounter();
+          $scope.$apply();
         }, 1000);
+
       }
     }
 
