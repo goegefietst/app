@@ -15,7 +15,7 @@
     BackgroundGeolocationService,
     Database) {
     var vm = this;
-    var tracking = false;
+    vm.tracking = false;
     var timestamp;
     vm.stopwatch = {
       hours: '00',
@@ -58,16 +58,16 @@
     });
 
     vm.toggle = function toggle() {
-      if (!tracking) {
-        console.log('app starts tracking');
+      if (!vm.tracking) {
+        console.log('app starts vm.tracking');
         BackgroundGeolocationService.start();
         vm.startStopwatch();
-        tracking = true;
+        vm.tracking = true;
       } else {
-        console.log('app stops tracking');
+        console.log('app stops vm.tracking');
         var route = BackgroundGeolocationService.stop();
         console.log(route);
-        tracking = false;
+        vm.tracking = false;
         vm.stopStopwatch();
         Database.insertRoute(route);
       }
