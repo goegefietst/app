@@ -4,15 +4,35 @@
   angular
     .module('app.tracker')
     .controller('TrackerController', Controller);
-
-  Controller.$inject = ['$scope', '$http', '$window', 'leafletData', 'BackgroundGeolocationService']; //dependencies
+  //dependencies
+  Controller.$inject = ['$scope', '$http', '$window', 'leafletData', 'BackgroundGeolocationService', 'Database'];
 
   /* @ngInject */
-  function Controller($scope, $http, $window, leafletData, BackgroundGeolocationService) {
+  function Controller($scope,
+    $http,
+    $window,
+    leafletData,
+    BackgroundGeolocationService,
+    Database) {
     var vm = this;
+    vm.tracking = false;
+    var timestamp;
+    vm.stopwatch = {
+      hours: '00',
+      minutes: '00',
+      seconds: '00'
+    };
+    var running = false;
+
     BackgroundGeolocationService.subscribe($scope, function dataUpdated() {
       console.log('Data updated!');
-      vm.drawRoute(BackgroundGeolocationService.locations);
+
+      var latlngs = [];
+      for (var i = 0; i < BackgroundGeolocationService.locations.length; i++) {
+        var point = BackgroundGeolocationService.locations[i];
+        latlngs.push([point.latitude, point.longitude]);
+      }
+      vm.drawRoute(latlngs);
     });
     angular.extend($scope, {
       defaults: { //todo: check configurations
@@ -36,6 +56,76 @@
       paths: {},
       height: ($window.innerHeight - 105) / 1.6
     });
+
+    vm.toggle = function toggle() {
+      if (!vm.tracking) {
+        console.log('app starts vm.tracking');
+        BackgroundGeolocationService.start();
+        vm.startStopwatch();
+        vm.tracking = true;
+      } else {
+        console.log('app stops vm.tracking');
+        var route = BackgroundGeolocationService.stop();
+        console.log(route);
+        vm.tracking = false;
+        vm.stopStopwatch();
+        Database.insertRoute(route);
+      }
+    };
+
+    vm.startStopwatch = function startStopwatch() {
+      var now = new Date();
+      timestamp = now.getTime();
+      running = true;
+      timecounter();
+    };
+
+    vm.stopStopwatch = function stopStopwatch() {
+      running = false;
+      console.log('User tracked for ' +
+      vm.stopwatch.hours + ':' +
+      vm.stopwatch.minutes + ':' +
+      vm.stopwatch.seconds);
+      vm.stopwatch.hours = '00';
+      vm.stopwatch.minutes = '00';
+      vm.stopwatch.seconds = '00';
+    };
+
+    function timecounter() {
+      var now = new Date();
+      var timediff = now.getTime() - timestamp;
+      if (running === true) {
+        var time = formattedtime(timediff);
+        vm.stopwatch.hours = time.hours;
+        vm.stopwatch.minutes = time.minutes;
+        vm.stopwatch.seconds = time.seconds;
+        console.log(vm.stopwatch.hours + ':' + vm.stopwatch.minutes + ':' + vm.stopwatch.seconds);
+
+        setTimeout(function() {
+          timecounter();
+          $scope.$apply();
+        }, 1000);
+
+      }
+    }
+
+    function formattedtime(unformattedtime) {
+      var second = Math.floor(unformattedtime / 1000);
+      var minute = Math.floor(unformattedtime / 60000);
+      var hour = Math.floor(unformattedtime / 3600000);
+      second = second - 60 * minute - 24 * hour;
+      minute = minute - 24 * hour;
+
+      second = second > 9 ? '' + second : '0' + second;
+      minute = minute > 9 ? '' + minute : '0' + minute;
+      hour = hour > 9 ? '' + hour : '0' + hour;
+
+      return {
+        hours: hour,
+        minutes: minute,
+        seconds: second
+      };
+    }
 
     vm.loadRoute = function() {
       $http.get('route.geo.json').success(function(data, status) {
@@ -93,7 +183,8 @@
       routes.opacity = 0.5;
       $scope.paths.multiPolyline = routes;
 
-      var lastPoint = routes.latlngs[0][routes.latlngs[0].length - 1];
+      var lastPoint = routes.latlngs[routes.latlngs[0].length - 1];
+
       vm.addMarker(lastPoint);
       vm.setView(lastPoint);
     };
@@ -112,7 +203,7 @@
         color: 'red',
         opacity: 0.5,
         latlngs: route
-          //latlngs: [[51.050, 3.733], [52.050, 4.733]]
+        //latlngs: [[51.050, 3.733], [52.050, 4.733]]
       };
       $scope.paths.path = path;
 

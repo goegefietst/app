@@ -8,7 +8,7 @@
             <h2 class="center">Tijd</h2>
           </div>
           <div class="row">
-            <h3 class="center">00:00:00</h3>
+            <h3 class="center">{{tracker.stopwatch.hours}}:{{tracker.stopwatch.minutes}}:{{tracker.stopwatch.seconds}}</h3>
           </div>
         </div>
         <div class="row">
@@ -36,8 +36,11 @@
       </div>
     </div>
     <div class="row">
-      <button class="button button-block button-balanced">
+      <button class="button button-block button-balanced" ng-hide="tracker.tracking" ng-click="tracker.toggle()">
         <h1>Go!</h1>
+      </button>
+      <button class="button button-block button-assertive" ng-show="tracker.tracking" ng-click="tracker.toggle()">
+        <h1>Stop!</h1>
       </button>
     </div>
   </ion-content>
