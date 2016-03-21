@@ -3,9 +3,17 @@
 
   angular
     .module('database')
-    .factory('Database', ['$cordovaSQLite', function($cordovaSQLite) {
+    .service('Database', ['$cordovaSQLite', function($cordovaSQLite) {
 
-      var insertReminder = function(reminder) {
+      this.insertReminder = insertReminder;
+      this.deleteReminder = deleteReminder;
+      this.selectReminders = selectReminders;
+      this.insertPoint = insertPoint;
+      this.insertRoute = insertRoute;
+      this.selectRoutes = selectRoutes;
+      this.selectPoints = selectPoints;
+
+      function insertReminder(reminder) {
         var query = 'INSERT OR REPLACE INTO reminders ' +
           '(id, active, hour, minutes, mon, tue, wed, thu, fri, sat, sun)' +
           ' VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
@@ -27,9 +35,9 @@
           console.error(err);
           return true;
         });
-      };
+      }
 
-      var deleteReminder = function(reminder) {
+      function deleteReminder(reminder) {
         var query = 'DELETE FROM reminders WHERE id = ?';
         $cordovaSQLite.execute(db, query, [
           reminder.id
@@ -39,9 +47,9 @@
           console.error(err);
           return true;
         });
-      };
+      }
 
-      var selectReminders = function(callback) {
+      function selectReminders(callback) {
         var query = 'SELECT * FROM reminders';
         var reminders = [];
         $cordovaSQLite.execute(db, query).then(function(result) {
@@ -57,9 +65,9 @@
         }, function(err) {
           console.error(err);
         });
-      };
+      }
 
-      var insertPoint = function(routeId, point) {
+      function insertPoint(routeId, point) {
         var query = 'INSERT INTO points ' +
           '(routeId, lat, lng, alt, acc, speed, time)' +
           ' VALUES (?, ?, ?, ?, ?, ?, ?)';
@@ -77,9 +85,9 @@
           console.error(err);
           return true;
         });
-      };
+      }
 
-      var insertRoute = function(route) {
+      function insertRoute(route) {
         if (route.length < 1) {
           console.error('Can\'t store route, it is empty');
           return;
@@ -88,7 +96,8 @@
         var query = 'INSERT INTO routes (time)' +
           'VALUES (?)';
         $cordovaSQLite.execute(db, query, [point.time]).then(function(result) {
-          console.log('INSERT ROUTE ID -> ' + result.insertId + ' TIME -> ' + result.time);
+          console.log('INSERT ROUTE ID -> ' + result.insertId +
+            ' TIME -> ' + result.time);
           for (var i = 0; i < route.length; i++) {
             insertPoint(result.insertId, route[i]);
           }
@@ -96,9 +105,9 @@
           console.error(err);
           return true;
         });
-      };
+      }
 
-      var selectRoutes = function(callback, options) {
+      function selectRoutes(callback, options) {
         var query = 'SELECT id, time FROM routes';
         var routes = [];
         $cordovaSQLite.execute(db, query)
@@ -146,12 +155,14 @@
           }, function(err) {
             console.error(err);
           });
-      };
+      }
 
-      var selectPoints = function(callback, routeId) {
-        var query = 'SELECT routeId, lat, lng FROM points WHERE routeId = ?';
+      function selectPoints(callback, routeIds) {
+        var query = 'SELECT routeId, lat AS latitude, lng AS longitude,' +
+          ' time FROM points WHERE routeId IN ' + routeIds;
+        console.log('query = ' + query);
         var points = [];
-        $cordovaSQLite.execute(db, query, [routeId]).then(function(result) {
+        $cordovaSQLite.execute(db, query).then(function(result) {
           if (result.rows.length > 0) {
             for (var i = 0; i < result.rows.length; i++) {
               /*console.log('SELECTED -> ' +
@@ -166,16 +177,7 @@
         }, function(err) {
           console.error(err);
         });
-      };
-
-      return {
-        selectPoints: selectPoints,
-        insertRoute: insertRoute,
-        selectRoutes: selectRoutes,
-        insertReminder: insertReminder,
-        deleteReminder: deleteReminder,
-        selectReminders: selectReminders
-      };
+      }
 
     }]);
 })();

@@ -5,10 +5,10 @@
     .module('app.performance')
     .controller('PersonalPerformanceController', Controller);
 
-  Controller.$inject = ['Database']; //dependencies
+  Controller.$inject = ['$q', 'Database']; //dependencies
 
   /* @ngInject */
-  function Controller(Database) {
+  function Controller($q, Database) {
     var vm = this;
 
     vm.timespan = 'day';
@@ -116,7 +116,7 @@
     function loadData(options) {
       //temporary for testing purposes, should load from db later
       //test routes for day
-      if (options.day && options.month && options.year) {
+      /*if (options.day && options.month && options.year) {
         console.log('Loading day data');
         vm.routes = [
           [{
@@ -220,9 +220,72 @@
             time: Date.now()
           }]
         ];
-      }
+      }*/
 
-      var distances = calculateDistances(vm.routes);
+      /*Database.insertRoute([{
+        latitude: 66,
+        longitude: 66,
+        altitude: 123,
+        accuracy: 10,
+        speed: 5.5,
+        time: Date.now() - 7 * 60 * 60 * 1000
+      }, {
+        latitude: 66.2,
+        longitude: 66.3,
+        altitude: 124,
+        accuracy: 10,
+        speed: 5.0,
+        time: Date.now() - 6 * 60 * 60 * 1000
+      }]);
+      Database.insertRoute([{
+        latitude: 66.2,
+        longitude: 66.3,
+        altitude: 123,
+        accuracy: 10,
+        speed: 5.5,
+        time: Date.now() - 2 * 60 * 60 * 1000
+      }, {
+        latitude: 66.1,
+        longitude: 66.2,
+        altitude: 124,
+        accuracy: 10,
+        speed: 5.0,
+        time: Date.now() - 2 * 60 * 60 * 1000
+      }]);
+
+      Database.insertRoute([{
+        latitude: 23,
+        longitude: 23,
+        altitude: 123,
+        accuracy: 10,
+        speed: 5.5,
+        time: Date.now() - 31 * 24 * 60 * 60 * 1000
+      }, {
+        latitude: 26,
+        longitude: 26,
+        altitude: 124,
+        accuracy: 10,
+        speed: 5.0,
+        time: Date.now() - 31 * 24 * 60 * 60 * 1000
+      }]);
+
+      Database.insertRoute([{
+        latitude: 26,
+        longitude: 26,
+        altitude: 123,
+        accuracy: 10,
+        speed: 5.5,
+        time: Date.now() - 1 * 60 * 60 * 1000
+      }, {
+        latitude: 27,
+        longitude: 27,
+        altitude: 124,
+        accuracy: 10,
+        speed: 5.0,
+        time: Date.now()
+      }]);*/
+
+      /*var distances = calculateDistances(vm.routes);
       var distance = distances.reduce(function add(a, b) {
         return a + b.distance;
       }, 0);
@@ -231,18 +294,51 @@
       vm.tim = msToTime(duration);
       vm.spe = (distance / duration * 1000 * 60 * 60).toFixed(1);
       vm.cal = 'Such wow, many';
-      vm.loadChart(distances);
+      vm.loadChart(distances);*/
 
-      /*var callback = function(routes) {
-        vm.routes = routes;
-        vm.routes.sort(comparePoints);
-        vm.loadChart();
+      Database.selectRoutes(routeCallback, options);
+      //Database.selectPoints(log, 1);
 
-        function comparePoints(a, b) {
-          return a.time - b.time;
+      function log(points) {
+        console.log(points);
+      }
+
+      function routeCallback(routes) {
+        if (!routes || routes.length < 1) {
+          console.log('0 routes were returned from DB');
+          resetStats();
+          vm.loadChart([]);
+          return;
         }
-      };
-      Database.selectRoutes(callback, options);*/
+        var sql = '('; //TODO FIX THIS PROPERLY IN DB SERVICE
+        for (var i = 0; i < routes.length; i++) {
+          sql += routes[i].id + ', ';
+        }
+        sql = sql.slice(0, -2) + ')';
+        Database.selectPoints(pointCallback, sql);
+      }
+
+      function pointCallback(points) {
+        var routes = [];
+        for (var i = 0; i < points.length; i++) {
+          if (!routes[points[i].routeId]) {
+            routes[points[i].routeId] = [];
+            routes[points[i].routeId].push(points[i]);
+          } else {
+            routes[points[i].routeId].push(points[i]);
+          }
+        }
+        var distances = calculateDistances(routes);
+        var distance = distances.reduce(function add(a, b) {
+          return a + b.distance;
+        }, 0);
+        vm.dis = distance.toFixed(1);
+        var duration = getDuration(routes);
+        vm.tim = msToTime(duration);
+        vm.spe = (distance / duration * 1000 * 60 * 60).toFixed(1);
+        vm.cal = 'Such wow, many';
+        vm.loadChart(distances);
+      }
     }
 
     function loadChart(distances) {
@@ -340,21 +436,23 @@
     function calculateDistances(routes) {
       var distances = [];
       for (var i = 0; i < routes.length; i++) {
-        routes[i].sort(function(a, b) {
-          return a.time - b.time;
-        });
-        for (var j = 0; j < routes[i].length - 1; j++) {
-          var first = routes[i][j];
-          var second = routes[i][j + 1];
-          var time = (first.time + second.time) / 2;
-          var distance = getDistance(
-            first.latitude, first.longitude,
-            second.latitude, second.longitude
-          );
-          distances.push({
-            time: time,
-            distance: distance
+        if (Object.prototype.toString.call(routes[i]) === '[object Array]') {
+          routes[i].sort(function(a, b) {
+            return a.time - b.time;
           });
+          for (var j = 0; j < routes[i].length - 1; j++) {
+            var first = routes[i][j];
+            var second = routes[i][j + 1];
+            var time = (first.time + second.time) / 2;
+            var distance = getDistance(
+              first.latitude, first.longitude,
+              second.latitude, second.longitude
+            );
+            distances.push({
+              time: time,
+              distance: distance
+            });
+          }
         }
       }
       return distances;
@@ -364,7 +462,10 @@
       var duration = 0;
       for (var i = 0; i < routes.length; i++) {
         var route = routes[i];
-        duration += route[route.length - 1].time - route[0].time;
+        if (Object.prototype.toString.call(route) === '[object Array]' &&
+          route.length > 1) {
+          duration += route[route.length - 1].time - route[0].time;
+        }
       }
       return duration;
     }
@@ -416,6 +517,13 @@
         sum = cumul[i];
       }
       return cumul;
+    }
+
+    function resetStats() {
+      vm.dis = '0.0';
+      vm.tim = '00:00:00';
+      vm.spe = '0.0';
+      vm.cal = '0';
     }
 
   }
