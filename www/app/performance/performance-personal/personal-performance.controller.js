@@ -361,7 +361,8 @@
         scaleSteps: 23,
         scaleStepWidth: 1,
         scaleStartValue: 0,
-        bezierCurve: false
+        bezierCurve: false,
+        animation: false
       };
       vm.labels = [];
       for (var i = 0; i < 24; i++) {
@@ -389,34 +390,40 @@
     function loadWeekChart(distances) {
       console.log('Loading week chart');
       vm.options = {
-        scaleSteps: 6,
+        scaleSteps: 6 + 1, //Extra step to start with 0
         scaleStepWidth: 1,
         scaleStartValue: 0,
-        bezierCurve: false
+        bezierCurve: false,
+        animation: false
       };
-      vm.labels = ['Maandag', 'Dinsdag', 'Woensdag',
+      vm.labels = ['', 'Maandag', 'Dinsdag', 'Woensdag',
         'Donderdag', 'Vrijdag', 'Zaterdag', 'Zondag'
       ];
       vm.series = ['Per dag', 'Cumulatief'];
       var data = [0, 0, 0, 0, 0, 0, 0];
+      var today = mondayFirstDay(new Date().getDay());
       for (var j = 0; j < distances.length; j++) {
-        var day = new Date(distances[j].time).getDay();
-        data[mondayFirstDay(day)] += distances[j].distance;
+        var day = mondayFirstDay(new Date(distances[j].time).getDay());
+        if (day <= today) {
+          data[day] += distances[j].distance;
+        }
       }
-      data = trim(data, mondayFirstDay(new Date().getDay()));
-      vm.data = [data, cumulative(data)];
+      data = trim(data, today);
+      var dataZeroStart = addZeroStart(data);
+      vm.data = [dataZeroStart, cumulative(dataZeroStart)];
     }
 
     function loadYearChart(distances) {
       console.log('Loading year chart');
       vm.options = {
-        scaleSteps: 11,
+        scaleSteps: 11 + 1, //Extra step to start with 0
         scaleStepWidth: 1,
         scaleStartValue: 0,
-        bezierCurve: false
+        bezierCurve: false,
+        animation: false
       };
       vm.labels = [
-        'Januari', 'Februari', 'Maart', 'April', 'Mei', 'Juni', 'Juli',
+        '', 'Januari', 'Februari', 'Maart', 'April', 'Mei', 'Juni', 'Juli',
         'Augustus', 'September', 'Oktober', 'November', 'December'
       ];
       vm.series = ['Per maand', 'Cumulatief'];
@@ -426,7 +433,14 @@
         data[month] += distances[j].distance;
       }
       data = trim(data, new Date().getMonth());
-      vm.data = [data, cumulative(data)];
+      var dataZeroStart = addZeroStart(data);
+      vm.data = [dataZeroStart, cumulative(dataZeroStart)];
+    }
+
+    function addZeroStart(data) {
+      var withZero = data.slice();
+      withZero.unshift(0);
+      return withZero;
     }
 
     function mondayFirstDay(day) {
