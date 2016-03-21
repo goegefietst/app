@@ -77,7 +77,9 @@
           $rootScope.$emit('geolocation-service-event');
         },
 
-        locations: locations
+        getLocations: function() {
+          return locations;
+        }
 
       };
     }]);

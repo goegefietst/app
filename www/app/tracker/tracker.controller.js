@@ -26,10 +26,10 @@
 
     BackgroundGeolocationService.subscribe($scope, function dataUpdated() {
       console.log('Data updated!');
-
       var latlngs = [];
-      for (var i = 0; i < BackgroundGeolocationService.locations.length; i++) {
-        var point = BackgroundGeolocationService.locations[i];
+      var locations = BackgroundGeolocationService.getLocations();
+      for (var i = 0; i < locations.length; i++) {
+        var point = locations[i];
         latlngs.push([point.latitude, point.longitude]);
       }
       vm.drawRoute(latlngs);
