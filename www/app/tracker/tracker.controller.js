@@ -49,16 +49,23 @@
         vm.distance = getDistance(secondLastPoint.latitude,
           secondLastPoint.longitude,
           lastPoint.latitude,
-          lastPoint.longitude).fixed(1);
+          lastPoint.longitude);
+        vm.distance = Math.round(vm.distance * 100) / 100;
+        console.log(vm.distance);
+
+        var duration = (parseInt(vm.stopwatch.hours) * 3600000) +
+        (parseInt(vm.stopwatch.minutes) * 60000) +
+        (parseInt(vm.stopwatch.seconds) * 1000);
+
+        if (duration === 0) {
+          vm.speed = 0;
+        } else {
+          vm.speed = vm.distance / duration;
+        }
+        vm.speed = Math.round(vm.speed * 100) / 100;
+        console.log(vm.speed);
       }
 
-      var duration = (parseInt(vm.stopwatch.hours) * 3600000) +
-      (parseInt(vm.stopwatch.minutes) * 60000) +
-      (parseInt(vm.stopwatch.seconds) * 1000);
-
-      console.log(duration);
-      vm.speed = vm.distance / duration;
-      console.log(vm.speed);
       vm.drawRoute(latlngs);
     });
     angular.extend($scope, {
