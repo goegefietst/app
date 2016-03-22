@@ -16,22 +16,49 @@
     Database) {
     var vm = this;
     vm.tracking = false;
-    var timestamp;
     vm.stopwatch = {
       hours: '00',
       minutes: '00',
       seconds: '00'
     };
+    vm.distance = 0.0;
+    vm.speed = 0.0;
+
+    var timestamp;
     var running = false;
 
     BackgroundGeolocationService.subscribe($scope, function dataUpdated() {
       console.log('Data updated!');
       var latlngs = [];
       var locations = BackgroundGeolocationService.getLocations();
+      var lastPoint;
+      var secondLastPoint;
+
       for (var i = 0; i < locations.length; i++) {
         var point = locations[i];
         latlngs.push([point.latitude, point.longitude]);
       }
+
+      if (locations.length === 1) {
+        lastPoint = locations[(locations.length - 1)];
+      }
+
+      if (locations.length > 1) {
+        lastPoint = locations[(locations.length - 1)];
+        secondLastPoint = locations[(locations.length - 2)];
+        vm.distance = getDistance(secondLastPoint.latitude,
+          secondLastPoint.longitude,
+          lastPoint.latitude,
+          lastPoint.longitude).fixed(1);
+      }
+
+      var duration = (parseInt(vm.stopwatch.hours) * 3600000) +
+      (parseInt(vm.stopwatch.minutes) * 60000) +
+      (parseInt(vm.stopwatch.seconds) * 1000);
+
+      console.log(duration);
+      vm.speed = vm.distance / duration;
+      console.log(vm.speed);
       vm.drawRoute(latlngs);
     });
     angular.extend($scope, {
@@ -215,8 +242,21 @@
         vm.addMarker(lastPoint);
         vm.setView(lastPoint);
       }
-
     };
+
+    function getDistance(lat1, lon1, lat2, lon2) {
+      var radlat1 = Math.PI * lat1 / 180;
+      var radlat2 = Math.PI * lat2 / 180;
+      var theta = lon1 - lon2;
+      var radtheta = Math.PI * theta / 180;
+      var dist = Math.sin(radlat1) * Math.sin(radlat2) +
+        Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+      dist = Math.acos(dist);
+      dist = dist * 180 / Math.PI;
+      dist = dist * 60 * 1.1515;
+      dist = dist * 1.609344;
+      return dist;
+    }
 
     //vm.drawRoute('test');
     //vm.loadRoute();
