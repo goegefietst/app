@@ -53,21 +53,20 @@
       if (locations.length > 1) {
         lastPoint = locations[(locations.length - 1)];
         secondLastPoint = locations[(locations.length - 2)];
-        vm.distance = getDistance(secondLastPoint.latitude,
+        vm.distance += getDistance(secondLastPoint.latitude,
           secondLastPoint.longitude,
           lastPoint.latitude,
           lastPoint.longitude);
         vm.distance = Math.round(vm.distance * 100) / 100;
         console.log(vm.distance);
 
-        var duration = (parseInt(vm.stopwatch.hours) * 3600000) +
-        (parseInt(vm.stopwatch.minutes) * 60000) +
-        (parseInt(vm.stopwatch.seconds) * 1000);
+        var duration = locations[locations.length - 1].time - locations[0].time;
 
         if (duration === 0) {
           vm.speed = 0;
         } else {
-          vm.speed = vm.distance / duration;
+          vm.speed = (vm.distance / duration * 1000 * 60 * 60);
+          vm.speed = Math.round(vm.speed * 100) / 100;
         }
         vm.speed = Math.round(vm.speed * 100) / 100;
         console.log(vm.speed);
@@ -111,6 +110,8 @@
         vm.tracking = false;
         vm.stopStopwatch();
         Database.insertRoute(route);
+        vm.distance = 0.0;
+        vm.speed = 0.0;
         $state.go('tab.performance.personal', {route: route});
       }
     };
