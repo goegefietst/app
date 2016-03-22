@@ -11,8 +11,6 @@
   function Controller($q, $stateParams, Database) {
     var vm = this;
 
-    console.log($stateParams.route);
-
     vm.timespan = 'day';
     vm.routes = [];
     vm.chartData = 'distance';
@@ -21,12 +19,20 @@
     vm.tim = '00:00:00';
     vm.spe = '0.0';
     vm.cal = '0';
+    vm.new = {
+      dis: 0,
+      tim: 0,
+      spe: 0
+    };
 
     //CHANGE BETWEEN DAY, WEEK OR YEAR STATISTICS
     vm.isActive = isActive;
     vm.goToDay = goToDay;
     vm.goToWeek = goToWeek;
     vm.goToYear = goToYear;
+
+    //SHOW RECENT TRACKED DATA IF USER JUST STOPPED TRACKING
+    vm.showNewData = showNewData;
 
     //CURRENTLY NOT USED
     vm.goToDistance = goToDistance;
@@ -45,6 +51,35 @@
 
     //DEFAULT
     vm.goToDay();
+    vm.showNewData();
+
+    function showNewData() {
+      var route = $stateParams.route;
+      var distance = 0;
+      var duration = 0;
+      var speed = 0;
+
+      if (route !== undefined) {
+        if (route.length > 1) {
+          for (var j = 0; j < route.length - 1; j++) {
+            var first = route[j];
+            var second = route[j + 1];
+            distance += getDistance(
+              first.latitude, first.longitude,
+              second.latitude, second.longitude
+            );
+          }
+          vm.new.dis = distance;
+          console.log('distance: ' + distance);
+          duration = route[route.length - 1].time - route[0].time;
+          vm.new.tim = msToTime(duration);
+          console.log('duration:' + duration);
+          speed = (distance / duration * 1000 * 60 * 60).toFixed(1);
+          vm.new.spe = speed;
+          console.log('speed: ' + speed);
+        }
+      }
+    }
 
     function goToDay() {
       //change timespan to day
