@@ -69,12 +69,14 @@
               second.latitude, second.longitude
             );
           }
+          distance = Math.round(distance * 100) / 100;
           vm.new.dis = distance;
           console.log('distance: ' + distance);
           duration = route[route.length - 1].time - route[0].time;
           vm.new.tim = msToTime(duration);
           console.log('duration:' + duration);
-          speed = (distance / duration * 1000 * 60 * 60).toFixed(1);
+          speed = (distance / duration * 1000 * 60 * 60);
+          speed = Math.round(speed * 100) / 100;
           vm.new.spe = speed;
           console.log('speed: ' + speed);
         }
