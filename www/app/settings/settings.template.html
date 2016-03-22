@@ -5,7 +5,7 @@
   </ion-nav-buttons>
   <ion-nav-buttons side="right" ng-show="false">
     <label class="toggle toggle-calm">
-      <input type="checkbox" ng-model="settings.masterCheck" ng-click="settings.toggleMasterCheck()">
+      <input type="checkbox" ng-checked="settings.masterCheck" ng-click="settings.toggleMasterCheck()">
       <div class="track">
         <div class="handle"></div>
       </div>
@@ -13,10 +13,10 @@
   </ion-nav-buttons>
   <ion-content>
     <ion-list class="has-subheader" show-delete="settings.showDelete" show-reorder="settings.showEdit">
-      <ion-item class="item item-remove-animate item-toggle" ng-repeat="reminder in settings.reminders" ng-click="settings.test()">
+      <ion-item class="item item-remove-animate item-toggle" ng-repeat="reminder in settings.reminders | orderBy: 'at'" ng-click="settings.test()">
         <span>{{reminder.hour}}:{{reminder.minutes}}</span> - <span ng-repeat="day in reminder.daysString">{{day}} </span>
         <label class="toggle toggle-calm" ng-show="settings.masterCheck && !settings.showDelete" ng-click="settings.toggleReminder(reminder)">
-          <input type="checkbox" ng-model="reminder.active">
+          <input type="checkbox" ng-checked="reminder.active">
           <div class="track">
             <div class="handle"></div>
           </div>
