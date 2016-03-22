@@ -25,6 +25,7 @@
 
       .state('tab.performance.personal', {
         url: '/personal',
+        params: {route: null},
         views: {
           'prestaties-page': {
             templateUrl: 'app/performance/performance-personal/performance-personal.template.html',

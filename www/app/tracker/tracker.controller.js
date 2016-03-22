@@ -5,12 +5,19 @@
     .module('app.tracker')
     .controller('TrackerController', Controller);
   //dependencies
-  Controller.$inject = ['$scope', '$http', '$window', 'leafletData', 'BackgroundGeolocationService', 'Database'];
+  Controller.$inject = ['$scope',
+  '$http',
+  '$window',
+  '$state',
+  'leafletData',
+  'BackgroundGeolocationService',
+  'Database'];
 
   /* @ngInject */
   function Controller($scope,
     $http,
     $window,
+    $state,
     leafletData,
     BackgroundGeolocationService,
     Database) {
@@ -104,6 +111,7 @@
         vm.tracking = false;
         vm.stopStopwatch();
         Database.insertRoute(route);
+        $state.go('tab.performance.personal', {route: route});
       }
     };
 

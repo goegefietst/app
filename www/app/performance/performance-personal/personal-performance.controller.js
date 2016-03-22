@@ -5,11 +5,13 @@
     .module('app.performance')
     .controller('PersonalPerformanceController', Controller);
 
-  Controller.$inject = ['$q', 'Database']; //dependencies
+  Controller.$inject = ['$q', '$stateParams', 'Database']; //dependencies
 
   /* @ngInject */
-  function Controller($q, Database) {
+  function Controller($q, $stateParams, Database) {
     var vm = this;
+
+    console.log($stateParams.route);
 
     vm.timespan = 'day';
     vm.routes = [];
