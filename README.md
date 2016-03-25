@@ -1,6 +1,6 @@
-# Goegefietst !
+# Goe Gefietst !
 
-Goegefietst is an app that tracks your bike rides in Ghent. It's made by students for students (though not exclusively) to encourage you to travel by bike more often. It tracks your route on your device and gives you feedback at the end of your ride. The app then sends the gathered data anonymously to our server. This data can then be used by the [City of Ghent] to improve bike routes, safety and available amenities.
+Goe Gefietst is an app that tracks your bike rides in Ghent. It's made by students for students (though not exclusively) to encourage you to travel by bike more often. It tracks your route on your device and gives you feedback at the end of your ride. The app then sends the gathered data anonymously to our server. This data can then be used by the [City of Ghent] to improve bike routes, safety and available amenities.
 
 ### Features
   - A tracker that displays the route you travelled on a map
