@@ -59,7 +59,7 @@
       var duration = 0;
       var speed = 0;
 
-      if (route !== undefined) {
+      if (route !== undefined && route !== null) {
         if (route.length > 1) {
           for (var j = 0; j < route.length - 1; j++) {
             var first = route[j];
