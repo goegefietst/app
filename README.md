@@ -43,7 +43,6 @@ Adding the platform is only necessary the first time you run that platform.
 
 License
 ----
-Goe Gefietst is an app that encourages people to commute by bike and tracks them while they do so.
 Copyright (C) 2016 TreinTramBus
 
 This program is free software: you can redistribute it and/or modify
