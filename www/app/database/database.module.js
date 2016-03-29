@@ -15,14 +15,17 @@ var db;
           db = window.openDatabase('goegefietst.db',
             '1', 'goegefietst', 1024 * 1024 * 100);
         }*/
-        db = $cordovaSQLite.openDB('goegefietst.db');
+        db = $cordovaSQLite.openDB({
+          name: 'goegefietst.db',
+          iosDatabaseLocation: 'default'
+        });
         $cordovaSQLite.execute(db,
           'CREATE TABLE IF NOT EXISTS points ' +
           '(id integer primary key, routeId integer, lat real, lng real, ' +
           'alt decimal, acc real, speed real, time integer)');
         $cordovaSQLite.execute(db,
           'CREATE TABLE IF NOT EXISTS routes ' +
-          '(id integer primary key, time integer)');
+          '(id integer primary key, time integer, sent integer)');
         $cordovaSQLite.execute(db,
           'CREATE TABLE IF NOT EXISTS reminders ' +
           '(id integer primary key, active integer,' +

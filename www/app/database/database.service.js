@@ -12,6 +12,7 @@
       this.insertRoute = insertRoute;
       this.selectRoutes = selectRoutes;
       this.selectPoints = selectPoints;
+      this.sentRoute = sentRoute;
 
       function insertReminder(reminder) {
         var query = 'INSERT OR REPLACE INTO reminders ' +
@@ -59,7 +60,7 @@
             }
             callback(reminders);
           } else {
-            console.log('No results found');
+            console.log('No reminders found');
           }
         }, function(err) {
           console.error(err);
@@ -86,15 +87,27 @@
         });
       }
 
+      function sentRoute(route) {
+        var query = 'UPDATE routes SET sent = 1 WHERE id = ?';
+        $cordovaSQLite.execute(db, query, [
+          route.id,
+        ]).then(function(result) {
+          console.log('SENT ROUTE -> ' + result.insertId);
+        }, function(err) {
+          console.error(err);
+          return true;
+        });
+      }
+
       function insertRoute(route) {
         if (route.length < 1) {
           console.error('Can\'t store route, it is empty');
           return;
         }
         var point = route[route.length - 1];
-        var query = 'INSERT INTO routes (time)' +
-          'VALUES (?)';
-        $cordovaSQLite.execute(db, query, [point.time]).then(function(result) {
+        var query = 'INSERT INTO routes (time, sent)' +
+          'VALUES (?, ?)';
+        $cordovaSQLite.execute(db, query, [point.time, false]).then(function(result) {
           console.log('INSERT ROUTE ID -> ' + result.insertId +
             ' TIME -> ' + result.time);
           for (var i = 0; i < route.length; i++) {
@@ -107,7 +120,7 @@
       }
 
       function selectRoutes(callback, options) {
-        var query = 'SELECT id, time FROM routes';
+        var query = 'SELECT id, time, sent FROM routes';
         var routes = [];
         $cordovaSQLite.execute(db, query)
           .then(function(result) {
@@ -145,11 +158,16 @@
                   ) {
                     routes.push(route);
                   }
+                } else if (options.sent) {
+                  console.log('Trying to find routes that haven\'t been sent yet');
+                  if (route.sent === 'false') {
+                    routes.push(route);
+                  }
                 }
               }
               callback(routes, options.message);
             } else {
-              console.log('No results found');
+              console.log('No routes found');
             }
           }, function(err) {
             console.error(err);
@@ -171,7 +189,7 @@
             }
             callback(points);
           } else {
-            console.log('No results found');
+            console.log('No points found');
           }
         }, function(err) {
           console.error(err);
