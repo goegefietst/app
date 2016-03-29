@@ -27,7 +27,7 @@
       Database.deleteReminder({
         id: 0
       });
-      Database.selectReminders(log);*/
+      Database.selectReminders(log);
       Database.insertRoute([{
         latitude: 66,
         longitude: 66,
@@ -62,7 +62,7 @@
       Database.selectRoutes(log, {day: 2, month: 2, year: year(2016), message: 'BY DATE'});
       Database.selectRoutes(log, {month: 2, year: year(2016), message: 'BY MONTH AND YEAR'});
       Database.selectRoutes(log, {time: 1458046159000, message: 'BY TIME'});*/
-      //Database.selectPoints(log, 5);
+      //Database.selectPoints(log, 5);*/
     }
 
     Database.selectReminders(map);
