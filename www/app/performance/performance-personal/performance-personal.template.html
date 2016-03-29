@@ -1,23 +1,12 @@
-<ion-view title="Persoonlijke prestaties">
-  <div class="tabs-striped tabs-top tabs-background-stable">
-    <div class="tabs">
-      <a class="tab-item tab-item-active" ui-sref="tab.performance.personal">
-        Persoonlijk
-      </a>
-      <a class="tab-item" ui-sref="tab.performance.group">
-        Groep
-      </a>
-    </div>
-  </div>
-
-  <ion-content class="padding has-tabs-top ion-content-personal">
+<ion-view  style="margin: 0;">
+  <ion-content class="padding has-tabs-top ion-content-personal"  style="margin: 0;">
     <div class="button-bar">
       <a class="button" ng-class="{'button-positive': personal.isActive('day')}" ng-click="personal.goToDay()">Dag</a>
       <a class="button" ng-class="{'button-positive': personal.isActive('week')}" ng-click="personal.goToWeek()">Week</a>
       <a class="button" ng-class="{'button-positive': personal.isActive('year')}" ng-click="personal.goToYear()">Jaar</a>
     </div>
 
-    <ul class="list padding">
+    <ul class="list padding"  style="margin: 0;">
       <li class="item item-button-right">
         {{personal.dis}}
         km
@@ -43,9 +32,7 @@
     </ul>
     <canvas id="line" height="300" class="chart chart-line" chart-data="personal.data" chart-labels="personal.labels" chart-legend="true" chart-series="personal.series" chart-options="personal.options" chart-click="onClick"></canvas>
   </ion-content>
-  <ion-footer-bar>
-    <button class="button button-clear ion-chevron-left" ng-click="personal.goToPrevious()"></button>
-    <div class="title">Maandag 29 januari</div>
-    <button class="button button-clear ion-chevron-right" ng-click="personal.goToNext()"></button>
+  <ion-footer-bar align-title="center">
+    <h1 class="title">{{personal.footer}}</h1>
   </ion-footer-bar>
 </ion-view>
