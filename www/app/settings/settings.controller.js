@@ -77,7 +77,6 @@
       Database.selectRoutes(log, {month: 2, year: year(2016), message: 'BY MONTH AND YEAR'});
       Database.selectRoutes(log, {time: 1458046159000, message: 'BY TIME'});*/
       //Database.selectPoints(log, 5);*/
->>>>>>> feature_layout_tracker
     }
 
     Database.selectReminders(map);
