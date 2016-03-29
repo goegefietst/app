@@ -1,9 +1,9 @@
-<ion-view ng-controller="TrackerController" view-title="Tracker">
-  <ion-content>
+<ion-view ng-controller="TrackerController" hide-nav-bar="true">
+  <ion-content class="has-tabs-top" has-header="false">
     <leaflet id="map" defaults="defaults" lf-center="gent" paths="paths" markers="markers" geojson="geojson" tiles="tiles" width="100%" height="{{height}}"></leaflet>
     <div class="row responsive-sm">
-      <div class="col">
-        <div class="col">
+      <div class="col" style="margin: 0;">
+        <div class="col" style="margin: 0;">
           <div class="row">
             <h2 class="center">Tijd</h2>
           </div>
@@ -12,7 +12,7 @@
           </div>
         </div>
         <div class="row">
-          <div class="col">
+          <div class="col" style="margin: 0;">
             <div class="row">
               <h3 class="center">Afstand</h3>
             </div>
@@ -22,7 +22,7 @@
               </h4>
             </div>
           </div>
-          <div class="col">
+          <div class="col" style="margin: 0;">
             <div class="row">
               <h3 class="center">Tempo</h3>
             </div>
@@ -36,10 +36,10 @@
       </div>
     </div>
     <div class="row">
-      <button class="button button-block button-balanced" ng-hide="tracker.tracking" ng-click="tracker.toggle()">
+      <button class="button button-block button-balanced" style="margin: 0;" ng-hide="tracker.tracking" ng-click="tracker.toggle()">
         <h1>Go!</h1>
       </button>
-      <button class="button button-block button-assertive" ng-show="tracker.tracking" ng-click="tracker.toggle()">
+      <button class="button button-block button-assertive" style="margin: 0;" ng-show="tracker.tracking" ng-click="tracker.toggle()">
         <h1>Stop!</h1>
       </button>
     </div>

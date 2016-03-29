@@ -14,6 +14,7 @@
     vm.timespan = 'day';
     vm.routes = [];
     vm.chartData = 'distance';
+    vm.footer = '';
 
     vm.dis = '0.0';
     vm.tim = '00:00:00';
@@ -88,6 +89,7 @@
       vm.timespan = 'day';
       console.log('test timespan changed to ' + vm.timespan);
       var date = new Date();
+      vm.footer = format(date.getDate()) + '/' + format(date.getMonth() + 1);
       vm.loadData({
         day: date.getDay(),
         month: date.getMonth(),
@@ -98,6 +100,8 @@
     function goToWeek() {
       //change timespan to week$
       vm.timespan = 'week';
+      var date = new Date();
+      vm.footer = getWeek(date);
       console.log('test timespan changed to ' + vm.timespan);
       vm.loadData({
         time: Date.now()
@@ -109,6 +113,7 @@
       vm.timespan = 'year';
       console.log('test timespan changed to ' + vm.timespan);
       var date = new Date();
+      vm.footer = date.getFullYear();
       vm.loadData({
         year: date.getYear()
       });
@@ -577,6 +582,15 @@
       vm.tim = '00:00:00';
       vm.spe = '0.0';
       vm.cal = '0';
+    }
+
+    function getWeek(day) {
+      var firstday = new Date(day.setDate(day.getDate() - day.getDay() + 1));
+      var lastday = new Date(day.setDate(day.getDate() - day.getDay() + 7));
+      return format(firstday.getDate()) + '/' +
+      format(firstday.getMonth() + 1) +
+      ' - ' + format(lastday.getDate()) +
+      '/' + format(lastday.getMonth() + 1);
     }
 
   }
