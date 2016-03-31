@@ -5,10 +5,10 @@
     .module('app.settings')
     .controller('SettingsController', Controller);
 
-  Controller.$inject = ['$ionicPopup', '$scope', '$cordovaNetwork', 'Database'];//dependencies
+  Controller.$inject = ['$ionicPopup', '$scope', '$cordovaNetwork', 'Database', 'ionicTimePicker'];//dependencies
 
   /* @ngInject */
-  function Controller($ionicPopup, $scope, $cordovaNetwork, Database) {
+  function Controller($ionicPopup, $scope, $cordovaNetwork, Database, ionicTimePicker) {
     var vm = this;
 
     vm.reminders = [];
@@ -62,7 +62,7 @@
       '<ion-checkbox ng-model="data.sunday">zondag</ion-checkbox></ion-list>';
 
     vm.timePickerObject = {
-      inputEpochTime: ((new Date()).getHours() * 60 * 60), //Optional
+      inputTime: ((new Date()).getHours() * 60 * 60), //Optional
       step: 5, //Optional
       format: 24, //Optional
       titleLabel: 'Kies het uur', //Optional
@@ -75,6 +75,10 @@
       }
     };
 
+    function addNotification() {
+      ionicTimePicker.openTimePicker(vm.timePickerObject);
+    }
+
     function timePickerCallback(val) {
       if (typeof(val) === 'undefined') {
         console.log('User didn\'t select a time');
@@ -82,7 +86,7 @@
         var time = new Date(val * 1000);
         vm.selectedTime.hours = time.getUTCHours();
         vm.selectedTime.minutes = time.getUTCMinutes();
-        vm.addNotification();
+        setDays();
       }
     }
 
@@ -158,7 +162,7 @@
       vm.showEdit = !vm.showEdit;
     }
 
-    function addNotification() {
+    function setDays() {
       $scope.data = {};
 
       var myPopup = $ionicPopup.show({

@@ -15,7 +15,7 @@
           <span ng-repeat="day in reminder.daysString">{{day}}
           </span>
         </div>
-        <label class="toggle toggle-calm" ng-click="settings.toggleReminder(reminder)">
+        <label class="toggle toggle-calm" ng-hide="settings.showDelete" ng-click="settings.toggleReminder(reminder)">
           <input type="checkbox" ng-checked="reminder.active">
           <div class="track">
             <div class="handle"></div>
@@ -25,12 +25,9 @@
         <!--<ion-reorder-button class="ion-ios-gear" ng-click="settings.onItemEdit(reminder)"></ion-option-button>-->
       </ion-item>
     </ion-list>
-    <ionic-timepicker input-obj="settings.timePickerObject" ng-show="settings.masterCheck">
-      <button class="button button-block overflowShow" id="timepicker">
-        <standard-time-meridian etime='timePickerObject.inputEpochTime'></standard-time-meridian>
+      <button class="button button-block overflowShow" ng-show="settings.masterCheck" ng-click="settings.addNotification()">
         Voeg nieuwe reminder toe
       </button>
-    </ionic-timepicker>
   </ion-content>
   <ion-footer-bar>
     <div class="buttons">
