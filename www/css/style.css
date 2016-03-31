@@ -10,3 +10,7 @@
 .newData {
   color: green;
 }
+
+.reminder-off {
+  height: 100%;
+}

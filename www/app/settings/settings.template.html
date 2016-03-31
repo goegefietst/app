@@ -1,7 +1,14 @@
 <ion-view hide-nav-bar="true">
   <ion-content>
+    <div class="reminder-off row row-center" ng-show="!settings.masterCheck">
+      <div class="col col-center">
+        <div class="text-center">
+          <h3>Reminders uitgeschakeld</h3>
+        </div>
+      </div>
+    </div>
     <ion-list class="has-subheader" show-delete="settings.showDelete" show-reorder="settings.showEdit" ng-show="settings.masterCheck">
-      <ion-item class="item item-remove-animate item-toggle" ng-repeat="reminder in settings.reminders" ng-click="settings.test()">
+      <ion-item class="item item-remove-animate item-toggle" ng-repeat="reminder in settings.reminders">
         <span>{{reminder.hour}}:{{reminder.minutes}}</span>
         -
         <span ng-repeat="day in reminder.daysString">{{day}}
@@ -16,7 +23,7 @@
         <!--<ion-reorder-button class="ion-ios-gear" ng-click="settings.onItemEdit(reminder)"></ion-option-button>-->
       </ion-item>
     </ion-list>
-    <ionic-timepicker input-obj="settings.timePickerObject">
+    <ionic-timepicker input-obj="settings.timePickerObject" ng-show="settings.masterCheck">
       <button class="button button-block overflowShow" id="timepicker">
         <standard-time-meridian etime='timePickerObject.inputEpochTime'></standard-time-meridian>
         Voeg nieuwe reminder toe
@@ -25,13 +32,13 @@
   </ion-content>
   <ion-footer-bar>
     <div class="buttons">
-      <button class="button button-icon icon ion-ios-minus-outline" ng-click="settings.toggleDelete()"></button>
+      <button class="button button-icon icon ion-ios-minus-outline" ng-show="settings.masterCheck" ng-click="settings.toggleDelete()"></button>
     </div>
     <!--<button class="button button-icon icon ion-ios-gear-outline" ng-click="settings.toggleEdit()"></button>-->
-    <h1 class="title"> </h1>
+    <h1 class="title"></h1>
     <div class="buttons">
       <label class="toggle toggle-calm">
-        <input type="checkbox" ng-model="settings.masterCheck" ng-click="settings.toggleMasterCheck()">
+        <input type="checkbox" ng-checked="settings.masterCheck" ng-click="settings.toggleMasterCheck()">
         <div class="track">
           <div class="handle"></div>
         </div>

@@ -33,52 +33,6 @@
       }, {
         sent: true
       });
-      /*Database.insertReminder({
-        id: 0,
-        active: true,
-        hour: 11,
-        minutes: 55,
-        days: [true, true, true, true, true, true, true]
-      });
-      Database.deleteReminder({
-        id: 0
-      });
-      Database.selectReminders(log);
-      Database.insertRoute([{
-        latitude: 66,
-        longitude: 66,
-        altitude: 123,
-        accuracy: 10,
-        speed: 5.5,
-        time: Date.now() - 4 * 60 * 60 * 1000
-      }, {
-        latitude: 45,
-        longitude: 45,
-        altitude: 124,
-        accuracy: 10,
-        speed: 5.0,
-        time: Date.now() - 3 * 60 * 60 * 1000
-      }]);
-      Database.insertRoute([{
-        latitude: 66,
-        longitude: 66,
-        altitude: 123,
-        accuracy: 10,
-        speed: 5.5,
-        time: Date.now() - 1 * 60 * 60 * 1000
-      }, {
-        latitude: 45,
-        longitude: 45,
-        altitude: 124,
-        accuracy: 10,
-        speed: 5.0,
-        time: Date.now()
-      }]);
-      /*Database.selectRoutes(log, {day: 2, message: 'BY DAY'});
-      Database.selectRoutes(log, {day: 2, month: 2, year: year(2016), message: 'BY DATE'});
-      Database.selectRoutes(log, {month: 2, year: year(2016), message: 'BY MONTH AND YEAR'});
-      Database.selectRoutes(log, {time: 1458046159000, message: 'BY TIME'});*/
-      //Database.selectPoints(log, 5);*/
     }
 
     Database.selectReminders(map);
@@ -281,7 +235,9 @@
     }
 
     function toggleMasterCheck() {
+      console.log('REMINDERS BEFORE=' + vm.masterCheck);
       vm.masterCheck = !vm.masterCheck;
+      console.log('REMINDERS AFTER=' + vm.masterCheck);
       if (vm.masterCheck) {
         updateReminders(vm.reminders);
       } else {
