@@ -42,6 +42,7 @@
     vm.masterCheck = true;
     vm.selectedTime = {};
 
+    vm.editReminder = editReminder;
     vm.toggleDelete = toggleDelete; //TURN ON/OFF DELETE OPTION
     vm.toggleEdit = toggleEdit; //NOT USED ATM
     vm.addNotification = addNotification; //ADD NEW REMINDER
@@ -140,6 +141,15 @@
       cordova.plugins.notification.local.schedule(notifications);
     }
 
+    function editReminder(reminder) {
+      console.log('REMINDER');
+      console.log(reminder);
+      reminder.test = 'SUCCESSFUL';
+      var index = vm.reminders.map(function(x) {return x.id; }).indexOf(reminder.id);
+      console.log('TEST');
+      console.log(vm.reminders[index].test);
+    }
+
     function toggleDelete() {
       vm.showDelete = !vm.showDelete;
     }
@@ -235,9 +245,7 @@
     }
 
     function toggleMasterCheck() {
-      console.log('REMINDERS BEFORE=' + vm.masterCheck);
       vm.masterCheck = !vm.masterCheck;
-      console.log('REMINDERS AFTER=' + vm.masterCheck);
       if (vm.masterCheck) {
         updateReminders(vm.reminders);
       } else {

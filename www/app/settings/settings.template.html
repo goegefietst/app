@@ -9,11 +9,13 @@
     </div>
     <ion-list class="has-subheader" show-delete="settings.showDelete" show-reorder="settings.showEdit" ng-show="settings.masterCheck">
       <ion-item class="item item-remove-animate item-toggle" ng-repeat="reminder in settings.reminders">
-        <span>{{reminder.hour}}:{{reminder.minutes}}</span>
-        -
-        <span ng-repeat="day in reminder.daysString">{{day}}
-        </span>
-        <label class="toggle toggle-calm" ng-show="settings.masterCheck && !settings.showDelete" ng-click="settings.toggleReminder(reminder)">
+        <div ng-click="settings.editReminder(reminder)">
+          <span>{{reminder.hour}}:{{reminder.minutes}}</span>
+          -
+          <span ng-repeat="day in reminder.daysString">{{day}}
+          </span>
+        </div>
+        <label class="toggle toggle-calm" ng-click="settings.toggleReminder(reminder)">
           <input type="checkbox" ng-checked="reminder.active">
           <div class="track">
             <div class="handle"></div>
