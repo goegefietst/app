@@ -5,6 +5,8 @@
     .module('database')
     .service('Database', ['$cordovaSQLite', function($cordovaSQLite) {
 
+      this.insertReminders = insertReminders;
+      this.deleteReminders = deleteReminders;
       this.insertReminder = insertReminder;
       this.deleteReminder = deleteReminder;
       this.selectReminders = selectReminders;
@@ -13,6 +15,43 @@
       this.selectRoutes = selectRoutes;
       this.selectPoints = selectPoints;
       this.sentRoute = sentRoute;
+
+      function insertReminders(reminders) {
+        var query = 'INSERT OR REPLACE INTO reminders ' +
+          '(id, active, hour, minutes, mon, tue, wed, thu, fri, sat, sun)' +
+          ' VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+        for (var i = 0; i < reminders.length; i++) {
+          $cordovaSQLite.execute(db, query, [
+            reminders[i].id,
+            reminders[i].active,
+            reminders[i].hour,
+            reminders[i].minutes,
+            reminders[i].days[0],
+            reminders[i].days[1],
+            reminders[i].days[2],
+            reminders[i].days[3],
+            reminders[i].days[4],
+            reminders[i].days[5],
+            reminders[i].days[6]
+          ]).then(function(result) {
+            console.log('INSERT REMINDER ID -> ' + result.insertId);
+          }, function(err) {
+            console.error(err);
+            return true;
+          });
+        }
+      }
+
+      function deleteReminders(callback) {
+        var query = 'DELETE FROM reminders';
+        $cordovaSQLite.execute(db, query).then(function() {
+          console.log('DELETE REMINDER ID -> ');
+          callback();
+        }, function(err) {
+          console.error(err);
+          return true;
+        });
+      }
 
       function insertReminder(reminder) {
         var query = 'INSERT OR REPLACE INTO reminders ' +

@@ -7,7 +7,7 @@
         <span ng-repeat="day in reminder.daysString">{{day}}
         </span>
         <label class="toggle toggle-calm" ng-show="settings.masterCheck && !settings.showDelete" ng-click="settings.toggleReminder(reminder)">
-          <input type="checkbox" ng-model="reminder.active">
+          <input type="checkbox" ng-checked="reminder.active">
           <div class="track">
             <div class="handle"></div>
           </div>

@@ -30,7 +30,9 @@
           //TODO Send to server, if successful update db entry
           Database.sentRoute(routes[i]);
         }
-      }, {sent: true});
+      }, {
+        sent: true
+      });
       /*Database.insertReminder({
         id: 0,
         active: true,
@@ -81,35 +83,20 @@
 
     Database.selectReminders(map);
 
-    function map(object) {
-      for (var i = 0; i < object.length; i++) {
-        var days = [];
-        days.push(object[i].mon === 'true');
-        days.push(object[i].tue === 'true');
-        days.push(object[i].wed === 'true');
-        days.push(object[i].thu === 'true');
-        days.push(object[i].fri === 'true');
-        days.push(object[i].sat === 'true');
-        days.push(object[i].sun === 'true');
-
-        console.log(format(object[i].hour));
-        console.log(format(object[i].minutes));
-        var reminder = {
-          id: object[i].id,
-          active: object[i].active === 'true',
-          hour: format(object[i].hour),
-          minutes: format(object[i].minutes),
-          days: days,
-          daysString: vm.daysToString(days)
-        };
-        vm.reminders.push(reminder);
-      }
-    }
-
     vm.showDelete = false;
     vm.showEdit = false;
     vm.masterCheck = true;
     vm.selectedTime = {};
+
+    vm.toggleDelete = toggleDelete; //TURN ON/OFF DELETE OPTION
+    vm.toggleEdit = toggleEdit; //NOT USED ATM
+    vm.addNotification = addNotification; //ADD NEW REMINDER
+
+    vm.onItemDelete = onItemDelete; //DELETE REMINDER
+    vm.onItemEdit = onItemEdit; //EDIT REMINDER
+    vm.toggleReminder = toggleReminder; //TOGGLE REMINDER ON/OFF
+    vm.toggleMasterCheck = toggleMasterCheck; //TOGGLE ALL REMINDERS ON/OFF
+
     vm.templatePopup =
       '<ion-list><ion-checkbox ng-model="data.monday">maandag</ion-checkbox>' +
       '<ion-checkbox ng-model="data.tuesday">dinsdag</ion-checkbox>' +
@@ -129,30 +116,85 @@
       setButtonType: 'button-positive', //Optional
       closeButtonType: 'button-stable', //Optional
       callback: function(val) { //Mandatory
-        vm.timePickerCallback(val);
+        timePickerCallback(val);
       }
     };
 
-    vm.timePickerCallback = function timePickerCallback(val) {
+    function timePickerCallback(val) {
       if (typeof(val) === 'undefined') {
         console.log('User didn\'t select a time');
       } else {
         var time = new Date(val * 1000);
         vm.selectedTime.hours = time.getUTCHours();
         vm.selectedTime.minutes = time.getUTCMinutes();
-        vm.add();
+        vm.addNotification();
       }
-    };
+    }
 
-    vm.toggleDelete = function toggleDelete() {
+    function map(object) {
+      for (var i = 0; i < object.length; i++) {
+        var days = [];
+        days.push(object[i].mon === 'true');
+        days.push(object[i].tue === 'true');
+        days.push(object[i].wed === 'true');
+        days.push(object[i].thu === 'true');
+        days.push(object[i].fri === 'true');
+        days.push(object[i].sat === 'true');
+        days.push(object[i].sun === 'true');
+
+        console.log(format(object[i].hour));
+        console.log(format(object[i].minutes));
+        var reminder = {
+          id: object[i].id,
+          active: object[i].active === 'true',
+          hour: format(object[i].hour),
+          minutes: format(object[i].minutes),
+          days: days,
+          daysString: daysToString(days)
+        };
+        vm.reminders.push(reminder);
+      }
+    }
+
+    function updateDatabase(newReminders) {
+      Database.deleteReminders(function() {
+        Database.insertReminders(newReminders);
+      });
+    }
+
+    function updateReminders(reminders) {
+      cordova.plugins.notification.local.cancelAll();
+      var notifications = [];
+      for (var i = 0; i < reminders.length; i++) {
+        if (reminders[i].active) {
+          for (var j = 0; j < reminders[i].days.length; j++) {
+            if (reminders[i].days[j]) {
+              var result =
+                returnDateObject(reminders[i].hour, reminders[i].minutes, j);
+              notifications.push({
+                id: reminders[i].id * 10 + j,
+                text: 'Vergeet niet je route te tracken!',
+                at: result,
+                every: 'week',
+              });
+            }
+          }
+        }
+      }
+      console.log('setting notifications');
+      console.log(notifications);
+      cordova.plugins.notification.local.schedule(notifications);
+    }
+
+    function toggleDelete() {
       vm.showDelete = !vm.showDelete;
-    };
+    }
 
-    vm.toggleEdit = function toggleEdit() {
+    function toggleEdit() {
       vm.showEdit = !vm.showEdit;
-    };
+    }
 
-    vm.add = function add() {
+    function addNotification() {
       $scope.data = {};
 
       var myPopup = $ionicPopup.show({
@@ -175,7 +217,7 @@
               //don't allow the user to close unless he enters wifi password
               e.preventDefault();
             } else {
-              return vm.mapDays($scope.data);
+              return mapDays($scope.data);
             }
           }
         }]
@@ -183,13 +225,13 @@
 
       myPopup.then(function(res) {
         if (res !== undefined) {
-          var ids = window.localStorage['counterIds'];
+          var ids = window.localStorage.counterIds;
           if (ids === undefined) {
             ids = 1;
           } else {
             ids++;
           }
-          window.localStorage['counterIds'] = ids;
+          window.localStorage.counterIds = ids;
           //user did select day/days
           var newReminder = {
             id: ids,
@@ -197,83 +239,51 @@
             hour: format(vm.selectedTime.hours),
             minutes: format(vm.selectedTime.minutes),
             days: res,
-            daysString: vm.daysToString(res)
+            daysString: daysToString(res)
           };
-          if (vm.masterCheck) {
-            vm.configureNotification(newReminder);
-          }
-
           //add notification to db
           vm.reminders.push(newReminder);
-          Database.insertReminder({
-            id: newReminder.id,
-            active: newReminder.active,
-            hour: parseInt(vm.selectedTime.hours),
-            minutes: parseInt(vm.selectedTime.minutes),
-            days: [res[0], res[1], res[2], res[3], res[4], res[5], res[6]]
-          });
+          updateReminders(vm.reminders);
+          updateDatabase(vm.reminders);
         } else {
           //user didn't select one or more days of the week
           console.log('User didn\'t select any days of the week');
         }
         vm.selectedTime = {};
       });
-    };
+    }
 
-    vm.configureNotification = function configureNotification(reminder) {
-      if (reminder.active) {
-        //configure notification with id
-        for (var j = 0; j < reminder.days.length; j++) {
-          if (reminder.days[j]) {
-            var result =
-              vm.returnDateObject(reminder.hour, reminder.minutes, j);
-            console.log(result);
-            cordova.plugins.notification.local.schedule({
-              id: reminder.id,
-              text: 'Vergeet niet je route te tracken!',
-              at: result,
-              every: 'week',
-            });
-          }
-        }
-      }
-    };
-
-    vm.onItemDelete = function onItemDelete(reminder) {
+    function onItemDelete(reminder) {
       vm.reminders.splice(vm.reminders.indexOf(reminder), 1);
       Database.deleteReminder(reminder);
-      vm.cancelNotification(reminder);
+      cancelNotification(reminder);
       if (vm.reminders.length === 0) {
         vm.showDelete = false;
       }
       Database.selectReminders(function(object) {
         console.log(object);
       });
-    };
+    }
 
-    vm.onItemEdit = function onItemEdit(reminder) {
-      //TO DO
-    };
+    function onItemEdit(reminder) {
+      //TODO
+    }
 
-    vm.toggleReminder = function toggleReminder(reminder) {
+    function toggleReminder(reminder) {
+      reminder.active = !reminder.active;
       if (reminder.active) {
-        console.log(reminder.active);
-        vm.configureNotification(reminder);
+        updateReminders(vm.reminders);
+        updateDatabase(vm.reminders);
       } else {
-        console.log(reminder.active);
-        vm.cancelNotification(reminder);
+        updateReminders(vm.reminders);
+        updateDatabase(vm.reminders);
       }
-    };
+    }
 
-    vm.toggleMasterCheck = function toggleMasterCheck() {
+    function toggleMasterCheck() {
+      vm.masterCheck = !vm.masterCheck;
       if (vm.masterCheck) {
-        for (var i = 0; i < vm.reminders.length; i++) {
-          var reminder = vm.reminders[i];
-          vm.configureNotification(reminder);
-        }
-        cordova.plugins.notification.local.getAllIds(function(ids) {
-          console.log(ids);
-        });
+        updateReminders(vm.reminders);
       } else {
         cordova.plugins.notification.local.cancelAll(function() {
           console.log('cancel all notifications');
@@ -282,19 +292,19 @@
           console.log(ids);
         });
       }
-    };
+    }
 
-    vm.cancelNotification = function cancelNotification(reminder) {
+    function cancelNotification(reminder) {
       cordova.plugins.notification.local.cancel(reminder.id, function() {
         console.log('cancel notification with id ' + reminder.id);
       });
-    };
+    }
 
     function format(number) {
       return number > 9 ? '' + number : '0' + number;
     }
 
-    vm.daysToString = function daysToString(days) {
+    function daysToString(days) {
       var daysString = [];
       for (var i = 0; i < days.length; i++) {
         if (days[i]) {
@@ -325,9 +335,9 @@
       }
       console.log(daysString);
       return daysString;
-    };
+    }
 
-    vm.mapDays = function mapDays(input) {
+    function mapDays(input) {
       var result = [];
       if (input.monday) {
         result.push(true);
@@ -365,9 +375,9 @@
         result.push(false);
       }
       return result;
-    };
+    }
 
-    vm.returnDateObject = function returnDateObject(hours, minutes, j) {
+    function returnDateObject(hours, minutes, j) {
       var now = new Date();
       var result = new Date();
       var dayOfWeek = now.getDay();
@@ -413,6 +423,6 @@
       result.setSeconds(0);
 
       return result;
-    };
+    }
   }
 })();
