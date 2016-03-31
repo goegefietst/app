@@ -22,14 +22,16 @@
     BackgroundGeolocationService,
     Database) {
     var vm = this;
+
     vm.tracking = false;
+    vm.distance = 0.0;
+    vm.speed = 0.0;
+    vm.textButton = 'Start route';
     vm.stopwatch = {
       hours: '00',
       minutes: '00',
       seconds: '00'
     };
-    vm.distance = 0.0;
-    vm.speed = 0.0;
 
     var timestamp;
     var running = false;
@@ -103,6 +105,7 @@
         BackgroundGeolocationService.start();
         vm.startStopwatch();
         vm.tracking = true;
+        vm.textButton = 'Stop route';
       } else {
         console.log('app stops vm.tracking');
         var route = BackgroundGeolocationService.stop();
@@ -112,6 +115,7 @@
         Database.insertRoute(route);
         vm.distance = 0.0;
         vm.speed = 0.0;
+        vm.textButton = 'Start route';
         $state.go('tab.performance.personal', {route: route});
       }
     };
