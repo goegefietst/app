@@ -98,13 +98,21 @@
     vm.toggleMasterCheck = toggleMasterCheck; //TOGGLE ALL REMINDERS ON/OFF
 
     vm.templatePopup =
-      '<ion-list><ion-checkbox ng-model="data.monday">maandag</ion-checkbox>' +
-      '<ion-checkbox ng-model="data.tuesday">dinsdag</ion-checkbox>' +
-      '<ion-checkbox ng-model="data.wednesday">woensdag</ion-checkbox>' +
-      '<ion-checkbox ng-model="data.thursday">donderdag</ion-checkbox>' +
-      '<ion-checkbox ng-model="data.friday">vrijdag</ion-checkbox>' +
-      '<ion-checkbox ng-model="data.saturday">zaterdag</ion-checkbox>' +
-      '<ion-checkbox ng-model="data.sunday">zondag</ion-checkbox></ion-list>';
+      '<ion-list>' +
+      '<ion-checkbox class="checkbox-royal" ng-model="data.monday">' +
+      'maandag</ion-checkbox>' +
+      '<ion-checkbox class="checkbox-royal" ng-model="data.tuesday">' +
+      'dinsdag</ion-checkbox>' +
+      '<ion-checkbox class="checkbox-royal" ng-model="data.wednesday">' +
+      'woensdag</ion-checkbox>' +
+      '<ion-checkbox class="checkbox-royal" ng-model="data.thursday">' +
+      'donderdag</ion-checkbox>' +
+      '<ion-checkbox class="checkbox-royal" ng-model="data.friday">' +
+      'vrijdag</ion-checkbox>' +
+      '<ion-checkbox class="checkbox-royal" ng-model="data.saturday">' +
+      'zaterdag</ion-checkbox>' +
+      '<ion-checkbox class="checkbox-royal" ng-model="data.sunday">' +
+      'zondag</ion-checkbox></ion-list>';
 
     vm.timePickerObject = {
       inputEpochTime: ((new Date()).getHours() * 60 * 60), //Optional
@@ -113,7 +121,7 @@
       titleLabel: 'Kies het uur', //Optional
       setLabel: 'Kies', //Optional
       closeLabel: 'Annuleer', //Optional
-      setButtonType: 'button-positive', //Optional
+      setButtonType: 'button-royal', //Optional
       closeButtonType: 'button-stable', //Optional
       callback: function(val) { //Mandatory
         timePickerCallback(val);
@@ -205,7 +213,7 @@
           text: 'Annuleer'
         }, {
           text: '<b>Kies</b>',
-          type: 'button-positive',
+          type: 'button-royal',
           onTap: function(e) {
             if (!$scope.data.monday &&
               !$scope.data.tuesday &&

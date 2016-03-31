@@ -4,6 +4,11 @@
   "gulpStartupTasks": [
     "wiredep",
     "inject",
-    "watch"
+    "watch",
+    "sass"
+  ],
+  "watchPatterns": [
+    "www/**/*",
+    "!www/lib/**/*"
   ]
 }
