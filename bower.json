@@ -11,7 +11,7 @@
     "angular-resource": "~1.4.8",
     "ionic": "~1.2.1",
     "ui-leaflet": "^1.0.0",
-    "ionic-timepicker": "^0.4.0",
+    "ionic-timepicker": "^0.5.0",
     "angular-chart.js": "^0.8.8"
   },
   "resolutions": {

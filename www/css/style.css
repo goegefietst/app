@@ -14,3 +14,7 @@
 .reminder-off {
   height: 100%;
 }
+
+.item-toggle{
+  pointer-events:initial !important;
+}
