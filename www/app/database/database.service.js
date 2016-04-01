@@ -214,11 +214,18 @@
       }
 
       function selectPoints(callback, routeIds) {
+        if (routeIds.length < 1) {
+          console.log('Need at least one route id to query for points');
+          return;
+        }
+        var ids = routeIds.reduce(function(previousValue) {
+          return previousValue += '?, ';
+        }, '(').slice(0, -2) + ')';
         var query = 'SELECT routeId, lat AS latitude, lng AS longitude,' +
-          ' time FROM points WHERE routeId IN ' + routeIds;
+          ' time FROM points WHERE routeId IN ' + ids;
         console.log('query = ' + query);
         var points = [];
-        $cordovaSQLite.execute(db, query).then(function(result) {
+        $cordovaSQLite.execute(db, query, routeIds).then(function(result) {
           if (result.rows.length > 0) {
             for (var i = 0; i < result.rows.length; i++) {
               /*console.log('SELECTED -> ' +

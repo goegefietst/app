@@ -158,194 +158,7 @@
     }
 
     function loadData(options) {
-      //temporary for testing purposes, should load from db later
-      //test routes for day
-      /*if (options.day && options.month && options.year) {
-        console.log('Loading day data');
-        vm.routes = [
-          [{
-            latitude: 66,
-            longitude: 66,
-            altitude: 123,
-            accuracy: 10,
-            speed: 5.5,
-            time: Date.now() - 7 * 60 * 60 * 1000
-          }, {
-            latitude: 66.2,
-            longitude: 66.3,
-            altitude: 124,
-            accuracy: 10,
-            speed: 5.0,
-            time: Date.now() - 6 * 60 * 60 * 1000
-          }],
-          [{
-            latitude: 66.2,
-            longitude: 66.3,
-            altitude: 123,
-            accuracy: 10,
-            speed: 5.5,
-            time: Date.now() - 2 * 60 * 60 * 1000
-          }, {
-            latitude: 66.1,
-            longitude: 66.2,
-            altitude: 124,
-            accuracy: 10,
-            speed: 5.0,
-            time: Date.now() - 2 * 60 * 60 * 1000
-          }]
-        ];
-      } else if (options.time) {
-        //test routes for week
-        console.log('Loading week data');
-        vm.routes = [
-          [{
-            latitude: 23,
-            longitude: 23,
-            altitude: 123,
-            accuracy: 10,
-            speed: 5.5,
-            time: Date.now() - 49 * 60 * 60 * 1000
-          }, {
-            latitude: 26,
-            longitude: 26,
-            altitude: 124,
-            accuracy: 10,
-            speed: 5.0,
-            time: Date.now() - 48 * 60 * 60 * 1000
-          }],
-          [{
-            latitude: 26,
-            longitude: 26,
-            altitude: 123,
-            accuracy: 10,
-            speed: 5.5,
-            time: Date.now() - 1 * 60 * 60 * 1000
-          }, {
-            latitude: 27,
-            longitude: 27,
-            altitude: 124,
-            accuracy: 10,
-            speed: 5.0,
-            time: Date.now()
-          }]
-        ];
-      } else if (options.year) {
-        //test routes for week
-        console.log('Loading year data');
-        vm.routes = [
-          [{
-            latitude: 23,
-            longitude: 23,
-            altitude: 123,
-            accuracy: 10,
-            speed: 5.5,
-            time: Date.now() - 31 * 24 * 60 * 60 * 1000
-          }, {
-            latitude: 26,
-            longitude: 26,
-            altitude: 124,
-            accuracy: 10,
-            speed: 5.0,
-            time: Date.now() - 31 * 24 * 60 * 60 * 1000
-          }],
-          [{
-            latitude: 26,
-            longitude: 26,
-            altitude: 123,
-            accuracy: 10,
-            speed: 5.5,
-            time: Date.now() - 1 * 60 * 60 * 1000
-          }, {
-            latitude: 27,
-            longitude: 27,
-            altitude: 124,
-            accuracy: 10,
-            speed: 5.0,
-            time: Date.now()
-          }]
-        ];
-      }*/
-
-      /*Database.insertRoute([{
-        latitude: 66,
-        longitude: 66,
-        altitude: 123,
-        accuracy: 10,
-        speed: 5.5,
-        time: Date.now() - 7 * 60 * 60 * 1000
-      }, {
-        latitude: 66.2,
-        longitude: 66.3,
-        altitude: 124,
-        accuracy: 10,
-        speed: 5.0,
-        time: Date.now() - 6 * 60 * 60 * 1000
-      }]);
-      Database.insertRoute([{
-        latitude: 66.2,
-        longitude: 66.3,
-        altitude: 123,
-        accuracy: 10,
-        speed: 5.5,
-        time: Date.now() - 2 * 60 * 60 * 1000
-      }, {
-        latitude: 66.1,
-        longitude: 66.2,
-        altitude: 124,
-        accuracy: 10,
-        speed: 5.0,
-        time: Date.now() - 2 * 60 * 60 * 1000
-      }]);
-
-      Database.insertRoute([{
-        latitude: 23,
-        longitude: 23,
-        altitude: 123,
-        accuracy: 10,
-        speed: 5.5,
-        time: Date.now() - 31 * 24 * 60 * 60 * 1000
-      }, {
-        latitude: 26,
-        longitude: 26,
-        altitude: 124,
-        accuracy: 10,
-        speed: 5.0,
-        time: Date.now() - 31 * 24 * 60 * 60 * 1000
-      }]);
-
-      Database.insertRoute([{
-        latitude: 26,
-        longitude: 26,
-        altitude: 123,
-        accuracy: 10,
-        speed: 5.5,
-        time: Date.now() - 1 * 60 * 60 * 1000
-      }, {
-        latitude: 27,
-        longitude: 27,
-        altitude: 124,
-        accuracy: 10,
-        speed: 5.0,
-        time: Date.now()
-      }]);*/
-
-      /*var distances = calculateDistances(vm.routes);
-      var distance = distances.reduce(function add(a, b) {
-        return a + b.distance;
-      }, 0);
-      vm.dis = distance.toFixed(1);
-      var duration = getDuration(vm.routes);
-      vm.tim = msToTime(duration);
-      vm.spe = (distance / duration * 1000 * 60 * 60).toFixed(1);
-      vm.cal = 'Such wow, many';
-      vm.loadChart(distances);*/
-
       Database.selectRoutes(routeCallback, options);
-      //Database.selectPoints(log, 1);
-
-      function log(points) {
-        console.log(points);
-      }
 
       function routeCallback(routes) {
         if (!routes || routes.length < 1) {
@@ -354,12 +167,9 @@
           vm.loadChart([]);
           return;
         }
-        var sql = '('; //TODO FIX THIS PROPERLY IN DB SERVICE
-        for (var i = 0; i < routes.length; i++) {
-          sql += routes[i].id + ', ';
-        }
-        sql = sql.slice(0, -2) + ')';
-        Database.selectPoints(pointCallback, sql);
+        Database.selectPoints(pointCallback, routes.map(function(route) {
+          return route.id;
+        }));
       }
 
       function pointCallback(points) {
@@ -588,9 +398,9 @@
       var firstday = new Date(day.setDate(day.getDate() - day.getDay() + 1));
       var lastday = new Date(day.setDate(day.getDate() - day.getDay() + 7));
       return format(firstday.getDate()) + '/' +
-      format(firstday.getMonth() + 1) +
-      ' - ' + format(lastday.getDate()) +
-      '/' + format(lastday.getMonth() + 1);
+        format(firstday.getMonth() + 1) +
+        ' - ' + format(lastday.getDate()) +
+        '/' + format(lastday.getMonth() + 1);
     }
 
   }
