@@ -39,7 +39,7 @@
 
     vm.showDelete = false;
     vm.showEdit = false;
-    vm.masterCheck = true;
+    vm.masterCheck = window.localStorage.masterCheck === 'false' ? false : true;
 
     vm.editReminder = editReminder;
     vm.toggleDelete = toggleDelete; //TURN ON/OFF DELETE OPTION
@@ -277,6 +277,7 @@
 
     function toggleMasterCheck() {
       vm.masterCheck = !vm.masterCheck;
+      window.localStorage.masterCheck = vm.masterCheck;
       if (vm.masterCheck) {
         updateReminders(vm.reminders);
       } else {
