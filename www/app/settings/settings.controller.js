@@ -5,7 +5,7 @@
     .module('app.settings')
     .controller('SettingsController', Controller);
 
-  Controller.$inject = ['$ionicPopup', '$scope', '$cordovaNetwork', 'Database', 'ionicTimePicker'];//dependencies
+  Controller.$inject = ['$ionicPopup', '$scope', '$cordovaNetwork', 'Database', 'ionicTimePicker']; //dependencies
 
   /* @ngInject */
   function Controller($ionicPopup, $scope, $cordovaNetwork, Database, ionicTimePicker) {
@@ -40,12 +40,11 @@
     vm.showDelete = false;
     vm.showEdit = false;
     vm.masterCheck = true;
-    vm.selectedTime = {};
 
     vm.editReminder = editReminder;
     vm.toggleDelete = toggleDelete; //TURN ON/OFF DELETE OPTION
     vm.toggleEdit = toggleEdit; //NOT USED ATM
-    vm.addNotification = addNotification; //ADD NEW REMINDER
+    vm.addReminder = addReminder; //ADD NEW REMINDER
 
     vm.onItemDelete = onItemDelete; //DELETE REMINDER
     vm.onItemEdit = onItemEdit; //EDIT REMINDER
@@ -65,28 +64,40 @@
       inputTime: ((new Date()).getHours() * 60 * 60), //Optional
       step: 5, //Optional
       format: 24, //Optional
-      titleLabel: 'Kies het uur', //Optional
+      titleLabel: 'Kies een tijdstip', //Optional
       setLabel: 'Kies', //Optional
       closeLabel: 'Annuleer', //Optional
-      setButtonType: 'button-positive', //Optional
-      closeButtonType: 'button-stable', //Optional
       callback: function(val) { //Mandatory
         timePickerCallback(val);
       }
     };
 
-    function addNotification() {
+    function addReminder() {
       ionicTimePicker.openTimePicker(vm.timePickerObject);
     }
 
-    function timePickerCallback(val) {
+    function editReminder(reminder) {
+      ionicTimePicker.openTimePicker({
+        //If hour when editing a reminder is incorrect, this is the place to check first
+        inputTime: (parseInt(reminder.hour) * 60 * 60 +
+          parseInt(reminder.minutes) * 60), //Optional
+        step: 5, //Optional
+        format: 24, //Optional
+        titleLabel: 'Kies een tijdstip', //Optional
+        setLabel: 'Kies', //Optional
+        closeLabel: 'Annuleer', //Optional
+        callback: function(val) { //Mandatory
+          timePickerCallback(val, reminder);
+        }
+      });
+    }
+
+    function timePickerCallback(val, reminder) {
       if (typeof(val) === 'undefined') {
         console.log('User didn\'t select a time');
       } else {
         var time = new Date(val * 1000);
-        vm.selectedTime.hours = time.getUTCHours();
-        vm.selectedTime.minutes = time.getUTCMinutes();
-        setDays();
+        setDays(time.getUTCHours(), time.getUTCMinutes(), reminder);
       }
     }
 
@@ -145,15 +156,6 @@
       cordova.plugins.notification.local.schedule(notifications);
     }
 
-    function editReminder(reminder) {
-      console.log('REMINDER');
-      console.log(reminder);
-      reminder.test = 'SUCCESSFUL';
-      var index = vm.reminders.map(function(x) {return x.id; }).indexOf(reminder.id);
-      console.log('TEST');
-      console.log(vm.reminders[index].test);
-    }
-
     function toggleDelete() {
       vm.showDelete = !vm.showDelete;
     }
@@ -162,8 +164,17 @@
       vm.showEdit = !vm.showEdit;
     }
 
-    function setDays() {
+    function setDays(hour, minutes, reminder) {
       $scope.data = {};
+      if (reminder) {
+        $scope.data.monday = reminder.days[0];
+        $scope.data.tuesday = reminder.days[1];
+        $scope.data.wednesday = reminder.days[2];
+        $scope.data.thursday = reminder.days[3];
+        $scope.data.friday = reminder.days[4];
+        $scope.data.saturday = reminder.days[5];
+        $scope.data.sunday = reminder.days[6];
+      }
 
       var myPopup = $ionicPopup.show({
         template: vm.templatePopup,
@@ -193,31 +204,39 @@
 
       myPopup.then(function(res) {
         if (res !== undefined) {
-          var ids = window.localStorage.counterIds;
-          if (ids === undefined) {
-            ids = 1;
+          if (reminder) {
+            reminder.hour = format(hour);
+            reminder.minutes = format(minutes);
+            reminder.days = res;
+            reminder.daysString = daysToString(res);
+            updateReminders(vm.reminders);
+            updateDatabase(vm.reminders);
           } else {
-            ids++;
+            var ids = window.localStorage.counterIds;
+            if (ids === undefined) {
+              ids = 1;
+            } else {
+              ids++;
+            }
+            window.localStorage.counterIds = ids;
+            //user did select day/days
+            var newReminder = {
+              id: ids,
+              active: true,
+              hour: format(hour),
+              minutes: format(minutes),
+              days: res,
+              daysString: daysToString(res)
+            };
+            //add notification to db
+            vm.reminders.push(newReminder);
+            updateReminders(vm.reminders);
+            updateDatabase(vm.reminders);
           }
-          window.localStorage.counterIds = ids;
-          //user did select day/days
-          var newReminder = {
-            id: ids,
-            active: true,
-            hour: format(vm.selectedTime.hours),
-            minutes: format(vm.selectedTime.minutes),
-            days: res,
-            daysString: daysToString(res)
-          };
-          //add notification to db
-          vm.reminders.push(newReminder);
-          updateReminders(vm.reminders);
-          updateDatabase(vm.reminders);
         } else {
           //user didn't select one or more days of the week
           console.log('User didn\'t select any days of the week');
         }
-        vm.selectedTime = {};
       });
     }
 
