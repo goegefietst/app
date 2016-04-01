@@ -8,7 +8,7 @@
       </div>
     </div>
     <ion-list class="has-subheader" show-delete="settings.showDelete" show-reorder="settings.showEdit" ng-show="settings.masterCheck">
-      <ion-item class="item item-remove-animate item-toggle" ng-repeat="reminder in settings.reminders">
+      <ion-item class="item item-remove-animate item-toggle" ng-repeat="reminder in settings.reminders | orderBy:['hour','minutes']">
         <div ng-click="settings.editReminder(reminder)">
           <span>{{reminder.hour}}:{{reminder.minutes}}</span>
           -
