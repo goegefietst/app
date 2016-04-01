@@ -21,7 +21,7 @@
       }
       if (window.StatusBar) {
         // org.apache.cordova.statusbar required
-        StatusBar.styleDefault();
+        StatusBar.backgroundColorByHexString('#f07b47');
       }
       BackgroundGeolocationService.init();
     });
