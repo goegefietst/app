@@ -220,16 +220,16 @@
             updateReminders(vm.reminders);
             updateDatabase(vm.reminders);
           } else {
-            var ids = window.localStorage.counterIds;
+            /*var ids = window.localStorage.counterIds;
             if (ids === undefined) {
               ids = 1;
             } else {
               ids++;
             }
-            window.localStorage.counterIds = ids;
+            window.localStorage.counterIds = ids;*/
             //user did select day/days
             var newReminder = {
-              id: ids,
+              id: getAvailableId(),
               active: true,
               hour: format(hour),
               minutes: format(minutes),
@@ -418,6 +418,15 @@
       result.setSeconds(0);
 
       return result;
+    }
+
+    function getAvailableId() {
+      if (!vm.reminders || vm.reminders.length === 0) {
+        return 0;
+      }
+      return Math.max.apply(null, vm.reminders.map(function(reminder) {
+        return reminder.id;
+      })) + 1;
     }
   }
 })();
