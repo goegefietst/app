@@ -23,10 +23,8 @@
     Database) {
     var vm = this;
 
-    vm.tracking = false;
     vm.distance = 0.0;
     vm.speed = 0.0;
-    vm.textButton = 'Start route';
     vm.stopwatch = {
       hours: '00',
       minutes: '00',
@@ -36,46 +34,13 @@
     var timestamp;
     var running = false;
 
+    checkService();
+
     BackgroundGeolocationService.subscribe($scope, function dataUpdated() {
       console.log('Data updated!');
-      var latlngs = [];
-      var locations = BackgroundGeolocationService.getLocations();
-      var lastPoint;
-      var secondLastPoint;
-
-      for (var i = 0; i < locations.length; i++) {
-        var point = locations[i];
-        latlngs.push([point.latitude, point.longitude]);
-      }
-
-      if (locations.length === 1) {
-        lastPoint = locations[(locations.length - 1)];
-      }
-
-      if (locations.length > 1) {
-        lastPoint = locations[(locations.length - 1)];
-        secondLastPoint = locations[(locations.length - 2)];
-        vm.distance += getDistance(secondLastPoint.latitude,
-          secondLastPoint.longitude,
-          lastPoint.latitude,
-          lastPoint.longitude);
-        vm.distance = Math.round(vm.distance * 100) / 100;
-        console.log(vm.distance);
-
-        var duration = locations[locations.length - 1].time - locations[0].time;
-
-        if (duration === 0) {
-          vm.speed = 0;
-        } else {
-          vm.speed = (vm.distance / duration * 1000 * 60 * 60);
-          vm.speed = Math.round(vm.speed * 100) / 100;
-        }
-        vm.speed = Math.round(vm.speed * 100) / 100;
-        console.log(vm.speed);
-      }
-
-      vm.drawRoute(latlngs);
+      getRoute();
     });
+
     angular.extend($scope, {
       defaults: { //todo: check configurations
         touchZoom: true,
@@ -154,6 +119,59 @@
         }, 1000);
 
       }
+    }
+
+    function checkService() {
+      var running = window.localStorage.getItem('bgGPS');
+      if (running === '1') {
+        alert('service is still running');
+        vm.tracking = true;
+        vm.textButton = 'Stop route';
+      } else {
+        vm.tracking = false;
+        vm.textButton = 'Start route';
+        vm.distance = 0.0;
+      }
+    }
+
+    function getRoute() {
+      var latlngs = [];
+      var locations = BackgroundGeolocationService.getLocations();
+      var lastPoint;
+      var secondLastPoint;
+
+      for (var i = 0; i < locations.length; i++) {
+        var point = locations[i];
+        latlngs.push([point.latitude, point.longitude]);
+      }
+
+      if (locations.length === 1) {
+        lastPoint = locations[(locations.length - 1)];
+      }
+
+      if (locations.length > 1) {
+        lastPoint = locations[(locations.length - 1)];
+        secondLastPoint = locations[(locations.length - 2)];
+        vm.distance += getDistance(secondLastPoint.latitude,
+          secondLastPoint.longitude,
+          lastPoint.latitude,
+          lastPoint.longitude);
+        vm.distance = Math.round(vm.distance * 100) / 100;
+        console.log(vm.distance);
+
+        var duration = locations[locations.length - 1].time - locations[0].time;
+
+        if (duration === 0) {
+          vm.speed = 0;
+        } else {
+          vm.speed = (vm.distance / duration * 1000 * 60 * 60);
+          vm.speed = Math.round(vm.speed * 100) / 100;
+        }
+        vm.speed = Math.round(vm.speed * 100) / 100;
+        console.log(vm.speed);
+      }
+
+      vm.drawRoute(latlngs);
     }
 
     function formattedtime(unformattedtime) {
