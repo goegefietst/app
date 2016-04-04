@@ -250,8 +250,8 @@
 
     function onItemDelete(reminder) {
       vm.reminders.splice(vm.reminders.indexOf(reminder), 1);
+      updateReminders(vm.reminders);
       Database.deleteReminder(reminder);
-      cancelNotification(reminder);
       if (vm.reminders.length === 0) {
         vm.showDelete = false;
       }
@@ -288,12 +288,6 @@
           console.log(ids);
         });
       }
-    }
-
-    function cancelNotification(reminder) {
-      cordova.plugins.notification.local.cancel(reminder.id, function() {
-        console.log('cancel notification with id ' + reminder.id);
-      });
     }
 
     function format(number) {
