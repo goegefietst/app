@@ -82,10 +82,23 @@
 
         getLocations: function() {
           return locations;
-        }
+        },
 
+        check: check
       };
     }]);
+
+  function check(callback) {
+    backgroundGeoLocation.isLocationEnabled(function(enabled) {
+      if (enabled) {
+        alert('location is enabled');
+        callback(enabled);
+      } else {
+        alert('location is disabled');
+        backgroundGeoLocation.showLocationSettings();
+      }
+    });
+  }
 
   function logLocation(location) {
     var date = new Date(0);
