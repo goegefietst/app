@@ -43,13 +43,6 @@
     vm.goToPrevious = goToPrevious;
     vm.goToNext = goToNext;
 
-    //LOAD DATA AND CHART
-    vm.loadData = loadData;
-    vm.loadChart = loadChart;
-    vm.loadDayChart = loadDayChart;
-    vm.loadWeekChart = loadWeekChart;
-    vm.loadYearChart = loadYearChart;
-
     //DEFAULT
     vm.goToDay();
     vm.showNewData();
@@ -90,7 +83,7 @@
       console.log('test timespan changed to ' + vm.timespan);
       var date = new Date();
       vm.footer = format(date.getDate()) + '/' + format(date.getMonth() + 1);
-      vm.loadData({
+      loadData({
         day: date.getDay(),
         month: date.getMonth(),
         year: date.getYear()
@@ -103,7 +96,7 @@
       var date = new Date();
       vm.footer = getWeek(date);
       console.log('test timespan changed to ' + vm.timespan);
-      vm.loadData({
+      loadData({
         time: Date.now()
       });
     }
@@ -114,7 +107,7 @@
       console.log('test timespan changed to ' + vm.timespan);
       var date = new Date();
       vm.footer = date.getFullYear();
-      vm.loadData({
+      loadData({
         year: date.getYear()
       });
     }
@@ -164,7 +157,7 @@
         if (!routes || routes.length < 1) {
           console.log('0 routes were returned from DB');
           resetStats();
-          vm.loadChart([]);
+          loadChartAndStats([]);
           return;
         }
         Database.selectPoints(pointCallback, routes.map(function(route) {
@@ -183,30 +176,37 @@
           }
         }
         var distances = calculateDistances(routes);
-        var distance = distances.reduce(function add(a, b) {
-          return a + b.distance;
-        }, 0);
-        vm.dis = distance.toFixed(1);
-        var duration = getDuration(routes);
-        vm.tim = msToTime(duration);
-        vm.spe = (distance / duration * 1000 * 60 * 60).toFixed(1);
-        vm.cal = 'Such wow, many';
-        vm.loadChart(distances);
+        loadChartAndStats(distances, routes);
       }
     }
 
-    function loadChart(distances) {
+    function loadChartAndStats(distances, routes) {
       switch (vm.timespan) {
         case 'day': //show a 24 hour day
-          vm.loadDayChart(distances);
+          loadDayChart(distances);
+          loadStats(distances, routes);
           break;
         case 'week': //show a 7 day week
-          vm.loadWeekChart(distances);
+          var filtered = filterThisWeek(distances, routes);
+          loadWeekChart(filtered.distances);
+          loadStats(filtered.distances, filtered.routes);
           break;
         case 'year': //show a 12 month year
-          vm.loadYearChart(distances);
+          loadYearChart(distances);
+          loadStats(distances, routes);
           break;
       }
+    }
+
+    function loadStats(distances, routes) {
+      var distance = distances.reduce(function add(a, b) {
+        return a + b.distance;
+      }, 0);
+      vm.dis = distance.toFixed(1);
+      var duration = getDuration(routes);
+      vm.tim = msToTime(duration);
+      vm.spe = (distance / duration * 1000 * 60 * 60).toFixed(1);
+      vm.cal = 'Such wow, many';
     }
 
     function loadDayChart(distances) {
@@ -255,13 +255,10 @@
       ];
       vm.series = ['Per dag', 'Cumulatief'];
       var data = [0, 0, 0, 0, 0, 0, 0];
-      var monday = moment().startOf('isoweek').toDate();
       var today = mondayFirstDay(new Date().getDay());
       for (var j = 0; j < distances.length; j++) {
-        if (distances[j].time > monday.getTime()) {
-          var day = mondayFirstDay(new Date(distances[j].time).getDay());
-          data[day] += distances[j].distance;
-        }
+        var day = mondayFirstDay(new Date(distances[j].time).getDay());
+        data[day] += distances[j].distance;
       }
       data = trim(data, today);
       var dataZeroStart = addZeroStart(data);
@@ -290,6 +287,30 @@
       data = trim(data, new Date().getMonth());
       var dataZeroStart = addZeroStart(data);
       vm.data = [dataZeroStart, cumulative(dataZeroStart)];
+    }
+
+    function filterThisWeek(distances, routes) {
+      var filteredDistances = [];
+      var filteredRoutes = [];
+      var monday = moment().startOf('isoweek').toDate();
+      for (var i = 0; i < distances.length; i++) {
+        if (distances[i].time > monday.getTime()) {
+          filteredDistances.push(distances[i]);
+        }
+      }
+      for (var j = 0; j < routes.length; j++) {
+        var route = routes[j];
+        if (Object.prototype.toString.call(route) === '[object Array]' &&
+          route.length > 1 && route[route.length - 1].time > monday.getTime()) {
+          filteredRoutes.push(route);
+        }
+      }
+      console.log('FILTERED ROUTES');
+      console.log(filteredRoutes);
+      return {
+        distances: filteredDistances,
+        routes: filteredRoutes
+      };
     }
 
     function addZeroStart(data) {
