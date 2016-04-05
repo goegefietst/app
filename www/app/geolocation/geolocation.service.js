@@ -91,10 +91,8 @@
   function check(callback) {
     backgroundGeoLocation.isLocationEnabled(function(enabled) {
       if (enabled) {
-        alert('location is enabled');
         callback(enabled);
       } else {
-        alert('location is disabled');
         backgroundGeoLocation.showLocationSettings();
       }
     });

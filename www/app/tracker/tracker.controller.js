@@ -69,6 +69,11 @@
         console.log('app starts vm.tracking');
         BackgroundGeolocationService.check(function(enabled) {
           if (enabled) {
+            cordova.plugins.diagnostic.getLocationMode(function(mode) {
+              if (mode !== 'high_accuracy') {
+                showPopup();
+              }
+            });
             BackgroundGeolocationService.start();
             vm.startStopwatch();
             vm.tracking = true;
@@ -300,6 +305,9 @@
       return dist;
     }
 
+    function showPopup() {
+      alert('popup');
+    }
     //vm.drawRoute('test');
     //vm.loadRoute();
     //vm.drawRoutes(routes);
