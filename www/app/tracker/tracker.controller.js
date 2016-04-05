@@ -47,7 +47,7 @@
         scrollWheelZoom: true,
         zoomControl: false,
       },
-      gent: {
+      location: {
         lat: 51.050,
         lng: 3.733,
         zoom: 10
@@ -237,7 +237,11 @@
     vm.setView = function(latlng) {
       leafletData.getMap('map').then(
         function(map) {
-          map.setView(latlng);
+          $scope.location = {
+            lat: latlng.lat,
+            lng: latlng.lng,
+            zoom: map.getZoom()
+          };
         }
       );
     };
