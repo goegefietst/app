@@ -6,18 +6,21 @@
     .controller('TrackerController', Controller);
   //dependencies
   Controller.$inject = ['$scope',
-  '$http',
-  '$window',
-  '$state',
-  'leafletData',
-  'BackgroundGeolocationService',
-  'Database'];
+    '$http',
+    '$window',
+    '$state',
+    '$ionicPopup',
+    'leafletData',
+    'BackgroundGeolocationService',
+    'Database'
+  ];
 
   /* @ngInject */
   function Controller($scope,
     $http,
     $window,
     $state,
+    $ionicPopup,
     leafletData,
     BackgroundGeolocationService,
     Database) {
@@ -71,13 +74,15 @@
           if (enabled) {
             cordova.plugins.diagnostic.getLocationMode(function(mode) {
               if (mode !== 'high_accuracy') {
-                showPopup();
+                showPopup('accuracy');
               }
             });
             BackgroundGeolocationService.start();
             vm.startStopwatch();
             vm.tracking = true;
             vm.textButton = 'Stop route';
+          } else {
+            showPopup('location');
           }
         });
       } else {
@@ -90,7 +95,9 @@
         vm.distance = 0.0;
         vm.speed = 0.0;
         vm.textButton = 'Start route';
-        $state.go('tab.performance.personal', {route: route});
+        $state.go('tab.performance.personal', {
+          route: route
+        });
       }
     };
 
@@ -104,9 +111,9 @@
     vm.stopStopwatch = function stopStopwatch() {
       running = false;
       console.log('User tracked for ' +
-      vm.stopwatch.hours + ':' +
-      vm.stopwatch.minutes + ':' +
-      vm.stopwatch.seconds);
+        vm.stopwatch.hours + ':' +
+        vm.stopwatch.minutes + ':' +
+        vm.stopwatch.seconds);
       vm.stopwatch.hours = '00';
       vm.stopwatch.minutes = '00';
       vm.stopwatch.seconds = '00';
@@ -277,7 +284,7 @@
         color: 'red',
         opacity: 0.5,
         latlngs: route
-        //latlngs: [[51.050, 3.733], [52.050, 4.733]]
+          //latlngs: [[51.050, 3.733], [52.050, 4.733]]
       };
       $scope.paths.path = path;
 
@@ -305,8 +312,25 @@
       return dist;
     }
 
-    function showPopup() {
-      alert('popup');
+    function showPopup(type) {
+      var myPopup = $ionicPopup.show({
+        template: type === 'accuracy' ?
+        '<p>Je resultaten zullen nauwkeuriger zijn als je locatie op de grootste nauwkeurigheid staat.</p>' :
+        '<p>We kunnen enkel je route tracken als je locatie aanstaat.</p>',
+        title: type === 'accuracy' ? 'Nauwkeurigheid' : 'Locatie',
+        buttons: [{
+          text: 'Annuleer'
+        }, {
+          text: '<b>Instellingen</b>',
+          type: 'button-royal',
+          onTap: function() {
+            BackgroundGeolocationService.locationSettings();
+          }
+        },]
+      });
+      myPopup.then(function(res) {
+        console.log('Tapped!', res);
+      });
     }
     //vm.drawRoute('test');
     //vm.loadRoute();

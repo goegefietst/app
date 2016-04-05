@@ -84,7 +84,11 @@
           return locations;
         },
 
-        check: check
+        check: check,
+
+        locationSettings: function() {
+          backgroundGeoLocation.showLocationSettings();
+        }
       };
     }]);
 
@@ -93,7 +97,7 @@
       if (enabled) {
         callback(enabled);
       } else {
-        backgroundGeoLocation.showLocationSettings();
+        callback(enabled);
       }
     });
   }
