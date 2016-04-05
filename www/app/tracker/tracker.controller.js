@@ -33,6 +33,8 @@
       minutes: '00',
       seconds: '00'
     };
+    vm.markers = [];
+    vm.paths = {};
 
     var timestamp;
     var running = false;
@@ -62,8 +64,8 @@
             'copyright">OpenStreetMap</a> contributors'
         }
       },
-      markers: [],
-      paths: {},
+      //markers: [],
+      //paths: {},
       height: ($window.innerHeight - 105) / 1.6
     });
 
@@ -95,6 +97,8 @@
         vm.distance = 0.0;
         vm.speed = 0.0;
         vm.textButton = 'Start route';
+        vm.paths = {};
+        vm.markers = [];
         $state.go('tab.performance.personal', {
           route: route
         });
@@ -232,15 +236,15 @@
     };
 
     vm.clearRoutes = function() {
-      $scope.paths = {};
+      vm.paths = {};
     };
 
     vm.clearMarkers = function() {
-      $scope.markers = [];
+      vm.markers = [];
     };
 
     vm.addMarker = function(latlng) {
-      $scope.markers.push({
+      vm.markers.push({
         lat: latlng.lat,
         lng: latlng.lng
       });
@@ -266,7 +270,7 @@
       routes.weight = 4;
       routes.color = 'red';
       routes.opacity = 0.5;
-      $scope.paths.multiPolyline = routes;
+      vm.paths.multiPolyline = routes;
 
       var lastPoint = routes.latlngs[routes.latlngs[0].length - 1];
 
@@ -290,7 +294,7 @@
         latlngs: route
           //latlngs: [[51.050, 3.733], [52.050, 4.733]]
       };
-      $scope.paths.path = path;
+      vm.paths.path = path;
 
       if (route.length > 0) {
         var lastPoint = {
