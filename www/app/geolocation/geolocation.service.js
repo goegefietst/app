@@ -31,20 +31,6 @@
       //Enable background geolocation
       var start = function() {
         //save settings (background tracking is enabled) in local storage
-        backgroundGeoLocation.isLocationEnabled(function(enabled) {
-          if (enabled) {
-            alert('location is enabled');
-            /*cordova.plugins.diagnostic.getLocationMode(function(mode) {
-              alert(mode);
-            }, function() {
-              alert('getLocationMode error');
-            });*/
-          } else {
-            alert('location is disabled');
-          }
-        }, function() {
-          alert('error');
-        });
         locations = [];
         window.localStorage.setItem('bgGPS', 1);
         backgroundGeoLocation.configure(callbackFn, failureFn, {
@@ -96,10 +82,23 @@
 
         getLocations: function() {
           return locations;
-        }
+        },
 
+        check: check
       };
     }]);
+
+  function check(callback) {
+    backgroundGeoLocation.isLocationEnabled(function(enabled) {
+      if (enabled) {
+        alert('location is enabled');
+        callback(enabled);
+      } else {
+        alert('location is disabled');
+        backgroundGeoLocation.showLocationSettings();
+      }
+    });
+  }
 
   function logLocation(location) {
     var date = new Date(0);

@@ -67,10 +67,14 @@
     vm.toggle = function toggle() {
       if (!vm.tracking) {
         console.log('app starts vm.tracking');
-        BackgroundGeolocationService.start();
-        vm.startStopwatch();
-        vm.tracking = true;
-        vm.textButton = 'Stop route';
+        BackgroundGeolocationService.check(function(enabled) {
+          if (enabled) {
+            BackgroundGeolocationService.start();
+            vm.startStopwatch();
+            vm.tracking = true;
+            vm.textButton = 'Stop route';
+          }
+        });
       } else {
         console.log('app stops vm.tracking');
         var route = BackgroundGeolocationService.stop();
