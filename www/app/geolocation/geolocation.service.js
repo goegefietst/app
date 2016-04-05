@@ -53,16 +53,6 @@
 
       return {
         start: start,
-
-        // Initialize service and enable background geolocation by default
-        init: function() {
-          var bgGPS = window.localStorage.getItem('bgGPS');
-
-          if (bgGPS === 1) {
-            start();
-          }
-        },
-
         // Stop data tracking
         stop: function() {
           window.localStorage.setItem('bgGPS', 0);

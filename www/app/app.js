@@ -23,7 +23,6 @@
         // org.apache.cordova.statusbar required
         StatusBar.backgroundColorByHexString('#f07b47');
       }
-      BackgroundGeolocationService.init();
     });
   });
 })();
