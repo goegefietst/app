@@ -5,10 +5,10 @@
     .module('app.performance')
     .controller('PersonalPerformanceController', Controller);
 
-  Controller.$inject = ['$q', '$stateParams', 'Database']; //dependencies
+  Controller.$inject = ['$q', '$stateParams', 'Database', 'moment']; //dependencies
 
   /* @ngInject */
-  function Controller($q, $stateParams, Database) {
+  function Controller($q, $stateParams, Database, moment) {
     var vm = this;
 
     vm.timespan = 'day';
@@ -255,10 +255,11 @@
       ];
       vm.series = ['Per dag', 'Cumulatief'];
       var data = [0, 0, 0, 0, 0, 0, 0];
+      var monday = moment().startOf('isoweek').toDate();
       var today = mondayFirstDay(new Date().getDay());
       for (var j = 0; j < distances.length; j++) {
-        var day = mondayFirstDay(new Date(distances[j].time).getDay());
-        if (day <= today) {
+        if (distances[j].time > monday.getTime()) {
+          var day = mondayFirstDay(new Date(distances[j].time).getDay());
           data[day] += distances[j].distance;
         }
       }
