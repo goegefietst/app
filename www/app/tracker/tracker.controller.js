@@ -25,19 +25,46 @@
     BackgroundGeolocationService,
     Database) {
     var vm = this;
+    var timestamp;
+    var running = false;
 
     vm.distance = 0.0;
     vm.speed = 0.0;
+    vm.markers = [];
+    vm.paths = {};
+    vm.height = ($window.innerHeight - 105) / 1.6;
     vm.stopwatch = {
       hours: '00',
       minutes: '00',
       seconds: '00'
     };
-    vm.markers = [];
-    vm.paths = {};
+    vm.defaults = { //todo: check configurations
+      touchZoom: true,
+      scrollWheelZoom: true,
+      zoomControl: false,
+    };
+    vm.location = {
+      lat: 51.050,
+      lng: 3.733,
+      zoom: 10
+    };
+    vm.tiles = {
+      url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      options: {
+        attribution: '&copy; <a href="http://www.openstreetmap.org/' +
+          'copyright">OpenStreetMap</a> contributors'
+      }
+    };
 
-    var timestamp;
-    var running = false;
+    vm.toggle = toggle; //START AND STOP TRACKING
+    vm.startStopwatch = startStopwatch; //START THE STOPWATCH
+    vm.stopStopwatch = stopStopwatch; //STOP THE STOPWATCH
+
+    vm.clearRoutes = clearRoutes; //DELETE ROUTES FROM MAP
+    vm.clearMarkers = clearMarkers; //DELETE MARKERS FROM MAP
+    vm.addMarker = addMarker; //ADD MARKER TO MAP
+    vm.setView = setView; //SET VIEW OF MAP
+    vm.drawRoute = drawRoute; //DRAWS ROUTE ON MAP
 
     checkService();
 
@@ -46,30 +73,7 @@
       getRoute();
     });
 
-    angular.extend($scope, {
-      defaults: { //todo: check configurations
-        touchZoom: true,
-        scrollWheelZoom: true,
-        zoomControl: false,
-      },
-      location: {
-        lat: 51.050,
-        lng: 3.733,
-        zoom: 10
-      },
-      tiles: {
-        url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-        options: {
-          attribution: '&copy; <a href="http://www.openstreetmap.org/' +
-            'copyright">OpenStreetMap</a> contributors'
-        }
-      },
-      //markers: [],
-      //paths: {},
-      height: ($window.innerHeight - 105) / 1.6
-    });
-
-    vm.toggle = function toggle() {
+    function toggle() {
       if (!vm.tracking) {
         console.log('app starts vm.tracking');
         BackgroundGeolocationService.check(function(enabled) {
@@ -103,16 +107,16 @@
           route: route
         });
       }
-    };
+    }
 
-    vm.startStopwatch = function startStopwatch() {
+    function startStopwatch() {
       var now = new Date();
       timestamp = now.getTime();
       running = true;
       timecounter();
-    };
+    }
 
-    vm.stopStopwatch = function stopStopwatch() {
+    function stopStopwatch() {
       running = false;
       console.log('User tracked for ' +
         vm.stopwatch.hours + ':' +
@@ -121,7 +125,7 @@
       vm.stopwatch.hours = '00';
       vm.stopwatch.minutes = '00';
       vm.stopwatch.seconds = '00';
-    };
+    }
 
     function timecounter() {
       var now = new Date();
@@ -131,7 +135,9 @@
         vm.stopwatch.hours = time.hours;
         vm.stopwatch.minutes = time.minutes;
         vm.stopwatch.seconds = time.seconds;
-        console.log(vm.stopwatch.hours + ':' + vm.stopwatch.minutes + ':' + vm.stopwatch.seconds);
+        console.log(vm.stopwatch.hours + ':' +
+        vm.stopwatch.minutes + ':' +
+        vm.stopwatch.seconds);
 
         setTimeout(function() {
           timecounter();
@@ -235,34 +241,34 @@
       });
     };
 
-    vm.clearRoutes = function() {
+    function clearRoutes() {
       vm.paths = {};
-    };
+    }
 
-    vm.clearMarkers = function() {
+    function clearMarkers() {
       vm.markers = [];
-    };
+    }
 
-    vm.addMarker = function(latlng) {
+    function addMarker(latlng) {
       vm.markers.push({
         lat: latlng.lat,
         lng: latlng.lng
       });
-    };
+    }
 
-    vm.setView = function(latlng) {
+    function setView(latlng) {
       leafletData.getMap('map').then(
         function(map) {
-          $scope.location = {
+          vm.location = {
             lat: latlng.lat,
             lng: latlng.lng,
             zoom: map.getZoom()
           };
         }
       );
-    };
+    }
 
-    vm.drawRoutes = function(routes) {
+    /*function drawRoutes(routes) {
       vm.clearRoutes();
       vm.clearMarkers();
 
@@ -277,8 +283,8 @@
       vm.addMarker(lastPoint);
       vm.setView(lastPoint);
     };
-
-    vm.drawRoute = function(route) {
+*/
+    function drawRoute(route) {
       if (!route) {
         return;
       }
@@ -292,7 +298,7 @@
         color: 'red',
         opacity: 0.5,
         latlngs: route
-          //latlngs: [[51.050, 3.733], [52.050, 4.733]]
+        //latlngs: [[51.050, 3.733], [52.050, 4.733]]
       };
       vm.paths.path = path;
 
@@ -304,7 +310,7 @@
         vm.addMarker(lastPoint);
         vm.setView(lastPoint);
       }
-    };
+    }
 
     function getDistance(lat1, lon1, lat2, lon2) {
       var radlat1 = Math.PI * lat1 / 180;
@@ -323,8 +329,9 @@
     function showPopup(type) {
       var myPopup = $ionicPopup.show({
         template: type === 'accuracy' ?
-        '<p>Je resultaten zullen nauwkeuriger zijn als je locatie op de grootste nauwkeurigheid staat.</p>' :
-        '<p>We kunnen enkel je route tracken als je locatie aanstaat.</p>',
+          '<p>Je resultaten zullen nauwkeuriger zijn als' +
+          ' je locatie op de grootste nauwkeurigheid staat.</p>'
+          : '<p>We kunnen enkel je route tracken als je locatie aanstaat.</p>',
         title: type === 'accuracy' ? 'Nauwkeurigheid' : 'Locatie',
         buttons: [{
           text: 'Annuleer'
@@ -340,8 +347,5 @@
         console.log('Tapped!', res);
       });
     }
-    //vm.drawRoute('test');
-    //vm.loadRoute();
-    //vm.drawRoutes(routes);
   }
 })();
