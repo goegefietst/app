@@ -154,6 +154,7 @@
                 text: 'Vergeet niet je route te tracken!',
                 at: result,
                 every: 'week',
+                led: 'EE6E35',
               });
             }
           }
