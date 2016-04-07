@@ -24,6 +24,7 @@
     leafletData,
     BackgroundGeolocationService,
     Database) {
+
     var vm = this;
     var timestamp;
     var running = false;
@@ -96,13 +97,15 @@
         var route = BackgroundGeolocationService.stop();
         console.log(route);
         vm.tracking = false;
-        vm.stopStopwatch();
-        Database.insertRoute(route);
         vm.distance = 0.0;
         vm.speed = 0.0;
         vm.textButton = 'Start route';
-        vm.paths = {};
-        vm.markers = [];
+
+        vm.stopStopwatch();
+        vm.clearRoutes();
+        vm.clearMarkers();
+
+        Database.insertRoute(route);
         $state.go('tab.performance.personal', {
           route: route
         });
@@ -268,22 +271,6 @@
       );
     }
 
-    /*function drawRoutes(routes) {
-      vm.clearRoutes();
-      vm.clearMarkers();
-
-      routes.type = 'multiPolyline';
-      routes.weight = 4;
-      routes.color = 'red';
-      routes.opacity = 0.5;
-      vm.paths.multiPolyline = routes;
-
-      var lastPoint = routes.latlngs[routes.latlngs[0].length - 1];
-
-      vm.addMarker(lastPoint);
-      vm.setView(lastPoint);
-    };
-*/
     function drawRoute(route) {
       if (!route) {
         return;
@@ -298,7 +285,6 @@
         color: 'red',
         opacity: 0.5,
         latlngs: route
-        //latlngs: [[51.050, 3.733], [52.050, 4.733]]
       };
       vm.paths.path = path;
 
