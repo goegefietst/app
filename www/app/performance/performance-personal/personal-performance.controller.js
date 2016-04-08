@@ -3,13 +3,29 @@
 
   angular
     .module('app.performance')
-    .controller('PersonalPerformanceController', Controller);
+    .controller('PersonalPerformanceController', Controller)
+    .filter('msToTimeFilter', Filter);
+
+  function Filter() {
+    return function(duration) {
+      var seconds = parseInt((duration / 1000) % 60);
+      var minutes = parseInt((duration / (1000 * 60)) % 60);
+      var hours = parseInt((duration / (1000 * 60 * 60)) % 24);
+
+      hours = (hours < 10) ? '0' + hours : hours;
+      minutes = (minutes < 10) ? '0' + minutes : minutes;
+      seconds = (seconds < 10) ? '0' + seconds : seconds;
+
+      return hours + ':' + minutes + ':' + seconds;
+    };
+  }
 
   Controller.$inject = ['$q', '$stateParams', 'Database', 'moment']; //dependencies
 
   /* @ngInject */
   function Controller($q, $stateParams, Database, moment) {
     var vm = this;
+    var dataLoaded = $q.defer();
 
     vm.timespan = 'day';
     vm.routes = [];
@@ -17,7 +33,7 @@
     vm.footer = '';
 
     vm.dis = '0.0';
-    vm.tim = '00:00:00';
+    vm.tim = 0;
     vm.spe = '0.0';
     vm.cal = '0';
     vm.new = {
@@ -48,33 +64,35 @@
     vm.showNewData();
 
     function showNewData() {
-      var route = $stateParams.route;
-      var distance = 0;
-      var duration = 0;
-      var speed = 0;
+      var isDataLoaded = dataLoaded.promise;
+      isDataLoaded.then(function() {
+        var route = $stateParams.route;
+        var distance = 0;
+        var duration = 0;
 
-      if (route !== undefined && route !== null) {
-        if (route.length > 1) {
-          for (var j = 0; j < route.length - 1; j++) {
-            var first = route[j];
-            var second = route[j + 1];
-            distance += getDistance(
-              first.latitude, first.longitude,
-              second.latitude, second.longitude
-            );
+        if (route !== undefined && route !== null) {
+          if (route.length > 1) {
+            for (var j = 0; j < route.length - 1; j++) {
+              var first = route[j];
+              var second = route[j + 1];
+              distance += getDistance(
+                first.latitude, first.longitude,
+                second.latitude, second.longitude
+              );
+            }
+            distance = Math.round(distance * 100) / 100;
+            vm.new.dis = distance;
+            duration = route[route.length - 1].time - route[0].time;
+            vm.new.tim = duration;
+            var distanceOld = vm.dis - vm.new.dis;
+            var timeOld = vm.tim - vm.new.tim;
+            var speedOld = (distanceOld / timeOld * 1000 * 60 * 60);
+            speedOld = Math.round(speedOld * 100) / 100;
+            var speed = Math.round((vm.spe - speedOld) * 100) / 100;
+            vm.new.spe = speed > 0 ? '+ ' + speed : '- ' + Math.abs(speed);
           }
-          distance = Math.round(distance * 100) / 100;
-          vm.new.dis = distance;
-          console.log('distance: ' + distance);
-          duration = route[route.length - 1].time - route[0].time;
-          vm.new.tim = msToTime(duration);
-          console.log('duration:' + duration);
-          speed = (distance / duration * 1000 * 60 * 60);
-          speed = Math.round(speed * 100) / 100;
-          vm.new.spe = speed;
-          console.log('speed: ' + speed);
         }
-      }
+      });
     }
 
     function goToDay() {
@@ -204,9 +222,10 @@
       }, 0);
       vm.dis = distance.toFixed(1);
       var duration = getDuration(routes);
-      vm.tim = msToTime(duration);
+      vm.tim = duration;
       vm.spe = (distance / duration * 1000 * 60 * 60).toFixed(1);
       vm.cal = 'Such wow, many';
+      dataLoaded.resolve();
     }
 
     function loadDayChart(distances) {
@@ -411,7 +430,7 @@
 
     function resetStats() {
       vm.dis = '0.0';
-      vm.tim = '00:00:00';
+      vm.tim = 0;
       vm.spe = '0.0';
       vm.cal = '0';
     }

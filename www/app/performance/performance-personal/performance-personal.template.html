@@ -10,18 +10,18 @@
       <li class="item item-button-right">
         {{personal.dis}}
         km
-        <span class="newData" ng-hide="personal.new.dis === 0"> + {{personal.new.dis}} km</span>
+        <span class="newData" ng-show="personal.new.dis !== 0 && personal.isActive('day')"> + {{personal.new.dis}} km</span>
         <button class="button ion-chevron-right" ng-click="personal.goToDistance()"></button>
       </li>
       <li class="item item-button-right">
-        {{personal.tim}}
-        <span class="newData" ng-hide="personal.new.tim === 0"> + {{personal.new.tim}}</span>
+        {{personal.tim | msToTimeFilter}}
+        <span class="newData" ng-show="personal.new.tim !== 0 && personal.isActive('day')"> + {{personal.new.tim | msToTimeFilter}}</span>
         <button class="button ion-chevron-right" ng-click="personal.goToTime()"></button>
       </li>
       <li class="item item-button-right">
         {{personal.spe}}
         km/u
-        <span class="newData" ng-hide="personal.new.spe === 0"> + {{personal.new.spe}} km/u</span>
+        <span class="newData" ng-show="personal.new.spe !== 0 && personal.isActive('day')"> {{personal.new.spe}} km/u</span>
         <button class="button ion-chevron-right" ng-click="personal.goToSpeed()"></button>
       </li>
       <li class="item item-button-right">
