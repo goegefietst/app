@@ -17,22 +17,6 @@
 
     function activate() {
       //FOR TESTING PURPOSES
-      //TODO Make periodically
-      console.log('NETWORK TYPE');
-      console.log($cordovaNetwork.getNetwork());
-      console.log('IS ONLINE');
-      console.log($cordovaNetwork.isOnline());
-
-      Database.selectRoutes(function(routes) {
-        console.log('ROUTES');
-        console.log(routes);
-        for (var i = 0; i < routes.length; i++) {
-          //TODO Send to server, if successful update db entry
-          Database.sentRoute(routes[i]);
-        }
-      }, {
-        sent: true
-      });
     }
 
     Database.selectReminders(map);
