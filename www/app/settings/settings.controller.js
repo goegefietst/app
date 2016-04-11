@@ -138,6 +138,7 @@
                 text: 'Vergeet niet je route te tracken!',
                 at: result,
                 every: 'week',
+                color: 'EE6E35',
                 led: 'EE6E35',
               });
             }
