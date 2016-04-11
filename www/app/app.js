@@ -44,39 +44,86 @@
         });
       }
 
-      var callback = function(routes) {
+      var options = {
+        notSent: true
+      };
+
+      Database
+        .selectRoutes(options)
+        .then(addPoints)
+        .then(sendRoutes);
+
+      function addPoints(values) {
+        var deferred = $q.defer();
+        var routes = values.routes;
         if (Object.prototype.toString.call(routes) !== '[object Array]' ||
           routes.length < 1) {
           console.log('ERROR: ROUTES IS NOT AN ARRAY OR AN EMPTY ARRAY');
           console.log(routes);
-          return;
+          deferred.reject('ERROR: ROUTES IS NOT AN ARRAY OR AN EMPTY ARRAY');
+          return deferred.promise;
         }
+        var promises = [];
         for (var i = 0; i < routes.length; i++) {
-          var callback = function(points) {
-            var route = routes[i];
-            route.points = points;
-            Connection.postRoute(uuid, secret, route).then(function() {
-              console.log('Sent a route to the server');
-              console.log(route);
-              Database.sentRoute(route);
-            });
-          };
-          Database.selectPoints(callback, [routes[i].id]);
-
+          promises.push(getPoints(routes[i]));
         }
-      };
-      var options = {
-        sent: true
-      };
-      Database.selectRoutes(callback, options);
+        $q.all(promises).then(function() {
+          deferred.resolve(routes);
+        }, function(reason) {
+          deferred.reject(reason);
+        });
 
-      /*
-      FOR TESTING PURPOSES
-      Connection.getRoutes().then(function(d) {
-        console.log('DATA');
-        console.log(d);
-      });
-      */
+        function getPoints(route) {
+          var deferred = $q.defer();
+          Database
+            .selectPoints([route.id])
+            .then(function(points) {
+              route.points = points;
+              deferred.resolve(points);
+            }, function(error) {
+              deferred.reject(error);
+            });
+          return deferred.promise;
+        }
+        return deferred.promise;
+      }
+
+      function sendRoutes(routes) {
+        var deferred = $q.defer();
+        var promises = [];
+        for (var i = 0; i < routes.length; i++) {
+          promises.push(postRoute(uuid, secret, routes[i]).then(sentRoute));
+        }
+
+        function postRoute(uuid, secret, route) {
+          var deferred = $q.defer();
+          Connection.postRoute(uuid, secret, route).then(function() {
+            deferred.resolve(route);
+          }, function() {
+            deferred.reject();
+          });
+          return deferred.promise;
+        }
+
+        function sentRoute(route) {
+          var deferred = $q.defer();
+          Database.sentRoute(route).then(function() {
+            deferred.resolve();
+          }, function() {
+            deferred.reject();
+          });
+          return deferred.promise;
+        }
+
+        $q.all(promises).then(function() {
+          deferred.resolve(routes);
+        }, function(reason) {
+          deferred.reject(reason);
+        });
+
+        return deferred.promise;
+      }
+
     });
   });
 })();
