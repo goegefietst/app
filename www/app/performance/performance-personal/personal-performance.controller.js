@@ -169,21 +169,41 @@
     }
 
     function loadData(options) {
-      Database.selectRoutes(routeCallback, options);
+      Database
+        .selectRoutes(options)
+        .then(checkIfEmpty)
+        .then(selectPoints)
+        .then(transformToRoutesAndDistances)
+        .then(loadChartAndStats);
 
-      function routeCallback(routes) {
+      function checkIfEmpty(value) {
+        var deferred = $q.defer();
+        var routes = value.routes;
         if (!routes || routes.length < 1) {
+          deferred.reject('0 routes were returned from DB');
           console.log('0 routes were returned from DB');
           resetStats();
           loadChartAndStats([]);
-          return;
+          return deferred.promise;
         }
-        Database.selectPoints(pointCallback, routes.map(function(route) {
+        deferred.resolve(routes.map(function(route) {
           return route.id;
         }));
+        return deferred.promise;
       }
 
-      function pointCallback(points) {
+      function selectPoints(routeIds) {
+        var deferred = $q.defer();
+        Database.selectPoints(routeIds).then(function(points) {
+          deferred.resolve(points);
+        }, function(err) {
+          deferred.reject(err);
+        });
+        return deferred.promise;
+      }
+
+      function transformToRoutesAndDistances(points) {
+        var deferred = $q.defer();
         var routes = [];
         for (var i = 0; i < points.length; i++) {
           if (!routes[points[i].routeId]) {
@@ -194,11 +214,18 @@
           }
         }
         var distances = calculateDistances(routes);
-        loadChartAndStats(distances, routes);
+        deferred.resolve({
+          distances: distances,
+          routes: routes
+        });
+        //loadChartAndStats(distances, routes);
+        return deferred.promise;
       }
     }
 
-    function loadChartAndStats(distances, routes) {
+    function loadChartAndStats(values) {
+      var routes = values.routes;
+      var distances = values.distances;
       switch (vm.timespan) {
         case 'day': //show a 24 hour day
           loadDayChart(distances);

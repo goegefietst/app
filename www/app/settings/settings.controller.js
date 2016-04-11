@@ -19,7 +19,7 @@
       //FOR TESTING PURPOSES
     }
 
-    Database.selectReminders(map);
+    Database.selectReminders().then(map);
 
     vm.showDelete = false;
     vm.showEdit = false;
@@ -119,9 +119,16 @@
     }
 
     function updateDatabase(newReminders) {
-      Database.deleteReminders(function() {
-        Database.insertReminders(newReminders);
-      });
+
+      var deleteReminders = function() {
+        return Database.deleteReminders();
+      };
+
+      var insertReminders = function() {
+        return Database.insertReminders(newReminders);
+      };
+
+      deleteReminders().then(insertReminders);
     }
 
     function updateReminders(reminders) {
@@ -236,11 +243,11 @@
     function onItemDelete(reminder) {
       vm.reminders.splice(vm.reminders.indexOf(reminder), 1);
       updateReminders(vm.reminders);
-      Database.deleteReminder(reminder);
+      updateDatabase(vm.reminders);
       if (vm.reminders.length === 0) {
         vm.showDelete = false;
       }
-      Database.selectReminders(function(object) {
+      Database.selectReminders().then(function(object) {
         console.log(object);
       });
     }
