@@ -262,7 +262,8 @@
         scaleStepWidth: 1,
         scaleStartValue: 0,
         bezierCurve: false,
-        animation: false
+        animation: false,
+        pointHitDetectionRadius: 0.1
       };
       vm.labels = [];
       for (var i = 0; i < 24; i++) {
@@ -404,18 +405,6 @@
         }
       }
       return duration;
-    }
-
-    function msToTime(duration) {
-      var seconds = parseInt((duration / 1000) % 60);
-      var minutes = parseInt((duration / (1000 * 60)) % 60);
-      var hours = parseInt((duration / (1000 * 60 * 60)) % 24);
-
-      hours = (hours < 10) ? '0' + hours : hours;
-      minutes = (minutes < 10) ? '0' + minutes : minutes;
-      seconds = (seconds < 10) ? '0' + seconds : seconds;
-
-      return hours + ':' + minutes + ':' + seconds;
     }
 
     function getDistance(lat1, lon1, lat2, lon2) {
