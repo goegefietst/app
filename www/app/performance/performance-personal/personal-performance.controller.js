@@ -263,7 +263,8 @@
         scaleStartValue: 0,
         bezierCurve: false,
         animation: false,
-        pointHitDetectionRadius: 0.1
+        pointHitDetectionRadius: 0.1,
+        multiTooltipTemplate: '<%= value.toFixed(2) %> km'
       };
       vm.labels = [];
       for (var i = 0; i < 24; i++) {
