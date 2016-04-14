@@ -298,7 +298,9 @@
         scaleStepWidth: 1,
         scaleStartValue: 0,
         bezierCurve: false,
-        animation: false
+        animation: false,
+        pointHitDetectionRadius: 0.1,
+        multiTooltipTemplate: '<%= value.toFixed(2) %> km'
       };
       vm.labels = ['', 'Maandag', 'Dinsdag', 'Woensdag',
         'Donderdag', 'Vrijdag', 'Zaterdag', 'Zondag'
@@ -322,7 +324,9 @@
         scaleStepWidth: 1,
         scaleStartValue: 0,
         bezierCurve: false,
-        animation: false
+        animation: false,
+        pointHitDetectionRadius: 0.1,
+        multiTooltipTemplate: '<%= value.toFixed(2) %> km'
       };
       vm.labels = [
         '', 'Januari', 'Februari', 'Maart', 'April', 'Mei', 'Juni', 'Juli',
