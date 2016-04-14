@@ -102,7 +102,7 @@
       var date = new Date();
       vm.footer = format(date.getDate()) + '/' + format(date.getMonth() + 1);
       loadData({
-        day: date.getDay(),
+        day: date.getDate(),
         month: date.getMonth(),
         year: date.getYear()
       });
@@ -278,11 +278,13 @@
         0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0
       ];
-      for (var j = 0; j < distances.length; j++) {
-        var hourMinutes = new Date(distances[j].time);
-        var hour = hourMinutes.getHours();
-        var minutes = hourMinutes.getMinutes();
-        data[minutes > 29 ? hour + 1 : hour] += distances[j].distance;
+      if (distances !== undefined) {
+        for (var j = 0; j < distances.length; j++) {
+          var hourMinutes = new Date(distances[j].time);
+          var hour = hourMinutes.getHours();
+          var minutes = hourMinutes.getMinutes();
+          data[minutes > 29 ? hour + 1 : hour] += distances[j].distance;
+        }
       }
       data = trim(data, new Date().getHours() + 1);
       vm.data = [data, cumulative(data)];

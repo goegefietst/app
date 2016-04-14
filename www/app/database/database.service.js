@@ -216,11 +216,11 @@
               } else if (options.day && options.month && options.year) { // OPTIONS.DATE = RETURN ALL ROUTES WITH A GIVEN DATE
                 if (options.year === date.getYear() &&
                   options.month === date.getMonth() &&
-                  options.day === date.getDay()) {
+                  options.day === date.getDate()) {
                   routes.push(route);
                 }
               } else if (options.day) { // OPTIONS.DAY = RETURN ALL ROUTES WITH A GIVEN DAY
-                if (options.day === date.getDay()) {
+                if (options.day === date.getDate()) {
                   routes.push(route);
                 }
               } else if (options.month && options.year) { // OPTIONS.MONTH = RETURN ALL ROUTES WITH A GIVEN MONTH AND YEAR
