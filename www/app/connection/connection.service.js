@@ -3,7 +3,7 @@
 
   angular
     .module('connection')
-    .service('Connection', ['$http', '$q', function($http) {
+    .service('Connection', ['$http', function($http) {
 
       this.getRoutes = getRoutes;
       this.makeAccount = makeAccount;
@@ -11,15 +11,13 @@
       this.getRoutesByUser = getRoutesByUser;
 
       function getRoutes() {
-        var promise =
-          $http
+        return $http
           .get('https://goegefietst.gent/routes')
           .then(function(response) {
             console.log('GET ROUTES RESPONSE');
             console.log(response);
             return response.data;
           });
-        return promise;
       }
 
       function makeAccount() {
@@ -31,11 +29,9 @@
         var error = function() {
           console.log('MAKE ACCOUNT ERROR');
         };
-        var promise =
-          $http
+        return $http
           .post('https://goegefietst.gent/user')
           .then(success, error);
-        return promise;
       }
 
       function postRoute(uuid, secret, route) {
@@ -45,16 +41,13 @@
           }
         };
         var data = route;
-        data.secret = secret; //Shouldn't we move this to headers on server?
-        var promise =
-          $http
+        return $http
           .post('https://goegefietst.gent/user/' + uuid, data, config)
           .then(function(response) {
             console.log('POST ROUTE RESPONSE');
             console.log(response);
             return response.data;
           });
-        return promise;
       }
 
       function getRoutesByUser(uuid, secret) {
@@ -63,15 +56,13 @@
             'secret': secret
           }
         };
-        var promise =
-          $http
+        return $http
           .get('https://goegefietst.gent/user/' + uuid, config)
           .then(function(response) {
             console.log('GET ROUTES BY USER RESPONSE');
             console.log(response);
             return response.data;
           });
-        return promise;
       }
 
     }]);
