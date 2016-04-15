@@ -2,8 +2,8 @@
   'use strict';
 
   angular
-    .module('app.settings')
-    .controller('SettingsController', Controller);
+    .module('app.reminders')
+    .controller('RemindersController', Controller);
 
   Controller.$inject = ['$ionicPopup', '$scope', '$cordovaNetwork', 'Database', 'ionicTimePicker']; //dependencies
 

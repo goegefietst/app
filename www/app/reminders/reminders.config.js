@@ -2,7 +2,7 @@
 'use strict';
 
 angular
-  .module('app.settings')
+  .module('app.reminders')
   .config(function($stateProvider) {
 
     // Ionic uses AngularUI Router which uses the concept of states
@@ -13,12 +13,12 @@ angular
 
     // Each tab has its own nav history stack:
 
-      .state('tab.settings', {
-      url: '/settings',
+      .state('tab.reminders', {
+      url: '/reminders',
       views: {
-        'tab-settings': {
-          templateUrl: 'app/settings/settings.template.html',
-          controller: 'SettingsController as settings'
+        'tab-reminders': {
+          templateUrl: 'app/reminders/reminders.template.html',
+          controller: 'RemindersController as reminders'
         }
       }
     });

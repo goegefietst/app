@@ -5,7 +5,7 @@
     'ionic',
     'app.tracker',
     'app.performance',
-    'app.settings',
+    'app.reminders',
     'app.layout',
     'ionic-timepicker',
     'database',

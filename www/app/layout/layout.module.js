@@ -2,5 +2,5 @@
   'use strict';
 
   angular
-    .module('app.layout', ['app.tracker', 'app.performance', 'app.settings']);
+    .module('app.layout', ['app.tracker', 'app.performance', 'app.reminders']);
 })();
