@@ -8,10 +8,23 @@
   Stats.$inject = ['$q', 'Helper'];
 
   /* @ngInject */
+  /**
+  * @class
+  * @name Week
+  * @memberof Stats
+  * @description Service that loads week chart & footer.
+  */
   function Stats($q, Helper) {
     this.loadChart = loadWeekChart;
     this.loadFooter = loadWeekFooter;
 
+    /**
+    * @function
+    * @name loadWeekChart
+    * @memberof Stats.Week
+    * @param {Object} values - object with distances and options for the chart.
+    * @returns {Promise}
+    */
     function loadWeekChart(values) {
       Helper.filterThisWeek(values);
       var deferred = $q.defer();
@@ -42,6 +55,13 @@
       return deferred.promise;
     }
 
+    /**
+    * @function
+    * @name loadWeekFooter
+    * @memberof Stats.Week
+    * @param {Object} values - object with distances and value for the footer.
+    * @returns {Promise}
+    */
     function loadWeekFooter(values) {
       var deferred = $q.defer();
       values.footer = Helper.getWeek(new Date());

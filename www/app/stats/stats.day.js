@@ -8,10 +8,23 @@
   Stats.$inject = ['$q', 'Helper'];
 
   /* @ngInject */
+  /**
+  * @class
+  * @name Day
+  * @memberof Stats
+  * @description Service that loads day chart & footer.
+  */
   function Stats($q, Helper) {
     this.loadChart = loadDayChart;
     this.loadFooter = loadDayFooter;
 
+    /**
+    * @function
+    * @name loadDayChart
+    * @memberof Stats.Day
+    * @param {Object} values - object with distances and options for the chart.
+    * @returns {Promise}
+    */
     function loadDayChart(values) {
       var deferred = $q.defer();
       var distances = values.distances;
@@ -51,6 +64,13 @@
       return deferred.promise;
     }
 
+    /**
+    * @function
+    * @name loadDayFooter
+    * @memberof Stats.Day
+    * @param {Object} values - object with distances and value for the footer.
+    * @returns {Promise}
+    */
     function loadDayFooter(values) {
       var deferred = $q.defer();
       var date = new Date();

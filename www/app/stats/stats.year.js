@@ -8,10 +8,23 @@
   Stats.$inject = ['$q', 'Helper'];
 
   /* @ngInject */
+  /**
+  * @class
+  * @name Year
+  * @memberof Stats
+  * @description Service that loads year chart & footer.
+  */
   function Stats($q, Helper) {
     this.loadChart = loadYearChart;
     this.loadFooter = loadYearFooter;
 
+    /**
+    * @function
+    * @name loadYearChart
+    * @memberof Stats.Year
+    * @param {Object} values - object with distances and options for the chart.
+    * @returns {Promise}
+    */
     function loadYearChart(values) {
       var deferred = $q.defer();
       var distances = values.distances;
@@ -41,6 +54,13 @@
       return deferred.promise;
     }
 
+    /**
+    * @function
+    * @name loadYearFooter
+    * @memberof Stats.Year
+    * @param {Object} values - object with distances and value for the footer.
+    * @returns {Promise}
+    */
     function loadYearFooter(values) {
       var deferred = $q.defer();
       values.footer = new Date().getFullYear();
