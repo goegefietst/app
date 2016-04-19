@@ -127,7 +127,7 @@
             updateDatabase(reminders);
           } else {
             var newReminder = {
-              id: getAvailableId(),
+              id: getAvailableId(reminders),
               active: true,
               hour: format(hour),
               minutes: format(minutes),
@@ -221,9 +221,6 @@
       if (reminders.length === 0) {
         return false;
       }
-      Database.selectReminders().then(function(object) {
-        console.log(object);
-      });
       return true;
     }
 
