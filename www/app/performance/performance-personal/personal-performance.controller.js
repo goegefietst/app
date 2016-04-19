@@ -127,7 +127,8 @@
         vm.labels = values.labels;
         vm.series = values.series;
         vm.options = values.options;
-      }).catch(resetStats);
+        vm.footer = values.footer;
+      });
     }
 
     function resetStats() {

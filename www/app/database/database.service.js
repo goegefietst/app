@@ -260,9 +260,11 @@
 
       function selectPoints(routeIds) {
         var deferred = $q.defer();
-        if (routeIds.length < 1) {
+        if (Object.prototype.toString.call(routeIds) !== '[object Array]' ||
+          routeIds.length < 1) {
           console.log('Need at least one route id to query for points');
-          return;
+          deferred.resolve([]);
+          return deferred.promise;
         }
         var ids = routeIds.reduce(function(previousValue) {
           return previousValue += '?, ';

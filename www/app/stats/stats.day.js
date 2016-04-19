@@ -11,9 +11,14 @@
   function Stats($q, Helper) {
     this.loadChart = loadDayChart;
     this.loadFooter = loadDayFooter;
+    this.setDefaultValues = setDefaultValues;
 
     function loadDayChart(values) {
       var deferred = $q.defer();
+      if (values.distances === undefined || values.distances.length < 1) {
+        deferred.resolve(values);
+        return deferred.promise;
+      }
       var distances = values.distances;
       values.options = {
         scaleSteps: 23,
@@ -57,6 +62,43 @@
       values.footer =
         Helper.format(date.getDate()) + '/' +
         Helper.format(date.getMonth() + 1);
+      deferred.resolve(values);
+      return deferred.promise;
+    }
+
+    function setDefaultValues(values) {
+      var deferred = $q.defer();
+      values.dis = '0.0';
+      values.tim = 0;
+      values.spe = '0.0';
+      values.cal = '0';
+      values.disDiff = 0;
+      values.timDiff = 0;
+      values.speDiff = 0;
+      values.options = {
+        scaleSteps: 23,
+        scaleStepWidth: 1,
+        scaleStartValue: 0,
+        bezierCurve: false,
+        animation: false,
+        pointHitDetectionRadius: 0.1,
+        multiTooltipTemplate: '<%= value.toFixed(2) %> km'
+      };
+      values.labels = [];
+      for (var i = 0; i < 24; i++) {
+        values.labels.push(
+          Helper.format(i) + ':' + Helper.format(0)
+        );
+      }
+      values.series = ['Per uur', 'Cumulatief'];
+      var data = [
+        0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0
+      ];
+      data = Helper.trim(data, new Date().getHours() + 1);
+      values.data = [data, Helper.cumulative(data)];
       deferred.resolve(values);
       return deferred.promise;
     }

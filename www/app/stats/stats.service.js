@@ -20,23 +20,24 @@
             day: date.getDate(),
             month: date.getMonth(),
             year: date.getYear()
-          }, Day.loadChart, Day.loadFooter);
+          }, Day.setDefaultValues, Day.loadChart, Day.loadFooter);
         case 'week': //show a 7 day week
           return loadData({
             time: date.getTime()
-          }, Week.loadChart, Week.loadFooter);
+          }, Week.setDefaultValues, Week.loadChart, Week.loadFooter);
         case 'year': //show a 12 month year
           return loadData({
             year: date.getYear()
-          }, Year.loadChart, Year.loadFooter);
+          }, Year.setDefaultValues, Year.loadChart, Year.loadFooter);
       }
     };
 
-    function loadData(options, loadChart, loadFooter) {
+    function loadData(options, setDefaultValues, loadChart, loadFooter) {
       return Database.selectRoutes(options)
         .then(checkIfEmpty)
         .then(Database.selectPoints)
         .then(transformToRoutesAndDistances)
+        .then(setDefaultValues)
         .then(loadChart)
         .then(loadStats)
         .then(loadLatestRoute)
@@ -47,7 +48,7 @@
       var deferred = $q.defer();
       var routes = values.routes;
       if (!routes || routes.length < 1) {
-        deferred.reject('0 routes were returned from DB');
+        deferred.resolve([]);
       } else {
         deferred.resolve(routes.map(function(route) {
           return route.id;
@@ -77,6 +78,10 @@
 
     function loadStats(values) {
       var deferred = $q.defer();
+      if (values.distances.length < 1) {
+        deferred.resolve(values);
+        return deferred.promise;
+      }
       var distance = values.distances.reduce(function add(a, b) {
         return a + b.distance;
       }, 0);
@@ -91,6 +96,10 @@
 
     function loadLatestRoute(values) {
       var deferred = $q.defer();
+      if (values.routes.length < 1) {
+        deferred.resolve(values);
+        return deferred.promise;
+      }
       var route = values.routes[values.routes.length - 1];
       var distance = 0;
       var duration = 0;
