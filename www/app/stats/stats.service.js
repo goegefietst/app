@@ -1,3 +1,6 @@
+/**
+* @namespace Stats
+*/
 (function() {
   'use strict';
 
@@ -10,6 +13,12 @@
   ];
 
   /* @ngInject */
+  /**
+  * @class
+  * @name StatsService
+  * @memberof Stats
+  * @description Service that is responsible for the stats.
+  */
   function Stats($q, Database, Helper, Day, Week, Year) {
 
     this.loadFor = function(timespan) {
@@ -32,7 +41,32 @@
       }
     };
 
-    function loadData(options, setDefaultValues, loadChart, loadFooter) {
+    /**
+    * @callback loadChart
+    * @description Load data and draw chart.
+    */
+
+    /**
+    * @callback loadFooter
+    * @description Load footer.
+    */
+
+    /**
+    * @callback setDefaultValues
+    * @description Set default values for statistics.
+    */
+
+    /**
+    * @function
+    * @name loadData
+    * @memberof Stats.StatsService
+    * @param {Object} options - options that determine what routes should be retrieved.
+    * @param {setDefaultValues} setDefaultValues - callback that sets default values for statistics.
+    * @param {loadChart} loadChart - callback that loads the chart.
+    * @param {loadFooter} loadFooter - callback that loads the footer.
+    */
+    function loadData(options, setDefaultValues, loadChart, loadFooter) {x
+
       return Database.selectRoutes(options)
         .then(checkIfEmpty)
         .then(Database.selectPoints)
@@ -44,6 +78,14 @@
         .then(loadFooter);
     }
 
+    /**
+    * @function
+    * @name checkIfEmpty
+    * @description checks if the retrieved data is empty or not.
+    * @memberof Stats.StatsService
+    * @param {Object} values - routes retrieved from database.
+    * @returns {Promise}
+    */
     function checkIfEmpty(values) {
       var deferred = $q.defer();
       var routes = values.routes;
@@ -57,6 +99,14 @@
       return deferred.promise;
     }
 
+    /**
+    * @function
+    * @name transformToRoutesAndDistances
+    * @description transforms points to routes and calculates distances.
+    * @memberof Stats.StatsService
+    * @param {Object} points - points retrieved from database.
+    * @returns {Promise}
+    */
     function transformToRoutesAndDistances(points) {
       var deferred = $q.defer();
       var routes = [];
@@ -76,6 +126,14 @@
       return deferred.promise;
     }
 
+    /**
+    * @function
+    * @name loadStats
+    * @description sets the stats in table.
+    * @memberof Stats.StatsService
+    * @param {Object} values - points retrieved from database.
+    * @returns {Promise}
+    */
     function loadStats(values) {
       var deferred = $q.defer();
       if (values.distances.length < 1) {
@@ -94,6 +152,14 @@
       return deferred.promise;
     }
 
+    /**
+    * @function
+    * @name loadLatestRoute
+    * @description Loads the latest route from the database.
+    * @memberof Stats.StatsService
+    * @param {Object} values - data retrieved from database.
+    * @returns {Promise}
+    */
     function loadLatestRoute(values) {
       var deferred = $q.defer();
       if (values.routes.length < 1) {
