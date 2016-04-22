@@ -188,10 +188,11 @@
       values.timDiff = duration;
       var distanceOld = values.dis - values.disDiff;
       var timeOld = values.tim - values.timDiff;
-      var speedOld = (distanceOld / timeOld * 1000 * 60 * 60);
+      var speedOld =
+        timeOld === 0 ? 0 : (distanceOld / timeOld * 1000 * 60 * 60);
       speedOld = Math.round(speedOld * 100) / 100;
       var speed = Math.round((values.spe - speedOld) * 100) / 100;
-      values.speDiff = speed > 0 ? '+ ' + speed : '- ' + Math.abs(speed);
+      values.speDiff = speed >= 0 ? '+ ' + speed : '- ' + Math.abs(speed);
       deferred.resolve(values);
       return deferred.promise;
     }
