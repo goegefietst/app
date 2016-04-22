@@ -32,12 +32,16 @@
     var vm = this;
     var timestamp;
     var running = false;
+    var contentHeight =
+      angular.element(document.getElementById('content'))[0].offsetHeight;
 
     vm.distance = 0.0;
     vm.speed = 0.0;
     vm.markers = [];
     vm.paths = {};
-    vm.height = ($window.innerHeight - 105) / 1.6;
+    vm.statsHeight =    contentHeight * 3 / 9;
+    vm.mapHeight =      contentHeight * 5 / 9;
+    vm.buttonHeight =   contentHeight * 1 / 9;
     vm.stopwatch = {
       hours: '00',
       minutes: '00',

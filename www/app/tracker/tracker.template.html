@@ -1,7 +1,7 @@
 <ion-view ng-controller="TrackerController" hide-nav-bar="true">
-  <ion-content class="has-tabs-top" has-header="false">
-    <leaflet id="map" defaults="tracker.defaults" lf-center="tracker.location" paths="tracker.paths" markers="tracker.markers" geojson="geojson" tiles="tracker.tiles" width="100%" height="{{tracker.height}}"></leaflet>
-    <div class="row responsive-sm">
+  <ion-content id="content" class="has-tabs-top" has-header="false">
+    <leaflet id="map" defaults="tracker.defaults" lf-center="tracker.location" paths="tracker.paths" markers="tracker.markers" geojson="geojson" tiles="tracker.tiles" width="100%" height="{{tracker.mapHeight}}"></leaflet>
+    <div ng-style="{height: {{tracker.statsHeight}} + 'px'}" class="row responsive-sm">
       <div class="col" style="margin: 0;">
         <div class="col" style="margin: 0;">
           <div class="row">
@@ -35,7 +35,7 @@
         </div>
       </div>
     </div>
-    <div class="row">
+    <div ng-style="{height: {{tracker.buttonHeight}} + 'px'}" class="row">
       <button class="button button-block button-outline button-royal" style="margin: 0;" ng-click="tracker.toggle()">
         <h1>{{tracker.textButton}}</h1>
       </button>
