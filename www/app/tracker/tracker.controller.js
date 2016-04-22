@@ -39,9 +39,9 @@
     vm.speed = 0.0;
     vm.markers = [];
     vm.paths = {};
-    vm.statsHeight =    contentHeight * 3 / 9;
-    vm.mapHeight =      contentHeight * 5 / 9;
-    vm.buttonHeight =   contentHeight * 1 / 9;
+    vm.statsHeight = contentHeight * 3 / 9;
+    vm.mapHeight = contentHeight * 5 / 9;
+    vm.buttonHeight = contentHeight * 1 / 9;
     vm.stopwatch = {
       hours: '00',
       minutes: '00',
@@ -147,8 +147,8 @@
         vm.stopwatch.minutes = time.minutes;
         vm.stopwatch.seconds = time.seconds;
         console.log(vm.stopwatch.hours + ':' +
-        vm.stopwatch.minutes + ':' +
-        vm.stopwatch.seconds);
+          vm.stopwatch.minutes + ':' +
+          vm.stopwatch.seconds);
 
         setTimeout(function() {
           timecounter();
@@ -162,6 +162,15 @@
       var running = window.localStorage.getItem('bgGPS');
       if (running === '1') {
         console.log('service is still running');
+        $ionicPopup.show({
+          title: 'Rit gestopt',
+          template: 'De app werd afgesloten tijdens je meest recente rit.' +
+            ' De data is daarom helaas verloren gegaan.',
+          buttons: [{
+            text: 'OK',
+            type: 'button-royal'
+          }]
+        });
         BackgroundGeolocationService.start();
         BackgroundGeolocationService.stop();
         vm.tracking = false;
@@ -329,8 +338,7 @@
       var myPopup = $ionicPopup.show({
         template: type === 'accuracy' ?
           '<p>Je resultaten zullen nauwkeuriger zijn als' +
-          ' je locatie op de grootste nauwkeurigheid staat.</p>'
-          : '<p>We kunnen enkel je route tracken als je locatie aanstaat.</p>',
+          ' je locatie op de grootste nauwkeurigheid staat.</p>' : '<p>We kunnen enkel je route tracken als je locatie aanstaat.</p>',
         title: type === 'accuracy' ? 'Nauwkeurigheid' : 'Locatie',
         buttons: [{
           text: 'Annuleer'
@@ -340,7 +348,7 @@
           onTap: function() {
             BackgroundGeolocationService.locationSettings();
           }
-        },]
+        }]
       });
       myPopup.then(function(res) {
         console.log('Tapped!', res);
