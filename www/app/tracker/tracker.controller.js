@@ -79,11 +79,13 @@
         console.log('app starts vm.tracking');
         cordova.plugins.diagnostic.isLocationEnabled(function(enabled) {
           if (enabled) {
-            /*cordova.plugins.diagnostic.getLocationMode(function(mode) {
-              if (mode !== 'high_accuracy') {
-                showPopup('accuracy');
-              }
-            });*/
+            if ($window.localStorage.getItem('platform') === 'Android') {
+              cordova.plugins.diagnostic.getLocationMode(function(mode) {
+                if (mode !== 'high_accuracy') {
+                  showPopup('accuracy');
+                }
+              });
+            }
             BackgroundGeolocationService.start();
             vm.startStopwatch();
             vm.tracking = true;
@@ -325,13 +327,16 @@
           text: '<b>Instellingen</b>',
           type: 'button-royal',
           onTap: function() {
+            if ($window.localStorage.getItem('platform') === 'Android') {
+              BackgroundGeolocationService.locationSettings();
+            } else {
             cordova.plugins.diagnostic.switchToSettings(function() {
                 console.log('Successfully switched to Settings app');
               },
               function(error) {
                 console.error('The following error occurred: ' + error);
               });
-            //BackgroundGeolocationService.locationSettings();
+            }
           }
         },]
       });
