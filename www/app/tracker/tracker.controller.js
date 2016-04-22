@@ -85,13 +85,15 @@
     function toggle() {
       if (!vm.tracking) {
         console.log('app starts vm.tracking');
-        BackgroundGeolocationService.check(function(enabled) {
+        cordova.plugins.diagnostic.isLocationEnabled(function(enabled) {
           if (enabled) {
-            cordova.plugins.diagnostic.getLocationMode(function(mode) {
-              if (mode !== 'high_accuracy') {
-                showPopup('accuracy');
-              }
-            });
+            if ($window.localStorage.getItem('platform') === 'Android') {
+              cordova.plugins.diagnostic.getLocationMode(function(mode) {
+                if (mode !== 'high_accuracy') {
+                  showPopup('accuracy');
+                }
+              });
+            }
             BackgroundGeolocationService.start();
             vm.startStopwatch();
             vm.tracking = true;
@@ -338,7 +340,9 @@
       var myPopup = $ionicPopup.show({
         template: type === 'accuracy' ?
           '<p>Je resultaten zullen nauwkeuriger zijn als' +
-          ' je locatie op de grootste nauwkeurigheid staat.</p>' : '<p>We kunnen enkel je route tracken als je locatie aanstaat.</p>',
+
+          ' je locatie op de grootste nauwkeurigheid staat.</p>' :
+          '<p>We kunnen enkel je route tracken als je locatie aanstaat.</p>',
         title: type === 'accuracy' ? 'Nauwkeurigheid' : 'Locatie',
         buttons: [{
           text: 'Annuleer'
@@ -346,7 +350,16 @@
           text: '<b>Instellingen</b>',
           type: 'button-royal',
           onTap: function() {
-            BackgroundGeolocationService.locationSettings();
+            if ($window.localStorage.getItem('platform') === 'Android') {
+              BackgroundGeolocationService.locationSettings();
+            } else {
+              cordova.plugins.diagnostic.switchToSettings(function() {
+                console.log('Successfully switched to Settings app');
+              },
+              function(error) {
+                console.error('The following error occurred: ' + error);
+              });
+            }
           }
         }]
       });

@@ -12,7 +12,7 @@
     'connection'
   ])
 
-  .run(function($ionicPlatform, $cordovaNetwork, $window, $q, Database, Connection) {
+  .run(function($ionicPlatform, $cordovaNetwork, $cordovaDevice, $window, $q, Database, Connection) {
     $ionicPlatform.ready(function() {
       // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
       // for form inputs)
@@ -25,6 +25,9 @@
         // org.apache.cordova.statusbar required
         StatusBar.backgroundColorByHexString('#f07b47');
       }
+
+      var device = $cordovaDevice.getDevice();
+      $window.localStorage.setItem('platform', device.platform);
     });
     $ionicPlatform.on('pause', function() {
       if (

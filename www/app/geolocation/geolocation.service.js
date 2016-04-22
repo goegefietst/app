@@ -15,7 +15,7 @@
           altitude: location.altitude,
           accuracy: location.accuracy,
           speed: location.speed,
-          time: location.time
+          time: location.time === undefined ? Date.now() : location.time
         });
         backgroundGeoLocation.finish();
         $rootScope.$emit('geolocation-service-event');
