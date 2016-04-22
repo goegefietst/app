@@ -65,7 +65,7 @@
     * @param {loadChart} loadChart - callback that loads the chart.
     * @param {loadFooter} loadFooter - callback that loads the footer.
     */
-    function loadData(options, setDefaultValues, loadChart, loadFooter) {x
+    function loadData(options, setDefaultValues, loadChart, loadFooter) {
 
       return Database.selectRoutes(options)
         .then(checkIfEmpty)
