@@ -42,7 +42,7 @@
         };
         var data = route;
         return $http
-          .post('https://goegefietst.gent/user/' + uuid, data, config)
+          .post('https://goegefietst.gent/route/' + uuid, data, config)
           .then(function(response) {
             console.log('POST ROUTE RESPONSE');
             console.log(response);
@@ -57,7 +57,7 @@
           }
         };
         return $http
-          .get('https://goegefietst.gent/user/' + uuid, config)
+          .get('https://goegefietst.gent/route/' + uuid, config)
           .then(function(response) {
             console.log('GET ROUTES BY USER RESPONSE');
             console.log(response);
