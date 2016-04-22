@@ -218,7 +218,6 @@
     * @returns {string} string with the first and last day of the week.
     */
     function getWeek(day) {
-      alert(typeof(day));
       var firstday = new Date(day.setDate(day.getDate() - day.getDay() + 1));
       var lastday = new Date(day.setDate(day.getDate() - day.getDay() + 7));
       return format(firstday.getDate()) + '/' +

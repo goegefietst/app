@@ -15,7 +15,7 @@
           altitude: location.altitude,
           accuracy: location.accuracy,
           speed: location.speed,
-          time: location.time
+          time: location.time === undefined ? Date.now() : location.time
         });
         //$http({
         //request options to send data to server

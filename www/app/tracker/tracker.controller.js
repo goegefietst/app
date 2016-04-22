@@ -77,13 +77,13 @@
     function toggle() {
       if (!vm.tracking) {
         console.log('app starts vm.tracking');
-        BackgroundGeolocationService.check(function(enabled) {
+        cordova.plugins.diagnostic.isLocationEnabled(function(enabled) {
           if (enabled) {
-            cordova.plugins.diagnostic.getLocationMode(function(mode) {
+            /*cordova.plugins.diagnostic.getLocationMode(function(mode) {
               if (mode !== 'high_accuracy') {
                 showPopup('accuracy');
               }
-            });
+            });*/
             BackgroundGeolocationService.start();
             vm.startStopwatch();
             vm.tracking = true;
@@ -139,8 +139,8 @@
         vm.stopwatch.minutes = time.minutes;
         vm.stopwatch.seconds = time.seconds;
         console.log(vm.stopwatch.hours + ':' +
-        vm.stopwatch.minutes + ':' +
-        vm.stopwatch.seconds);
+          vm.stopwatch.minutes + ':' +
+          vm.stopwatch.seconds);
 
         setTimeout(function() {
           timecounter();
@@ -316,8 +316,8 @@
       var myPopup = $ionicPopup.show({
         template: type === 'accuracy' ?
           '<p>Je resultaten zullen nauwkeuriger zijn als' +
-          ' je locatie op de grootste nauwkeurigheid staat.</p>'
-          : '<p>We kunnen enkel je route tracken als je locatie aanstaat.</p>',
+          ' je locatie op de grootste nauwkeurigheid staat.</p>' :
+          '<p>We kunnen enkel je route tracken als je locatie aanstaat.</p>',
         title: type === 'accuracy' ? 'Nauwkeurigheid' : 'Locatie',
         buttons: [{
           text: 'Annuleer'
@@ -325,7 +325,13 @@
           text: '<b>Instellingen</b>',
           type: 'button-royal',
           onTap: function() {
-            BackgroundGeolocationService.locationSettings();
+            cordova.plugins.diagnostic.switchToSettings(function() {
+                console.log('Successfully switched to Settings app');
+              },
+              function(error) {
+                console.error('The following error occurred: ' + error);
+              });
+            //BackgroundGeolocationService.locationSettings();
           }
         },]
       });
