@@ -5,7 +5,9 @@
     .module('app.tracker')
     .controller('TrackerController', Controller);
   //dependencies
-  Controller.$inject = ['$scope',
+  Controller.$inject = [
+    '$ionicPlatform',
+    '$scope',
     '$http',
     '$window',
     '$state',
@@ -16,7 +18,9 @@
   ];
 
   /* @ngInject */
-  function Controller($scope,
+  function Controller(
+    $ionicPlatform,
+    $scope,
     $http,
     $window,
     $state,
@@ -67,7 +71,7 @@
     vm.setView = setView; //SET VIEW OF MAP
     vm.drawRoute = drawRoute; //DRAWS ROUTE ON MAP
 
-    checkService();
+    $ionicPlatform.ready().then(checkService);
 
     BackgroundGeolocationService.subscribe($scope, function dataUpdated() {
       console.log('Data updated!');
@@ -153,9 +157,14 @@
     function checkService() {
       var running = window.localStorage.getItem('bgGPS');
       if (running === '1') {
-        alert('service is still running');
-        vm.tracking = true;
-        vm.textButton = 'Stop route';
+        console.log('service is still running');
+        BackgroundGeolocationService.start();
+        BackgroundGeolocationService.stop();
+        vm.tracking = false;
+        vm.textButton = 'Start route';
+        vm.distance = 0.0;
+        //vm.tracking = true;
+        //vm.textButton = 'Stop route';
       } else {
         vm.tracking = false;
         vm.textButton = 'Start route';

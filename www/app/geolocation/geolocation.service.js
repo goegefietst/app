@@ -17,9 +17,6 @@
           speed: location.speed,
           time: location.time
         });
-        //$http({
-        //request options to send data to server
-        //});
         backgroundGeoLocation.finish();
         $rootScope.$emit('geolocation-service-event');
       };
