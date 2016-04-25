@@ -2,13 +2,14 @@
 <widget id="com.ionicframework.goegefietst194659" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <name>Goe Gefietst</name>
   <description>
-        An Ionic Framework and Cordova project.
-    </description>
-  <author email="you@example.com" href="http://example.com.com/">
-      Your Name Here
-    </author>
+    Goe Gefietst, de vré wijze fietsapp voor Gentse studenten.
+  </description>
+  <author email="pieter-jan.pauwels@okfn.org" href="http://goegefietst.gent/">
+    Pieter-Jan Pauwels
+  </author>
   <content src="index.html"/>
-  <access origin="*"/>
+  <access origin="https://goegefietst.gent"/>
+  <access origin="http://*.openstreetmap.org"/>
   <preference name="webviewbounce" value="false"/>
   <preference name="UIWebViewBounce" value="false"/>
   <preference name="DisallowOverscroll" value="true"/>
