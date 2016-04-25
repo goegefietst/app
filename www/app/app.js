@@ -7,6 +7,7 @@
     'app.performance',
     'app.reminders',
     'app.layout',
+    'app.group',
     'ionic-timepicker',
     'database',
     'connection'
