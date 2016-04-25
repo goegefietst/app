@@ -1,7 +1,19 @@
 <ion-view hide-nav-bar="true">
-  <ion-content>
-    <p>
-      test
-    </p>
+  <ion-content class="padding has-tabs-top ion-content-personal">
+    <div class="button-bar">
+      <a class="button" ng-class="{'button-royal': personal.isActive('day')}" ng-click="">School</a>
+      <a class="button" ng-class="{'button-royal': personal.isActive('week')}" ng-click="">Faculteit</a>
+      <a class="button" ng-class="{'button-royal': personal.isActive('year')}" ng-click="">Vereniging</a>
+    </div>
   </ion-content>
+  <ion-footer-bar>
+    <div class="buttons">
+      <button class="button button-icon icon ion-ios-minus-outline" ng-click=""></button>
+    </div>
+
+    <h1 class="title"></h1>
+    <div class="buttons">
+      <button class="button button-icon icon ion-ios-plus-outline" ng-click=""></button>
+    </div>
+  </ion-footer-bar>
 </ion-view>
