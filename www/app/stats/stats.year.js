@@ -33,20 +33,6 @@
         return deferred.promise;
       }
       var distances = values.distances;
-      values.options = {
-        scaleSteps: 11 + 1, //Extra step to start with 0
-        scaleStepWidth: 1,
-        scaleStartValue: 0,
-        bezierCurve: false,
-        animation: false,
-        pointHitDetectionRadius: 0.1,
-        multiTooltipTemplate: '<%= value.toFixed(2) %> km'
-      };
-      values.labels = [
-        '', 'Januari', 'Februari', 'Maart', 'April', 'Mei', 'Juni', 'Juli',
-        'Augustus', 'September', 'Oktober', 'November', 'December'
-      ];
-      values.series = ['Per maand', 'Cumulatief'];
       var data = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
       for (var j = 0; j < distances.length; j++) {
         var month = new Date(distances[j].time).getMonth();
@@ -83,13 +69,31 @@
       values.timDiff = 0;
       values.speDiff = 0;
       values.options = {
+        scaleLabel: function(obj) {
+          return ' ' + obj.value;
+        },
         scaleSteps: 11 + 1, //Extra step to start with 0
         scaleStepWidth: 1,
         scaleStartValue: 0,
         bezierCurve: false,
         animation: false,
         pointHitDetectionRadius: 0.1,
-        multiTooltipTemplate: '<%= value.toFixed(2) %> km'
+        multiTooltipTemplate: function(obj) {
+          return obj.value.toFixed(2) + ' km';
+        },
+        legendTemplate: function(obj) {
+          var datasets = obj.datasets;
+          var templ = '<ul class=\"line-legend\">';
+          for (var i = 0; i < datasets.length; i++) {
+            var color = datasets[i].strokeColor;
+            var label = datasets[i].label ? datasets[i].label : '';
+            templ +=
+            '<li>' +
+            '<span style=\"background-color:' + color + '\"></span> ' + label +
+            '</li>';
+          }
+          return templ + '</ul>';
+        }
       };
       values.labels = [
         '', 'Januari', 'Februari', 'Maart', 'April', 'Mei', 'Juni', 'Juli',

@@ -147,7 +147,7 @@
       var duration = Helper.getDuration(values.routes);
       values.tim = duration;
       values.spe = (distance / duration * 1000 * 60 * 60).toFixed(1);
-      values.cal = 'Such wow, many';
+      values.cal = '0';
       deferred.resolve(values);
       return deferred.promise;
     }
