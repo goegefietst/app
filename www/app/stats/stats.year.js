@@ -97,7 +97,7 @@
       ];
       values.series = ['Per maand', 'Cumulatief'];
       var data = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-      data = Helper.trim(data, new Date().getMonth());
+      data = Helper.trim(data, new Date().getMonth() + 1);
       var dataZeroStart = Helper.addZeroStart(data);
       values.data = [dataZeroStart, Helper.cumulative(dataZeroStart)];
       deferred.resolve(values);

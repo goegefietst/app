@@ -98,7 +98,7 @@
       values.series = ['Per dag', 'Cumulatief'];
       var data = [0, 0, 0, 0, 0, 0, 0];
       var today = Helper.mondayFirstDay(new Date().getDay());
-      data = Helper.trim(data, today);
+      data = Helper.trim(data, today + 1);
       var dataZeroStart = Helper.addZeroStart(data);
       values.data = [dataZeroStart, Helper.cumulative(dataZeroStart)];
       deferred.resolve(values);

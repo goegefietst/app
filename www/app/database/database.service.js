@@ -204,7 +204,7 @@
         $cordovaSQLite.execute(db, query)
           .then(function(result) {
             if (result.rows.length < 1) {
-              deferred.reject('No routes found.');
+              deferred.resolve([]);
               return deferred.promise;
             }
             for (var i = 0; i < result.rows.length; i++) {
