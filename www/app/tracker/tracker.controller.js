@@ -7,6 +7,7 @@
   //dependencies
   Controller.$inject = [
     '$ionicPlatform',
+    '$q',
     '$scope',
     '$http',
     '$window',
@@ -20,6 +21,7 @@
   /* @ngInject */
   function Controller(
     $ionicPlatform,
+    $q,
     $scope,
     $http,
     $window,
@@ -82,26 +84,99 @@
       getRoute();
     });
 
+    function checkLocationAuthorized() {
+      var deferred = $q.defer();
+      cordova.plugins.diagnostic.isLocationAuthorized(function(enabled) {
+        if (!enabled) {
+          cordova.plugins.diagnostic
+            .requestLocationAuthorization(function(status) {
+              if (status === 'GRANTED') {
+                deferred.resolve('GRANTED');
+              } else {
+                deferred.reject('DENIED');
+              }
+            });
+        } else {
+          deferred.resolve('GRANTED');
+        }
+      });
+      return deferred.promise;
+    }
+
+    function checkLocationEnabled() {
+      var deferred = $q.defer();
+      cordova.plugins.diagnostic.isLocationEnabled(function(enabled) {
+        if (enabled) {
+          deferred.resolve();
+        } else {
+          showPopup('location').then(function(res) {
+            if (res) {
+              deferred.resolve();
+            } else {
+              deferred.reject();
+            }
+          });
+        }
+      });
+      return deferred.promise;
+    }
+
+    function checkHighAccuracy() {
+      var deferred = $q.defer();
+      if ($window.localStorage.getItem('platform') === 'Android') {
+        cordova.plugins.diagnostic.getLocationMode(function(mode) {
+          if (mode !== 'high_accuracy') {
+            showPopup('accuracy').then(function() {
+              deferred.resolve();
+            });
+          }
+        });
+      }
+      return deferred.promise;
+    }
+
+    function startTracking() {
+      BackgroundGeolocationService.start();
+      vm.startStopwatch();
+      vm.tracking = true;
+      vm.textButton = 'Stop route';
+    }
+
+    function showPopup(type) {
+      return $ionicPopup.show({
+        template: type === 'accuracy' ?
+          '<p>Je resultaten zullen nauwkeuriger zijn als' +
+          ' je locatie op de grootste nauwkeurigheid staat.</p>' : '<p>' +
+          'We kunnen enkel je route tracken als je locatie aanstaat.</p>',
+        title: type === 'accuracy' ? 'Nauwkeurigheid' : 'Locatie',
+        buttons: [{
+          text: 'Annuleer'
+        }, {
+          text: '<b>Instellingen</b>',
+          type: 'button-royal',
+          onTap: function() {
+            if ($window.localStorage.getItem('platform') === 'Android') {
+              BackgroundGeolocationService.locationSettings();
+            } else {
+              cordova.plugins.diagnostic.switchToSettings(function() {
+                console.log('Successfully switched to Settings app');
+              }, function(error) {
+                console.error('The following error occurred: ' + error);
+              });
+            }
+            return true;
+          }
+        }]
+      });
+    }
+
     function toggle() {
       if (!vm.tracking) {
         console.log('app starts vm.tracking');
-        cordova.plugins.diagnostic.isLocationEnabled(function(enabled) {
-          if (enabled) {
-            if ($window.localStorage.getItem('platform') === 'Android') {
-              cordova.plugins.diagnostic.getLocationMode(function(mode) {
-                if (mode !== 'high_accuracy') {
-                  showPopup('accuracy');
-                }
-              });
-            }
-            BackgroundGeolocationService.start();
-            vm.startStopwatch();
-            vm.tracking = true;
-            vm.textButton = 'Stop route';
-          } else {
-            showPopup('location');
-          }
-        });
+        checkLocationAuthorized()
+          .then(checkLocationEnabled)
+          .then(checkHighAccuracy)
+          .then(startTracking);
       } else {
         console.log('app stops vm.tracking');
         var route = BackgroundGeolocationService.stop();
@@ -334,38 +409,6 @@
       dist = dist * 60 * 1.1515;
       dist = dist * 1.609344;
       return dist;
-    }
-
-    function showPopup(type) {
-      var myPopup = $ionicPopup.show({
-        template: type === 'accuracy' ?
-          '<p>Je resultaten zullen nauwkeuriger zijn als' +
-
-          ' je locatie op de grootste nauwkeurigheid staat.</p>' :
-          '<p>We kunnen enkel je route tracken als je locatie aanstaat.</p>',
-        title: type === 'accuracy' ? 'Nauwkeurigheid' : 'Locatie',
-        buttons: [{
-          text: 'Annuleer'
-        }, {
-          text: '<b>Instellingen</b>',
-          type: 'button-royal',
-          onTap: function() {
-            if ($window.localStorage.getItem('platform') === 'Android') {
-              BackgroundGeolocationService.locationSettings();
-            } else {
-              cordova.plugins.diagnostic.switchToSettings(function() {
-                console.log('Successfully switched to Settings app');
-              },
-              function(error) {
-                console.error('The following error occurred: ' + error);
-              });
-            }
-          }
-        }]
-      });
-      myPopup.then(function(res) {
-        console.log('Tapped!', res);
-      });
     }
   }
 })();
