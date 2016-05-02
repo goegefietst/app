@@ -10,6 +10,8 @@
   /* @ngInject */
   function Controller() {
     var vm = this;
+
+    vm.type = 'sch';
     vm.schools = [
       {
         nr: 1,
@@ -37,5 +39,26 @@
         km: '103,9'
       }
     ];
+
+    vm.isActive = isActive;
+    vm.goToSchool = goToSchool;
+    vm.goToFaculty = goToFaculty;
+    vm.goToAssociation = goToAssociation;
+
+    function goToSchool() {
+      vm.type = 'sch';
+    }
+
+    function goToFaculty() {
+      vm.type = 'fac';
+    }
+
+    function goToAssociation() {
+      vm.type = 'ass';
+    }
+
+    function isActive(value) {
+      return vm.type === value;
+    }
   }
 })();

@@ -1,9 +1,9 @@
 <ion-view hide-nav-bar="true">
   <ion-content class="padding has-tabs-top ion-content-personal">
     <div class="button-bar">
-      <a class="button" ng-class="{'button-royal': personal.isActive('day')}" ng-click="">School</a>
-      <a class="button" ng-class="{'button-royal': personal.isActive('week')}" ng-click="">Faculteit</a>
-      <a class="button" ng-class="{'button-royal': personal.isActive('year')}" ng-click="">Vereniging</a>
+      <a class="button" ng-class="{'button-royal': group.isActive('sch')}" ng-click="group.goToSchool()">School</a>
+      <a class="button" ng-class="{'button-royal': group.isActive('fac')}" ng-click="group.goToFaculty()">Faculteit</a>
+      <a class="button" ng-class="{'button-royal': group.isActive('ass')}" ng-click="group.goToAssociation()">Vereniging</a>
     </div>
     <ion-list class="list padding">
       <ion-item class="item" ng-repeat="school in group.schools">
