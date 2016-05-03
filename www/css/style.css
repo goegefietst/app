@@ -30,3 +30,15 @@
 .ionic_timepicker_popup .button_set {
   background-color: #ee6e35;
 }
+
+.align-right {
+  float: right;
+}
+
+.align-left {
+  float: left;
+}
+
+.bolt {
+  font: bolt;
+}

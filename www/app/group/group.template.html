@@ -1,0 +1,25 @@
+<ion-view hide-nav-bar="true">
+  <ion-content class="padding has-tabs-top ion-content-personal">
+    <div class="button-bar">
+      <a class="button" ng-class="{'button-royal': group.isActive('school')}" ng-click="group.goToSchool()">School</a>
+      <a class="button" ng-class="{'button-royal': group.isActive('faculty')}" ng-click="group.goToFaculty()">Faculteit</a>
+      <a class="button" ng-class="{'button-royal': group.isActive('association')}" ng-click="group.goToAssociation()">Vereniging</a>
+    </div>
+    <ion-list class="list padding">
+      <ion-item class="item" ng-repeat="group in group.groups">
+        <span class="align-left">{{group.nr}}. {{group.name}}</span>
+        <span class="align-right">{{group.km}} km</span>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+  <ion-footer-bar>
+    <div class="buttons">
+      <button class="button button-icon icon ion-ios-minus-outline" ng-click="group.unsubscribe()"></button>
+    </div>
+
+    <h1 class="title"></h1>
+    <div class="buttons">
+      <button class="button button-icon icon ion-ios-plus-outline" ng-click="group.subscribe()"></button>
+    </div>
+  </ion-footer-bar>
+</ion-view>
