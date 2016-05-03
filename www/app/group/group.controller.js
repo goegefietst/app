@@ -84,7 +84,7 @@
           }
         ]
       });
-
+      //RES IS A BOOLEAN THAT REPRESENTS IF USER WANTS TO UNSUBSCRIBE
       popup.then(function(res) {
         console.log(res);
         if (res) {
