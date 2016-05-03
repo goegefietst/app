@@ -110,7 +110,7 @@
           console.log('Location is enabled');
           deferred.resolve();
         } else {
-          showPopup('location').then(function(res) {
+          showPopup('location').then(function() {
             /*if (res) {
               deferred.resolve();
             } else {
