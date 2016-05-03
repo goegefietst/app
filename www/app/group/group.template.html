@@ -6,9 +6,9 @@
       <a class="button" ng-class="{'button-royal': group.isActive('association')}" ng-click="group.goToAssociation()">Vereniging</a>
     </div>
     <ion-list class="list padding">
-      <ion-item class="item" ng-repeat="school in group.schools">
-        <span class="align-left">{{school.nr}}. {{school.school}}</span>
-        <span class="align-right">{{school.km}} km</span>
+      <ion-item class="item" ng-repeat="group in group.groups">
+        <span class="align-left">{{group.nr}}. {{group.name}}</span>
+        <span class="align-right">{{group.km}} km</span>
       </ion-item>
     </ion-list>
   </ion-content>

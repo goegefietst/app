@@ -12,25 +12,25 @@
     var vm = this;
 
     vm.type = 'school';
-    vm.schools = [{
+    vm.groups = [{
       nr: 1,
-      school: 'HoGent',
+      name: 'HoGent',
       km: '324,5'
     }, {
       nr: 2,
-      school: 'uGent',
+      name: 'uGent',
       km: '302,8'
     }, {
       nr: 3,
-      school: 'Artevelde',
+      name: 'Artevelde',
       km: '267,1'
     }, {
       nr: 4,
-      school: 'Odisee',
+      name: 'Odisee',
       km: '120,4'
     }, {
       nr: 5,
-      school: 'Luca',
+      name: 'Luca',
       km: '103,9'
     }];
 
@@ -61,30 +61,35 @@
       //CHECK IF USER IS ALREADY SUBSCRIBED TO SCHOOL/FACULTY/ASSOCIATIONS
       //IF USER IS SUBSCRIBED, ASK THEM IF THEY ARE SURE THEY WANT TO UNSUBSCRIBE
       //IF USER ISN'T SUBSCRIBED, TELL THEM THEY CAN'T UNSUBSCRIBE
-      $scope.unsubscribeTest = 'test';
+
+      //THIS IS THE SCHOOL/FACULTY/ASSOCIATIONS
+      $scope.unsubscribeTest = 'HoGent';
       var popup = $ionicPopup.show({
         scope: $scope,
         title: 'Uitschrijven',
         subTitle: 'Ben je zeker dat je volgende groep wenst te verlaten?',
-        template: '<p>{{unsubscribeTest}}</p>',
+        template: '<p style="text-align: center;">{{unsubscribeTest}}</p>',
         buttons: [
           {
             text: 'Nee',
             onTap: function() {
-              return;
+              return false;
             }
           }, {
             text: '<b>Ja</b>',
             type: 'button-royal',
             onTap: function() {
-
+              return true;
             }
           }
         ]
       });
 
-      popup.then(function() {
-
+      popup.then(function(res) {
+        console.log(res);
+        if (res) {
+          //UNSUBSCRIBE
+        }
       });
     }
 
@@ -93,21 +98,24 @@
       //IF USER IS SUBSCRIBED, TELL THEM THEY CAN'T SUBSCRIBE FOR MULTIPLE GROUPS (EXCEPT ASSOCIATIONS)
       //IF USER ISN'T SUBSCRIBED YET, GET POSSIBLE SCHOOLS/FACULTIES/ASSOCIATIONS TO SUBSCRIBE TO
       //SHOW GROUPS IN POPUP
+
+      //THESE ARE THE SCHOOLS/FACULTIES/ASSOCIATIONS WHERE A USER CAN SUBSCRIBE TO
+      var groupsArray = [
+        {
+          id: 1,
+          name: 'HoGent'
+        },
+        {
+          id: 2,
+          name: 'uGent'
+        },
+        {
+          id: 3,
+          name: 'Artevelde'
+        }
+      ];
       $scope.test = {
-        schools: [
-          {
-            id: 1,
-            name: 'HoGent'
-          },
-          {
-            id: 2,
-            name: 'uGent'
-          },
-          {
-            id: 3,
-            name: 'Artevelde'
-          }
-        ],
+        groups: groupsArray,
         result: null
       };
       var popup = $ionicPopup.show({
@@ -115,7 +123,7 @@
         template:
           '<label for="repeatSelect"> Repeat select: </label>' +
           '<select name="repeatSelect" ng-model="test.result">' +
-          '<option ng-repeat="test in test.schools" value="{{test.id}}">{{test.name}}</option>' +
+          '<option ng-repeat="group in test.groups" value="{{group.id}}">{{group.name}}</option>' +
           '</select>',
         title: 'Inschrijven',
         subTitle: 'Kies de groep waar je je wenst bij aan te sluiten.',
@@ -127,13 +135,17 @@
         }, {
           text: '<b>Kies</b>',
           type: 'button-royal',
-          onTap: function() {
-            console.log($scope.result);
-            return $scope.result;
+          onTap: function(e) {
+            if ($scope.test.result === null) {
+              e.preventDefault();
+            } else {
+              console.log($scope.test.result);
+              return $scope.test.result;
+            }
           }
         }]
       });
-
+      //RES IS THE ID OF THE SELECTED ITEM
       popup.then(function(res) {
         console.log(res);
       });
