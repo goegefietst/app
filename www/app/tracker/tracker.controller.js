@@ -107,14 +107,16 @@
       var deferred = $q.defer();
       cordova.plugins.diagnostic.isLocationEnabled(function(enabled) {
         if (enabled) {
+          console.log('Location is enabled');
           deferred.resolve();
         } else {
-          showPopup('location').then(function(res) {
-            if (res) {
+          showPopup('location').then(function() {
+            /*if (res) {
               deferred.resolve();
             } else {
               deferred.reject();
-            }
+            }*/
+            deferred.reject();
           });
         }
       });
@@ -126,9 +128,13 @@
       if ($window.localStorage.getItem('platform') === 'Android') {
         cordova.plugins.diagnostic.getLocationMode(function(mode) {
           if (mode !== 'high_accuracy') {
+            console.log('highest accuracy isn\'t selected.');
             showPopup('accuracy').then(function() {
               deferred.resolve();
             });
+          } else {
+            console.log('highest accuracy is selected.');
+            deferred.resolve();
           }
         });
       }
