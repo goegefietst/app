@@ -116,12 +116,10 @@
       ];
       $scope.test = {
         groups: groupsArray,
-        result: null
       };
       var popup = $ionicPopup.show({
         scope: $scope,
         template:
-          '<label for="repeatSelect"> Repeat select: </label>' +
           '<select name="repeatSelect" ng-model="test.result">' +
           '<option ng-repeat="group in test.groups" value="{{group.id}}">{{group.name}}</option>' +
           '</select>',
@@ -136,10 +134,9 @@
           text: '<b>Kies</b>',
           type: 'button-royal',
           onTap: function(e) {
-            if ($scope.test.result === null) {
+            if ($scope.test.result === null || $scope.test.result === undefined) {
               e.preventDefault();
             } else {
-              console.log($scope.test.result);
               return $scope.test.result;
             }
           }
@@ -147,7 +144,9 @@
       });
       //RES IS THE ID OF THE SELECTED ITEM
       popup.then(function(res) {
-        console.log(res);
+        if (res !== undefined) {
+          console.log(res);
+        }
       });
     }
   }
