@@ -1,25 +1,35 @@
 <ion-view hide-nav-bar="true">
-  <ion-content class="padding has-tabs-top ion-content-personal">
-    <div class="button-bar">
+  <ion-content id="groups" class="padding has-tabs-top">
+    <div ng-style="{height: {{group.tabsHeight}} + 'px'}" class="button-bar">
       <a class="button" ng-class="{'button-royal': group.isActive('school')}" ng-click="group.goToSchool()">School</a>
       <a class="button" ng-class="{'button-royal': group.isActive('faculty')}" ng-click="group.goToFaculty()">Faculteit</a>
       <a class="button" ng-class="{'button-royal': group.isActive('association')}" ng-click="group.goToAssociation()">Vereniging</a>
     </div>
-    <ion-list class="list padding">
-      <ion-item class="item" ng-repeat="group in group.groups">
-        <span class="align-left">{{group.nr}}. {{group.name}}</span>
-        <span class="align-right">{{group.km}} km</span>
-      </ion-item>
-    </ion-list>
+    <ion-scroll ng-style="{height: {{group.listHeight}} + 'px'}" zooming="false" direction="y" style="height: 100px">
+      <ion-list class="list padding">
+        <ion-item class="item" ng-repeat="team in group.currentTeams">
+          <span class="align-left">{{$index + 1}}. {{team.name}}</span>
+          <span class="align-right">{{team.values.distance}} km</span>
+        </ion-item>
+      </ion-list>
+    </ion-scroll>
+    <div ng-style="{height: {{group.dropdownHeight}} + 'px'}" class="list">
+      <label ng-style="{height: ({{group.dropdownHeight}} - 10)  + 'px'}" class="item item-input item-select">
+        <!--div class="input-label">
+        {{group.currentTeam.name}}
+        </div-->
+        <select class="customDropdown" ng-model="group.currentTeam" ng-options="team.name for team in group.currentDropdown | orderBy: 'name'" ng-change="group.setGroup()">
+        </select>
+      </label>
+    </div>
   </ion-content>
-  <ion-footer-bar>
-    <div class="buttons">
+  <!--ion-footer-bar-->
+    <!--div class="buttons">
       <button class="button button-icon icon ion-ios-minus-outline" ng-click="group.unsubscribe()"></button>
-    </div>
-
-    <h1 class="title"></h1>
-    <div class="buttons">
+    </div-->
+    <!--h1 class="title" ng-click="group.setGroup()">{{group.team}}</h1-->
+    <!--div class="buttons">
       <button class="button button-icon icon ion-ios-plus-outline" ng-click="group.subscribe()"></button>
-    </div>
-  </ion-footer-bar>
+    </div-->
+  <!--/ion-footer-bar-->
 </ion-view>

@@ -2,5 +2,5 @@
   'use strict';
 
   angular
-    .module('app.group', []);
+    .module('app.group', ['connection']);
 })();

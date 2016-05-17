@@ -7,8 +7,11 @@
 
       this.getRoutes = getRoutes;
       this.makeAccount = makeAccount;
+      this.updateTeams = updateTeams;
       this.postRoute = postRoute;
       this.getRoutesByUser = getRoutesByUser;
+      this.getTeams = getTeams;
+      this.getTeamDistances = getTeamDistances;
 
       function getRoutes() {
         return $http
@@ -32,6 +35,19 @@
         return $http
           .post('https://goegefietst.gent/user')
           .then(success, error);
+      }
+
+      function updateTeams(uuid, secret, teams) {
+        var config = {
+          headers: {
+            'secret': secret
+          }
+        };
+        var data = {
+          teams: teams
+        };
+        return $http
+          .post('https://goegefietst.gent/user/' + uuid, data, config);
       }
 
       function postRoute(uuid, secret, route) {
@@ -61,6 +77,22 @@
           .then(function(response) {
             console.log('GET ROUTES BY USER RESPONSE');
             console.log(response);
+            return response.data;
+          });
+      }
+
+      function getTeams() {
+        return $http
+          .get('https://goegefietst.gent/teams/names')
+          .then(function(response) {
+            return response.data;
+          });
+      }
+
+      function getTeamDistances() {
+        return $http
+          .get('https://goegefietst.gent/teams/distances')
+          .then(function(response) {
             return response.data;
           });
       }

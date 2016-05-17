@@ -5,149 +5,101 @@
     .module('app.group')
     .controller('GroupController', Controller);
 
-  Controller.$inject = ['$scope', '$ionicPopup'];
+  Controller.$inject = ['$scope', '$window', '$ionicPopup', 'Connection', 'Groups'];
 
   /* @ngInject */
-  function Controller($scope, $ionicPopup) {
+  function Controller($scope, $window, $ionicPopup, Connection, Groups) {
     var vm = this;
-
-    vm.type = 'school';
-    vm.groups = [{
-      nr: 1,
-      name: 'HoGent',
-      km: '324,5'
-    }, {
-      nr: 2,
-      name: 'uGent',
-      km: '302,8'
-    }, {
-      nr: 3,
-      name: 'Artevelde',
-      km: '267,1'
-    }, {
-      nr: 4,
-      name: 'Odisee',
-      km: '120,4'
-    }, {
-      nr: 5,
-      name: 'Luca',
-      km: '103,9'
-    }];
+    var uuid = $window.localStorage.getItem('uuid');
+    var secret = $window.localStorage.getItem('secret');
+    var userTeams = $window.localStorage.getItem('userTeams');
+    vm.userTeams = userTeams ? userTeams : [];
 
     vm.isActive = isActive;
     vm.goToSchool = goToSchool;
     vm.goToFaculty = goToFaculty;
     vm.goToAssociation = goToAssociation;
-    vm.unsubscribe = unsubscribe;
-    vm.subscribe = subscribe;
+
+    vm.ListAssociation = [];
+    vm.ListFaculty = [];
+    vm.ListSchool = [];
+    vm.DropdownAssociation = [];
+    vm.DropdownFaculty = [];
+    vm.DropdownSchool = [];
+    vm.currentType = 'school';
+    vm.currentTeams = [];
+    vm.storedAssociation = $window.localStorage.getItem('currentAssociation');
+    vm.storedFaculty = $window.localStorage.getItem('currentFaculty');
+    vm.storedSchool = $window.localStorage.getItem('currentSchool');
+    vm.setGroup = setGroup;
+
+    var contentHeight =
+      angular.element(document.getElementById('groups'))[0].offsetHeight;
+    vm.tabsHeight = contentHeight / 9 * 0.8;
+    vm.listHeight = contentHeight / 9 * 7;
+    vm.dropdownHeight = contentHeight / 9 * 1;
+
+    ['Association', 'School', 'Faculty'].forEach(function(category) {
+      Groups.getTeamsWithDistances(category).then(function(teams) {
+        var teamsWithEmpty = teams.slice();
+        var emptyTeam = {
+          name: 'Geen team',
+          category: teams[0].category,
+          values: {
+            distance: 0
+          }
+        };
+        teamsWithEmpty.push(emptyTeam);
+        vm['List' + category] = teams;
+        vm['Dropdown' + category] = teamsWithEmpty;
+        var team = teams.find(function(team) {
+          return team.name === vm['stored' + category];
+        });
+        vm['current' + category] = team ? team : emptyTeam;
+        if (category === 'School') {
+          vm.currentTeams = teams;
+          vm.currentTeam = vm.currentSchool;
+          vm.currentDropdown = vm.DropdownSchool;
+        }
+      });
+    });
 
     function goToSchool() {
-      vm.type = 'school';
+      vm.currentType = 'school';
+      vm.currentTeams = vm.ListSchool;
+      vm.currentTeam = vm.currentSchool;
+      vm.currentDropdown = vm.DropdownSchool;
     }
 
     function goToFaculty() {
-      vm.type = 'faculty';
+      vm.currentType = 'faculty';
+      vm.currentTeams = vm.ListFaculty;
+      vm.currentTeam = vm.currentFaculty;
+      vm.currentDropdown = vm.DropdownFaculty;
     }
 
     function goToAssociation() {
-      vm.type = 'association';
+      vm.currentType = 'association';
+      vm.currentTeams = vm.ListAssociation;
+      vm.currentTeam = vm.currentAssociation;
+      vm.currentDropdown = vm.DropdownAssociation;
     }
 
     function isActive(value) {
-      return vm.type === value;
+      return vm.currentType === value;
     }
 
-    function unsubscribe() {
-      //CHECK IF USER IS ALREADY SUBSCRIBED TO SCHOOL/FACULTY/ASSOCIATIONS
-      //IF USER IS SUBSCRIBED, ASK THEM IF THEY ARE SURE THEY WANT TO UNSUBSCRIBE
-      //IF USER ISN'T SUBSCRIBED, TELL THEM THEY CAN'T UNSUBSCRIBE
-
-      //THIS IS THE SCHOOL/FACULTY/ASSOCIATIONS
-      $scope.unsubscribeTest = 'HoGent';
-      var popup = $ionicPopup.show({
-        scope: $scope,
-        title: 'Uitschrijven',
-        subTitle: 'Ben je zeker dat je volgende groep wenst te verlaten?',
-        template: '<p style="text-align: center;">{{unsubscribeTest}}</p>',
-        buttons: [
-          {
-            text: 'Nee',
-            onTap: function() {
-              return false;
-            }
-          }, {
-            text: '<b>Ja</b>',
-            type: 'button-royal',
-            onTap: function() {
-              return true;
-            }
-          }
-        ]
-      });
-      //RES IS A BOOLEAN THAT REPRESENTS IF USER WANTS TO UNSUBSCRIBE
-      popup.then(function(res) {
-        console.log(res);
-        if (res) {
-          //UNSUBSCRIBE
-        }
-      });
+    function setGroup() {
+      vm['current' + vm.currentTeam.category] = vm.currentTeam;
+      $window.localStorage
+        .setItem('current' + vm.currentTeam.category, vm.currentTeam.name);
+      updateTeams();
     }
 
-    function subscribe() {
-      //CHECK IF USER IS ALREADY SUBSCRIBED TO SCHOOL/FACULTY/ASSOCIATIONS
-      //IF USER IS SUBSCRIBED, TELL THEM THEY CAN'T SUBSCRIBE FOR MULTIPLE GROUPS (EXCEPT ASSOCIATIONS)
-      //IF USER ISN'T SUBSCRIBED YET, GET POSSIBLE SCHOOLS/FACULTIES/ASSOCIATIONS TO SUBSCRIBE TO
-      //SHOW GROUPS IN POPUP
-
-      //THESE ARE THE SCHOOLS/FACULTIES/ASSOCIATIONS WHERE A USER CAN SUBSCRIBE TO
-      var groupsArray = [
-        {
-          id: 1,
-          name: 'HoGent'
-        },
-        {
-          id: 2,
-          name: 'uGent'
-        },
-        {
-          id: 3,
-          name: 'Artevelde'
-        }
-      ];
-      $scope.test = {
-        groups: groupsArray,
-      };
-      var popup = $ionicPopup.show({
-        scope: $scope,
-        template:
-          '<select name="repeatSelect" ng-model="test.result">' +
-          '<option ng-repeat="group in test.groups" value="{{group.id}}">{{group.name}}</option>' +
-          '</select>',
-        title: 'Inschrijven',
-        subTitle: 'Kies de groep waar je je wenst bij aan te sluiten.',
-        buttons: [{
-          text: 'Annuleer',
-          onTap: function() {
-            return;
-          }
-        }, {
-          text: '<b>Kies</b>',
-          type: 'button-royal',
-          onTap: function(e) {
-            if ($scope.test.result === null || $scope.test.result === undefined) {
-              e.preventDefault();
-            } else {
-              return $scope.test.result;
-            }
-          }
-        }]
-      });
-      //RES IS THE ID OF THE SELECTED ITEM
-      popup.then(function(res) {
-        if (res !== undefined) {
-          console.log(res);
-        }
-      });
+    function updateTeams() {
+      var teams = [vm.currentSchool, vm.currentFaculty, vm.currentAssociation];
+      $window.localStorage.setItem('userTeams', teams);
+      Connection.updateTeams(uuid, secret, teams);
     }
   }
 })();
