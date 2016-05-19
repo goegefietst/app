@@ -147,7 +147,14 @@
       var duration = Helper.getDuration(values.routes);
       values.tim = duration;
       values.spe = (distance / duration * 1000 * 60 * 60).toFixed(1);
-      values.cal = '0';
+      var intensity = 6;
+      if (values.spe < 12) {
+        intensity = 4;
+      }
+      if (values.spe > 20) {
+        intensity = 8;
+      }
+      values.cal = (duration / 1000 / 60 * intensity).toFixed(1);
       deferred.resolve(values);
       return deferred.promise;
     }
@@ -193,6 +200,15 @@
       speedOld = Math.round(speedOld * 100) / 100;
       var speed = Math.round((values.spe - speedOld) * 100) / 100;
       values.speDiff = speed >= 0 ? '+ ' + speed : '- ' + Math.abs(speed);
+      var intensity = 6;
+      if (values.spe < 12) {
+        intensity = 4;
+      }
+      if (values.spe > 20) {
+        intensity = 8;
+      }
+      values.calDiff = '+ ' +
+        (values.timDiff / 1000 / 60 * intensity).toFixed(1);
       deferred.resolve(values);
       return deferred.promise;
     }

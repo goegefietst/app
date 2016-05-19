@@ -27,6 +27,7 @@
       <li class="item item-button-right">
         {{personal.cal}}
         kcal
+        <span class="newData" ng-show="personal.new.cal !== 0 && personal.isActive('day')"> {{personal.new.cal}} kcal</span>
         <!--<button class="button ion-chevron-right" ng-click="personal.goToCalories()"></button>-->
       </li>
     </ul>

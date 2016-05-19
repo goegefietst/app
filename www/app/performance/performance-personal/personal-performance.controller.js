@@ -37,7 +37,8 @@
     vm.new = {
       dis: 0,
       tim: 0,
-      spe: 0
+      spe: 0,
+      cal: 0
     };
 
     //CHANGE BETWEEN DAY, WEEK OR YEAR STATISTICS
@@ -123,6 +124,7 @@
         vm.new.dis = values.disDiff;
         vm.new.tim = values.timDiff;
         vm.new.spe = values.speDiff;
+        vm.new.cal = values.calDiff;
         vm.data = values.data;
         vm.labels = values.labels;
         vm.series = values.series;
@@ -139,6 +141,7 @@
       vm.new.dis = 0;
       vm.new.tim = 0;
       vm.new.spe = 0;
+      vm.new.cal = 0;
       vm.data = [];
       vm.labels = [];
       vm.series = [];

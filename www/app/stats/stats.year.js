@@ -68,6 +68,7 @@
       values.disDiff = 0;
       values.timDiff = 0;
       values.speDiff = 0;
+      values.calDiff = 0;
       values.options = {
         scaleLabel: function(obj) {
           return ' ' + obj.value;
