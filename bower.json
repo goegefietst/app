@@ -6,7 +6,7 @@
     "ionic": "driftyco/ionic-bower#1.2.4"
   },
   "dependencies": {
-    "angular": "~1.4.8",
+    "angular": "~1.4.10",
     "ngCordova": "~0.1.23-alpha",
     "angular-resource": "~1.4.8",
     "ionic": "~1.2.1",
@@ -16,6 +16,6 @@
     "angular-moment": "^0.10.3"
   },
   "resolutions": {
-    "angular": "1.4.8"
+    "angular": "~1.4.10"
   }
 }

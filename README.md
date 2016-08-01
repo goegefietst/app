@@ -11,11 +11,11 @@ Goe Gefietst is an app that tracks your bike rides in Ghent. It's made by studen
 The app is made with the [ionic] framework which is build on top of [angular] (for web apps) and [cordova] (wraps web apps in a native app). It uses several cordova plugins to make native calls to track [geolocation], send [notifications], etc. Check package.json for an exhaustive list.
 
 ### Installation
-First make sure you have [node.js] 4 installed. Then install [ionic] and [cordova].
+First make sure you have [node.js] 4 installed. Then install [ionic], [cordova], [bower] and [gulp].
 
-    $ npm install -g cordova ionic
+    $ npm install -g cordova ionic bower gulp
 
-Now you can clone the project and resolve dependencies using [npm] and [bower]. Then install cordova plugins by restoring the state.
+Clone the project and resolve dependencies. Then install cordova plugins by restoring the state.
 
     $ git clone https://github.com/Buccaneer/goegefietst.git goegefietst
     $ cd goegefietst
@@ -23,12 +23,12 @@ Now you can clone the project and resolve dependencies using [npm] and [bower]. 
     $ bower install
     $ ionic state restore
 
-The following step shouldn't be required. But if you encounter angular related dependency errors: manually run the injection task then try to run the app again.
+The following step shouldn't be required, but if you encounter angular related dependency errors: manually run the injection task then try to run the app again.
 
     $ gulp inject
 
 Run the project in your browser.  
-Note: most cordova plugins such as geolocation and notifications rely on native calls and don't work in your browser.
+Note: cordova plugins such as geolocation and notifications have native dependencies and don't work in your browser.
 
     $ ionic serve
 
@@ -64,6 +64,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
    [npm]: <https://www.npmjs.com/>
    [node.js]: <https://nodejs.org/en/>
    [bower]: <http://bower.io/>
+   [gulp]: <http://gulpjs.com/>
    [ionic]: <http://ionicframework.com/>
    [cordova]: <https://cordova.apache.org/>
    [angular]: <https://angularjs.org/>
