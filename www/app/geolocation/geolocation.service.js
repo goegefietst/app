@@ -17,12 +17,12 @@
           speed: location.speed,
           time: location.time === undefined ? Date.now() : location.time
         });
-        backgroundGeoLocation.finish();
+        backgroundGeolocation.finish();
         $rootScope.$emit('geolocation-service-event');
       };
 
       var failureFn = function(error) {
-        console.log('BackgroundGeoLocation error ' + JSON.stringify(error));
+        console.log('BackgroundGeolocation error ' + JSON.stringify(error));
       };
 
       //Enable background geolocation
@@ -30,7 +30,7 @@
         //save settings (background tracking is enabled) in local storage
         locations = [];
         window.localStorage.setItem('bgGPS', 1);
-        backgroundGeoLocation.configure(callbackFn, failureFn, {
+        backgroundGeolocation.configure(callbackFn, failureFn, {
           desiredAccuracy: 10,
           stationaryRadius: 1,
           distanceFilter: 1,
@@ -38,14 +38,14 @@
           notificationTitle: 'Goe Gefietst',
           notificationIconColor: '#ee6e35',
           notificationText: 'Goe Gefietst is uw route aan het tracken',
-          locationService: backgroundGeoLocation.service.ANDROID_DISTANCE_FILTER,
+          locationService: backgroundGeolocation.provider.ANDROID_DISTANCE_FILTER_PROVIDER,
           debug: false,
           stopOnTerminate: false,
           fastestInterval: 1000,
           activitiesInterval: 10000
         });
 
-        backgroundGeoLocation.start();
+        backgroundGeolocation.start();
       };
 
       return {
@@ -53,7 +53,7 @@
         // Stop data tracking
         stop: function() {
           window.localStorage.setItem('bgGPS', 0);
-          backgroundGeoLocation.stop();
+          backgroundGeolocation.stop();
           console.log('stopped tracking');
           return locations;
         },
@@ -74,13 +74,13 @@
         check: check,
 
         locationSettings: function() {
-          backgroundGeoLocation.showLocationSettings();
+          backgroundGeolocation.showLocationSettings();
         }
       };
     }]);
 
   function check(callback) {
-    backgroundGeoLocation.isLocationEnabled(function(enabled) {
+    backgroundGeolocation.isLocationEnabled(function(enabled) {
       if (enabled) {
         callback(enabled);
       } else {
