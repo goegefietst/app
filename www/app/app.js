@@ -29,6 +29,7 @@
 
       var device = $cordovaDevice.getDevice();
       $window.localStorage.setItem('platform', device.platform);
+      navigator.splashscreen.hide();
     });
     $ionicPlatform.on('pause', function() {
       if (
