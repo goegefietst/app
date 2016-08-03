@@ -229,9 +229,9 @@
         vm.stopwatch.hours = time.hours;
         vm.stopwatch.minutes = time.minutes;
         vm.stopwatch.seconds = time.seconds;
-        console.log(vm.stopwatch.hours + ':' +
+        /*console.log(vm.stopwatch.hours + ':' +
           vm.stopwatch.minutes + ':' +
-          vm.stopwatch.seconds);
+          vm.stopwatch.seconds);*/
 
         setTimeout(function() {
           timecounter();
