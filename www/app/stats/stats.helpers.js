@@ -139,7 +139,7 @@
     /**
     * @function
     * @name getDistance
-    * @description calculates distance between 2 points.
+    * @description calculates distance between 2 points in kilometers.
     * @memberof Stats.HelperService
     * @param {number} lat1 - latitude of first point.
     * @param {number} lon1 - longitude of first point.
@@ -189,6 +189,47 @@
         }
       }
       return array.slice(0, ++i < index ? index : i);
+    }
+
+    /**
+    * @function
+    * @name trimRoute
+    * @description trims the start and end of the route, needs at least length 10
+    * @memberof Stats.HelperService
+    * @param {object[]} route - array of location objects.
+    * @param {number} radius - radius in meters.
+    * @returns {object[]} array that is trimmed.
+    */
+    function trimRoute(route, radius) {
+      if (route.length < 10) {
+        return route;
+      }
+      var start = route[0];
+      var startIndex = 0;
+      var end = route[route.length - 1];
+      var endIndex = route.length - 1;
+      var i;
+      var lat;
+      var lng;
+      // Find index of first point outside of radius
+      for (i = 0; i < route.length; i++) {
+        lat = route[i].latitude;
+        lng = route[i].longitude;
+        if (getDistance(start.latitude, start.longitude, lat, lng) * 1000 > radius) {
+          startIndex = i;
+          break;
+        }
+      }
+      // Find index of last point outside of radius
+      for (i = route.length - 1; i > 0; i--) {
+        lat = route[i].latitude;
+        lng = route[i].longitude;
+        if (getDistance(end.latitude, end.longitude, lat, lng) * 1000 > radius) {
+          endIndex = i;
+          break;
+        }
+      }
+      return route.slice(startIndex, endIndex + 1);
     }
 
     /**
