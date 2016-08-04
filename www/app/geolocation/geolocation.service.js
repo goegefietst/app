@@ -17,7 +17,7 @@
           speed: location.speed,
           time: location.time === undefined ? Date.now() : location.time
         });
-        backgroundGeolocation.finish();
+        backgroundGeoLocation.finish();
         $rootScope.$emit('geolocation-service-event');
       };
 
@@ -30,7 +30,7 @@
         //save settings (background tracking is enabled) in local storage
         locations = [];
         window.localStorage.setItem('bgGPS', 1);
-        backgroundGeolocation.configure(callbackFn, failureFn, {
+        backgroundGeoLocation.configure(callbackFn, failureFn, {
           desiredAccuracy: 10,
           stationaryRadius: 1,
           distanceFilter: 1,
@@ -38,14 +38,14 @@
           notificationTitle: 'Goe Gefietst',
           notificationIconColor: '#ee6e35',
           notificationText: 'Goe Gefietst is uw route aan het tracken',
-          locationService: backgroundGeolocation.provider.ANDROID_DISTANCE_FILTER_PROVIDER,
+          locationService: backgroundGeoLocation.service.ANDROID_DISTANCE_FILTER,
           debug: false,
           stopOnTerminate: false,
           fastestInterval: 1000,
           activitiesInterval: 10000
         });
 
-        backgroundGeolocation.start();
+        backgroundGeoLocation.start();
       };
 
       return {
@@ -53,7 +53,7 @@
         // Stop data tracking
         stop: function() {
           window.localStorage.setItem('bgGPS', 0);
-          backgroundGeolocation.stop();
+          backgroundGeoLocation.stop();
           console.log('stopped tracking');
           return locations;
         },
@@ -74,13 +74,13 @@
         check: check,
 
         locationSettings: function() {
-          backgroundGeolocation.showLocationSettings();
+          backgroundGeoLocation.showLocationSettings();
         }
       };
     }]);
 
   function check(callback) {
-    backgroundGeolocation.isLocationEnabled(function(enabled) {
+    backgroundGeoLocation.isLocationEnabled(function(enabled) {
       if (enabled) {
         callback(enabled);
       } else {

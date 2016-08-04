@@ -27,7 +27,7 @@
     "cordova-plugin-splashscreen",
     "cordova-plugin-statusbar",
     "ionic-plugin-keyboard",
-    "cordova-plugin-mauron85-background-geolocation",
+    "cordova-plugin-mauron85-background-geolocation@1.0.2",
     {
       "locator": "https://github.com/litehelpers/Cordova-sqlite-storage",
       "id": "cordova-sqlite-storage"
