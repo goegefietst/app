@@ -2,5 +2,5 @@
   'use strict';
 
   angular
-    .module('connection', []);
+    .module('connection', ['stats']);
 })();

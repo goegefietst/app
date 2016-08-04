@@ -23,6 +23,7 @@
     this.getDistance = getDistance;
     this.format = format;
     this.trim = trim;
+    this.trimRoute = trimRoute;
     this.cumulative = cumulative;
     this.getWeek = getWeek;
 
@@ -196,40 +197,40 @@
     * @name trimRoute
     * @description trims the start and end of the route, needs at least length 10
     * @memberof Stats.HelperService
-    * @param {object[]} route - array of location objects.
+    * @param {object[]} points - array of location points.
     * @param {number} radius - radius in meters.
     * @returns {object[]} array that is trimmed.
     */
-    function trimRoute(route, radius) {
-      if (route.length < 10) {
-        return route;
+    function trimRoute(points, radius) {
+      if (points.length < 10) {
+        return points;
       }
-      var start = route[0];
+      var start = points[0];
       var startIndex = 0;
-      var end = route[route.length - 1];
-      var endIndex = route.length - 1;
+      var end = points[points.length - 1];
+      var endIndex = points.length - 1;
       var i;
       var lat;
       var lng;
       // Find index of first point outside of radius
-      for (i = 0; i < route.length; i++) {
-        lat = route[i].latitude;
-        lng = route[i].longitude;
+      for (i = 0; i < points.length; i++) {
+        lat = points[i].latitude;
+        lng = points[i].longitude;
         if (getDistance(start.latitude, start.longitude, lat, lng) * 1000 > radius) {
           startIndex = i;
           break;
         }
       }
       // Find index of last point outside of radius
-      for (i = route.length - 1; i > 0; i--) {
-        lat = route[i].latitude;
-        lng = route[i].longitude;
+      for (i = points.length - 1; i > 0; i--) {
+        lat = points[i].latitude;
+        lng = points[i].longitude;
         if (getDistance(end.latitude, end.longitude, lat, lng) * 1000 > radius) {
           endIndex = i;
           break;
         }
       }
-      return route.slice(startIndex, endIndex + 1);
+      return points.slice(startIndex, endIndex + 1);
     }
 
     /**

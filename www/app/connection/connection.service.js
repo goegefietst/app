@@ -3,7 +3,7 @@
 
   angular
     .module('connection')
-    .service('Connection', ['$http', function($http) {
+    .service('Connection', ['$http', 'Helper', function($http, Helper) {
 
       this.getRoutes = getRoutes;
       this.makeAccount = makeAccount;
@@ -56,7 +56,15 @@
             'secret': secret
           }
         };
-        var data = route;
+        console.log('UNTRIMMED ROUTE');
+        console.log(route.points);
+        var data = {};
+        data.id = route.id;
+        data.time = route.time;
+        data.sent = route.sent;
+        data.points = Helper.trimRoute(route.points, 500);
+        console.log('TRIMMED ROUTE');
+        console.log(data.points);
         return $http
           .post('https://goegefietst.gent/route/' + uuid, data, config)
           .then(function(response) {
