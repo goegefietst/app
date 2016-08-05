@@ -40,7 +40,7 @@
           notificationText: 'Goe Gefietst is uw route aan het tracken',
           locationService: backgroundGeoLocation.service.ANDROID_DISTANCE_FILTER,
           debug: false,
-          stopOnTerminate: false,
+          stopOnTerminate: true,
           fastestInterval: 1000,
           activitiesInterval: 10000
         });
