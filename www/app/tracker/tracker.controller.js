@@ -4,7 +4,7 @@
   angular
     .module('app.tracker')
     .controller('TrackerController', Controller);
-  //dependencies
+
   Controller.$inject = [
     '$ionicPlatform',
     '$q',
@@ -15,21 +15,15 @@
     '$ionicPopup',
     'leafletData',
     'BackgroundGeolocationService',
-    'Database'
+    'Database',
+    'LocationSettings'
   ];
 
   /* @ngInject */
-  function Controller(
-    $ionicPlatform,
-    $q,
-    $scope,
-    $http,
-    $window,
-    $state,
-    $ionicPopup,
-    leafletData,
-    BackgroundGeolocationService,
-    Database) {
+  function Controller($ionicPlatform, $q, $scope, $http, $window,
+                      $state, $ionicPopup, leafletData,
+                      BackgroundGeolocationService, Database,
+                      LocationSettings) {
 
     var vm = this;
     var timestamp;
@@ -63,7 +57,7 @@
       url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       options: {
         attribution: '&copy; <a href="http://www.openstreetmap.org/' +
-          'copyright">OpenStreetMap</a> contributors'
+        'copyright">OpenStreetMap</a> contributors'
       }
     };
 
@@ -82,64 +76,8 @@
     BackgroundGeolocationService.subscribe($scope, function dataUpdated() {
       console.log('Data updated!');
       getRoute();
+      // FIXME ADD CHECK TO STOP TRACKING IF STATIONARY
     });
-
-    function checkLocationAuthorized() {
-      var deferred = $q.defer();
-      cordova.plugins.diagnostic.isLocationAuthorized(function(enabled) {
-        if (!enabled) {
-          cordova.plugins.diagnostic
-            .requestLocationAuthorization(function(status) {
-              if (status === 'GRANTED') {
-                deferred.resolve('GRANTED');
-              } else {
-                deferred.reject('DENIED');
-              }
-            });
-        } else {
-          deferred.resolve('GRANTED');
-        }
-      });
-      return deferred.promise;
-    }
-
-    function checkLocationEnabled() {
-      var deferred = $q.defer();
-      cordova.plugins.diagnostic.isLocationEnabled(function(enabled) {
-        if (enabled) {
-          console.log('Location is enabled');
-          deferred.resolve();
-        } else {
-          showPopup('location').then(function() {
-            /*if (res) {
-              deferred.resolve();
-            } else {
-              deferred.reject();
-            }*/
-            deferred.reject();
-          });
-        }
-      });
-      return deferred.promise;
-    }
-
-    function checkHighAccuracy() {
-      var deferred = $q.defer();
-      if ($window.localStorage.getItem('platform') === 'Android') {
-        cordova.plugins.diagnostic.getLocationMode(function(mode) {
-          if (mode !== 'high_accuracy') {
-            console.log('highest accuracy isn\'t selected.');
-            showPopup('accuracy').then(function() {
-              deferred.resolve();
-            });
-          } else {
-            console.log('highest accuracy is selected.');
-            deferred.resolve();
-          }
-        });
-      }
-      return deferred.promise;
-    }
 
     function startTracking() {
       BackgroundGeolocationService.start();
@@ -151,9 +89,9 @@
     function showPopup(type) {
       return $ionicPopup.show({
         template: type === 'accuracy' ?
-          '<p>Je resultaten zullen nauwkeuriger zijn als' +
-          ' je locatie op de grootste nauwkeurigheid staat.</p>' : '<p>' +
-          'We kunnen enkel je route tracken als je locatie aanstaat.</p>',
+        '<p>Je resultaten zullen nauwkeuriger zijn als' +
+        ' je locatie op de grootste nauwkeurigheid staat.</p>' : '<p>' +
+        'We kunnen enkel je route tracken als je locatie aanstaat.</p>',
         title: type === 'accuracy' ? 'Nauwkeurigheid' : 'Locatie',
         buttons: [{
           text: 'Annuleer'
@@ -165,7 +103,7 @@
               BackgroundGeolocationService.locationSettings();
             } else {
               cordova.plugins.diagnostic.switchToSettings(function() {
-                console.log('Successfully switched to Settings app');
+                console.log('Successfully switched to LocationSettings app');
               }, function(error) {
                 console.error('The following error occurred: ' + error);
               });
@@ -179,9 +117,15 @@
     function toggle() {
       if (!vm.tracking) {
         console.log('app starts vm.tracking');
-        checkLocationAuthorized()
-          .then(checkLocationEnabled)
-          .then(checkHighAccuracy)
+        LocationSettings.checkLocationAuthorized()
+          .then(LocationSettings.checkLocationEnabled)
+          .catch(function() {
+            return showPopup('location');
+          })
+          .then(LocationSettings.checkHighAccuracy)
+          .catch(function() {
+            return showPopup('accuracy');
+          })
           .then(startTracking);
       } else {
         console.log('app stops vm.tracking');
@@ -230,8 +174,8 @@
         vm.stopwatch.minutes = time.minutes;
         vm.stopwatch.seconds = time.seconds;
         /*console.log(vm.stopwatch.hours + ':' +
-          vm.stopwatch.minutes + ':' +
-          vm.stopwatch.seconds);*/
+         vm.stopwatch.minutes + ':' +
+         vm.stopwatch.seconds);*/
 
         setTimeout(function() {
           timecounter();
@@ -248,7 +192,7 @@
         $ionicPopup.show({
           title: 'Rit gestopt',
           template: 'De app werd afgesloten tijdens je meest recente rit.' +
-            ' De data is daarom helaas verloren gegaan.',
+          ' De data is daarom helaas verloren gegaan.',
           buttons: [{
             text: 'OK',
             type: 'button-royal'
