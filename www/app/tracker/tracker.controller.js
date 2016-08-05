@@ -76,7 +76,7 @@
 
     // BUTTON TO START & STOP TRACKING
     vm.textButton = 'Start route';
-    vm.toggle = toggleTracking; //START AND STOP TRACKING
+    vm.toggleTracking = toggleTracking; //START AND STOP TRACKING
     var timestamp; // Timestamp when tracking begun
     var running = false; // Whether tracking is on or not
 
