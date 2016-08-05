@@ -1,3 +1,6 @@
+/**
+ * @namespace Tracker
+ */
 (function() {
   'use strict';
 
@@ -7,7 +10,6 @@
 
   Controller.$inject = [
     '$ionicPlatform',
-    '$q',
     '$scope',
     '$http',
     '$window',
@@ -19,34 +21,36 @@
     'LocationSettings'
   ];
 
+  /**
+   * @class
+   * @name TrackerController
+   * @memberof Tracker
+   * @description Controller responsible for tracking tab
+   */
   /* @ngInject */
-  function Controller($ionicPlatform, $q, $scope, $http, $window,
+  function Controller($ionicPlatform, $scope, $http, $window,
                       $state, $ionicPopup, leafletData,
                       BackgroundGeolocationService, Database,
                       LocationSettings) {
 
     var vm = this;
-    var timestamp;
-    var running = false;
+
+    // RELATIVE HEIGHT OF THE MAP, STATS AND BUTTON
     var contentHeight =
       angular.element(document.getElementById('content'))[0].offsetHeight;
+    vm.height = {
+      stats: contentHeight * 3 / 9,
+      map: contentHeight * 5 / 9,
+      button: contentHeight * 1 / 9
+    };
 
-    vm.distance = 0.0;
-    vm.speed = 0.0;
+    // MAP
     vm.markers = [];
     vm.paths = {};
-    vm.statsHeight = contentHeight * 3 / 9;
-    vm.mapHeight = contentHeight * 5 / 9;
-    vm.buttonHeight = contentHeight * 1 / 9;
-    vm.stopwatch = {
-      hours: '00',
-      minutes: '00',
-      seconds: '00'
-    };
     vm.defaults = { //todo: check configurations
       touchZoom: true,
       scrollWheelZoom: true,
-      zoomControl: false,
+      zoomControl: false
     };
     vm.location = {
       lat: 51.050,
@@ -61,31 +65,88 @@
       }
     };
 
-    vm.toggle = toggle; //START AND STOP TRACKING
-    vm.startStopwatch = startStopwatch; //START THE STOPWATCH
-    vm.stopStopwatch = stopStopwatch; //STOP THE STOPWATCH
+    // DISTANCE, SPEED AND STOPWATCH
+    vm.distance = 0.0;
+    vm.speed = 0.0;
+    vm.stopwatch = {
+      hours: '00',
+      minutes: '00',
+      seconds: '00'
+    };
 
-    vm.clearRoutes = clearRoutes; //DELETE ROUTES FROM MAP
-    vm.clearMarkers = clearMarkers; //DELETE MARKERS FROM MAP
-    vm.addMarker = addMarker; //ADD MARKER TO MAP
-    vm.setView = setView; //SET VIEW OF MAP
-    vm.drawRoute = drawRoute; //DRAWS ROUTE ON MAP
+    // BUTTON TO START & STOP TRACKING
+    vm.textButton = 'Start route';
+    vm.toggle = toggleTracking; //START AND STOP TRACKING
+    var timestamp; // Timestamp when tracking begun
+    var running = false; // Whether tracking is on or not
 
+    // SERVICE STILL RUNNING AFTER APP WAS CLOSED
     $ionicPlatform.ready().then(checkService);
 
+    // SUBSCRIBE TO GEOLOCATION SERVICE AND UPDATE UI FOR EVERY LOCATION SAVED
     BackgroundGeolocationService.subscribe($scope, function dataUpdated() {
-      console.log('Data updated!');
-      getRoute();
+      updateUI();
       // FIXME ADD CHECK TO STOP TRACKING IF STATIONARY
     });
 
+    /**
+     * @function
+     * @name toggleTracking
+     * @memberof Tracker.TrackerController
+     * @description Toggles tracking on and off
+     */
+    function toggleTracking() {
+      if (!vm.tracking) {
+        console.log('TOGGLED TRACKING ON');
+        LocationSettings.checkLocationAuthorized()
+          .then(LocationSettings.checkLocationEnabled)
+          .catch(function() {
+            return showPopup('location');
+          })
+          .then(LocationSettings.checkHighAccuracy)
+          .catch(function() {
+            return showPopup('accuracy');
+          })
+          .then(startTracking);
+      } else {
+        console.log('TOGGLED TRACKING OFF');
+        var route = BackgroundGeolocationService.stop();
+        console.log(route);
+        vm.tracking = false;
+        vm.distance = 0.0;
+        vm.speed = 0.0;
+        vm.textButton = 'Start route';
+
+        stopStopwatch();
+        clearRoutes();
+        clearMarkers();
+
+        Database.insertRoute(route);
+        $state.go('tab.performance.personal', {
+          route: route
+        });
+      }
+    }
+
+    /**
+     * @function
+     * @name startTracking
+     * @memberof Tracker.TrackerController
+     * @description Starts the geolocation service and stopwatch
+     */
     function startTracking() {
       BackgroundGeolocationService.start();
-      vm.startStopwatch();
+      startStopwatch();
       vm.tracking = true;
       vm.textButton = 'Stop route';
     }
 
+    /**
+     * @function
+     * @name showPopup
+     * @memberof Tracker.TrackerController
+     * @description Starts the geolocation service and stopwatch
+     */
     function showPopup(type) {
       return $ionicPopup.show({
         template: type === 'accuracy' ?
@@ -103,7 +164,7 @@
               BackgroundGeolocationService.locationSettings();
             } else {
               cordova.plugins.diagnostic.switchToSettings(function() {
-                console.log('Successfully switched to LocationSettings app');
+                console.log('SWITCHED TO LOCATION SETTINGS');
               }, function(error) {
                 console.error('The following error occurred: ' + error);
               });
@@ -114,46 +175,46 @@
       });
     }
 
-    function toggle() {
-      if (!vm.tracking) {
-        console.log('app starts vm.tracking');
-        LocationSettings.checkLocationAuthorized()
-          .then(LocationSettings.checkLocationEnabled)
-          .catch(function() {
-            return showPopup('location');
-          })
-          .then(LocationSettings.checkHighAccuracy)
-          .catch(function() {
-            return showPopup('accuracy');
-          })
-          .then(startTracking);
-      } else {
-        console.log('app stops vm.tracking');
-        var route = BackgroundGeolocationService.stop();
-        console.log(route);
-        vm.tracking = false;
-        vm.distance = 0.0;
-        vm.speed = 0.0;
-        vm.textButton = 'Start route';
-
-        vm.stopStopwatch();
-        vm.clearRoutes();
-        vm.clearMarkers();
-
-        Database.insertRoute(route);
-        $state.go('tab.performance.personal', {
-          route: route
-        });
-      }
-    }
-
+    /**
+     * @function
+     * @name startStopwatch
+     * @memberof Tracker.TrackerController
+     * @description Set timestamp and start a time counter
+     */
     function startStopwatch() {
       var now = new Date();
       timestamp = now.getTime();
       running = true;
-      timecounter();
+      timeCounter();
     }
 
+    /**
+     * @function
+     * @name timeCounter
+     * @memberof Tracker.TrackerController
+     * @description Updates the stopwatch time every second
+     */
+    function timeCounter() {
+      var now = new Date();
+      var timediff = now.getTime() - timestamp;
+      if (running === true) {
+        var time = formatTime(timediff);
+        vm.stopwatch.hours = time.hours;
+        vm.stopwatch.minutes = time.minutes;
+        vm.stopwatch.seconds = time.seconds;
+        setTimeout(function() {
+          timeCounter();
+          $scope.$apply();
+        }, 1000);
+      }
+    }
+
+    /**
+     * @function
+     * @name stopStopwatch
+     * @memberof Tracker.TrackerController
+     * @description Stop time counter and reset stopwatch
+     */
     function stopStopwatch() {
       running = false;
       console.log('User tracked for ' +
@@ -165,30 +226,16 @@
       vm.stopwatch.seconds = '00';
     }
 
-    function timecounter() {
-      var now = new Date();
-      var timediff = now.getTime() - timestamp;
-      if (running === true) {
-        var time = formattedtime(timediff);
-        vm.stopwatch.hours = time.hours;
-        vm.stopwatch.minutes = time.minutes;
-        vm.stopwatch.seconds = time.seconds;
-        /*console.log(vm.stopwatch.hours + ':' +
-         vm.stopwatch.minutes + ':' +
-         vm.stopwatch.seconds);*/
-
-        setTimeout(function() {
-          timecounter();
-          $scope.$apply();
-        }, 1000);
-
-      }
-    }
-
+    /**
+     * @function
+     * @name checkService
+     * @memberof Tracker.TrackerController
+     * @description Checks if a previous geolocation service was still running, if so it ends it and notifies the user.
+     */
     function checkService() {
       var running = window.localStorage.getItem('bgGPS');
       if (running === '1') {
-        console.log('service is still running');
+        console.log('PREVIOUS GEOLOCATION SERVICE STILL RUNNING');
         $ionicPopup.show({
           title: 'Rit gestopt',
           template: 'De app werd afgesloten tijdens je meest recente rit.' +
@@ -203,8 +250,6 @@
         vm.tracking = false;
         vm.textButton = 'Start route';
         vm.distance = 0.0;
-        //vm.tracking = true;
-        //vm.textButton = 'Stop route';
       } else {
         vm.tracking = false;
         vm.textButton = 'Start route';
@@ -212,7 +257,13 @@
       }
     }
 
-    function getRoute() {
+    /**
+     * @function
+     * @name updateUI
+     * @memberof Tracker.TrackerController
+     * @description Retrieves route from local db then updates the UI (map, distance, speed) to reflect changes
+     */
+    function updateUI() {
       var latlngs = [];
       var locations = BackgroundGeolocationService.getLocations();
       var lastPoint;
@@ -246,16 +297,22 @@
           vm.speed = Math.round(vm.speed * 100) / 100;
         }
         vm.speed = Math.round(vm.speed * 100) / 100;
-        console.log(vm.speed);
       }
 
-      vm.drawRoute(latlngs);
+      drawRoute(latlngs);
     }
 
-    function formattedtime(unformattedtime) {
-      var second = Math.floor(unformattedtime / 1000);
-      var minute = Math.floor(unformattedtime / 60000);
-      var hour = Math.floor(unformattedtime / 3600000);
+    /**
+     * @function
+     * @name formatTime
+     * @memberof Tracker.TrackerController
+     * @description Format ms to object with hour, minutes and seconds
+     * @returns {Object} hours, minutes and seconds
+     */
+    function formatTime(ms) {
+      var second = Math.floor(ms / 1000);
+      var minute = Math.floor(ms / 60000);
+      var hour = Math.floor(ms / 3600000);
       second = second - 60 * minute - 24 * hour;
       minute = minute - 24 * hour;
 
@@ -269,29 +326,6 @@
         seconds: second
       };
     }
-
-    vm.loadRoute = function() {
-      $http.get('route.geo.json').success(function(data, status) {
-        if (status !== 200) {
-          console.log('Something went wrong, status code: ' + status);
-        }
-        angular.extend($scope, {
-          geojson: {
-            data: data,
-            style: {
-              color: 'red',
-              weight: 4,
-              opacity: 0.5
-            }
-          }
-        });
-        var coordinates = data.features[0].geometry.coordinates;
-        vm.addMarker({
-          lng: coordinates[coordinates.length - 1][0],
-          lat: coordinates[coordinates.length - 1][1]
-        });
-      });
-    };
 
     function clearRoutes() {
       vm.paths = {};
@@ -308,7 +342,7 @@
       });
     }
 
-    function setView(latlng) {
+    function moveViewTo(latlng) {
       leafletData.getMap('map').then(
         function(map) {
           vm.location = {
@@ -324,26 +358,22 @@
       if (!route) {
         return;
       }
-
-      vm.clearRoutes();
-      vm.clearMarkers();
-
-      var path = {
+      clearRoutes();
+      clearMarkers();
+      vm.paths.path = {
         type: 'polyline',
         weight: 4,
         color: 'red',
         opacity: 0.5,
         latlngs: route
       };
-      vm.paths.path = path;
-
       if (route.length > 0) {
         var lastPoint = {
           lat: route[route.length - 1][0],
           lng: route[route.length - 1][1]
         };
-        vm.addMarker(lastPoint);
-        vm.setView(lastPoint);
+        addMarker(lastPoint);
+        moveViewTo(lastPoint);
       }
     }
 
