@@ -11,14 +11,15 @@
   Controller.$inject = [
     '$ionicPlatform',
     '$scope',
-    '$http',
+    '$q',
     '$window',
     '$state',
     '$ionicPopup',
     'leafletData',
     'BackgroundGeolocationService',
     'Database',
-    'LocationSettings'
+    'LocationSettings',
+    'Popup'
   ];
 
   /**
@@ -28,10 +29,10 @@
    * @description Controller responsible for tracking tab
    */
   /* @ngInject */
-  function Controller($ionicPlatform, $scope, $http, $window,
+  function Controller($ionicPlatform, $scope, $q, $window,
                       $state, $ionicPopup, leafletData,
                       BackgroundGeolocationService, Database,
-                      LocationSettings) {
+                      LocationSettings, Popup) {
 
     var vm = this;
 
@@ -85,8 +86,12 @@
 
     // SUBSCRIBE TO GEOLOCATION SERVICE AND UPDATE UI FOR EVERY LOCATION SAVED
     BackgroundGeolocationService.subscribe($scope, function dataUpdated() {
-      updateUI();
-      // FIXME ADD CHECK TO STOP TRACKING IF STATIONARY
+      var locations = BackgroundGeolocationService.getLocations();
+      updateUI(locations);
+      if (isStationary(locations)) {
+        stopTracking();
+        Popup.showStopped();
+      }
     });
 
     /**
@@ -97,34 +102,9 @@
      */
     function toggleTracking() {
       if (!vm.tracking) {
-        console.log('TOGGLED TRACKING ON');
-        LocationSettings.checkLocationAuthorized()
-          .then(LocationSettings.checkLocationEnabled)
-          .catch(function() {
-            return showPopup('location');
-          })
-          .then(LocationSettings.checkHighAccuracy)
-          .catch(function() {
-            return showPopup('accuracy');
-          })
-          .then(startTracking);
+        startTracking();
       } else {
-        console.log('TOGGLED TRACKING OFF');
-        var route = BackgroundGeolocationService.stop();
-        console.log(route);
-        vm.tracking = false;
-        vm.distance = 0.0;
-        vm.speed = 0.0;
-        vm.textButton = 'Start route';
-
-        stopStopwatch();
-        clearRoutes();
-        clearMarkers();
-
-        Database.insertRoute(route);
-        $state.go('tab.performance.personal', {
-          route: route
-        });
+        stopTracking();
       }
     }
 
@@ -132,46 +112,71 @@
      * @function
      * @name startTracking
      * @memberof Tracker.TrackerController
-     * @description Starts the geolocation service and stopwatch
+     * @description Promise chain for start tracking
      */
     function startTracking() {
-      BackgroundGeolocationService.start();
-      startStopwatch();
-      vm.tracking = true;
-      vm.textButton = 'Stop route';
+      if (vm.tracking) {
+        console.log('CANNOT START TRACKING: ALREADY TRACKING');
+        return;
+      }
+      LocationSettings.checkLocationPermission()
+        .catch(function() {
+          return LocationSettings.requestLocationPermission();
+        })
+        .then(LocationSettings.checkLocationPermission)
+        .then(LocationSettings.checkLocationEnabled)
+        .then(LocationSettings.checkHighAccuracy)
+        .catch(function(err) {
+          // Only meant to catch high accuracy, rethrow if anything else
+          if (err !== LocationSettings.HIGH_ACCURACY) {
+            return $q.reject(err);
+          }
+          return Popup.showAccuracy().then(function(settings) {
+            return settings ? $q.reject() : $q.resolve();
+          });
+        })
+        .then(BackgroundGeolocationService.start)
+        .then(startStopwatch)
+        .then(function() {
+          vm.tracking = true;
+          vm.textButton = 'Stop route';
+        }).catch(function(err) {
+        switch (err) {
+          case LocationSettings.PERMISSION:
+            Popup.showPermission();
+            break;
+          case LocationSettings.LOCATION:
+            Popup.showLocation();
+            break;
+        }
+      });
     }
 
     /**
      * @function
-     * @name showPopup
+     * @name stopTracking
      * @memberof Tracker.TrackerController
-     * @description Starts the geolocation service and stopwatch
+     * @description Promise chain for stop tracking
      */
-    function showPopup(type) {
-      return $ionicPopup.show({
-        template: type === 'accuracy' ?
-        '<p>Je resultaten zullen nauwkeuriger zijn als' +
-        ' je locatie op de grootste nauwkeurigheid staat.</p>' : '<p>' +
-        'We kunnen enkel je route tracken als je locatie aanstaat.</p>',
-        title: type === 'accuracy' ? 'Nauwkeurigheid' : 'Locatie',
-        buttons: [{
-          text: 'Annuleer'
-        }, {
-          text: '<b>Instellingen</b>',
-          type: 'button-royal',
-          onTap: function() {
-            if ($window.localStorage.getItem('platform') === 'Android') {
-              BackgroundGeolocationService.locationSettings();
-            } else {
-              cordova.plugins.diagnostic.switchToSettings(function() {
-                console.log('SWITCHED TO LOCATION SETTINGS');
-              }, function(error) {
-                console.error('The following error occurred: ' + error);
-              });
-            }
-            return true;
-          }
-        }]
+    function stopTracking() {
+      if (!vm.tracking) {
+        console.log('CANNOT STOP TRACKING: IS NOT TRACKING');
+        return;
+      }
+      var route = BackgroundGeolocationService.stop();
+      console.log(route);
+      vm.tracking = false;
+      vm.distance = 0.0;
+      vm.speed = 0.0;
+      vm.textButton = 'Start route';
+
+      stopStopwatch();
+      clearRoutes();
+      clearMarkers();
+
+      Database.insertRoute(route);
+      $state.go('tab.performance.personal', {
+        route: route
       });
     }
 
@@ -186,6 +191,7 @@
       timestamp = now.getTime();
       running = true;
       timeCounter();
+      return $q.resolve();
     }
 
     /**
@@ -263,9 +269,8 @@
      * @memberof Tracker.TrackerController
      * @description Retrieves route from local db then updates the UI (map, distance, speed) to reflect changes
      */
-    function updateUI() {
+    function updateUI(locations) {
       var latlngs = [];
-      var locations = BackgroundGeolocationService.getLocations();
       var lastPoint;
       var secondLastPoint;
 
@@ -325,6 +330,10 @@
         minutes: minute,
         seconds: second
       };
+    }
+
+    function isStationary(locations) {
+      return false;
     }
 
     function clearRoutes() {

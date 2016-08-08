@@ -20,35 +20,43 @@
    */
   function LocationSettings($q, $window) {
 
-    this.checkLocationAuthorized = checkLocationAuthorized;
+    this.checkLocationPermission = hasLocationPermission;
+    this.requestLocationPermission = requestLocationPermission;
     this.checkLocationEnabled = checkLocationEnabled;
     this.checkHighAccuracy = checkHighAccuracy;
-    LocationSettings.AUTHORIZATION = 'AUTHORIZATION';
-    LocationSettings.ENABLED = 'ENABLED';
-    LocationSettings.HIGH_ACCURACY = 'HIGH_ACCURACY';
+    var PERMISSION = 'PERMISSION';
+    this.PERMISSION = PERMISSION;
+    var LOCATION = 'LOCATION';
+    this.LOCATION = LOCATION;
+    var HIGH_ACCURACY = 'HIGH_ACCURACY';
+    this.HIGH_ACCURACY = HIGH_ACCURACY;
 
     /**
      * @function
-     * @name checkLocationAuthorized
+     * @name hasLocationPermission
      * @description Checks if the app is authorized to use location services
      * @memberof LocationsSettings.Service
      * @returns {Promise}
      */
-    function checkLocationAuthorized() {
-      console.log('IN: ' + LocationSettings.AUTHORIZATION);
+    function hasLocationPermission() {
       var deferred = $q.defer();
       cordova.plugins.diagnostic.isLocationAuthorized(function(enabled) {
         if (!enabled) {
-          cordova.plugins.diagnostic
-            .requestLocationAuthorization(function(status) {
-              if (status === 'GRANTED') {
-                deferred.resolve();
-              } else {
-                deferred.reject(LocationSettings.AUTHORIZATION);
-              }
-            });
+          deferred.reject(PERMISSION);
         } else {
           deferred.resolve();
+        }
+      });
+      return deferred.promise;
+    }
+
+    function requestLocationPermission() {
+      var deferred = $q.defer();
+      cordova.plugins.diagnostic.requestLocationAuthorization(function(status) {
+        if (status === 'GRANTED') {
+          deferred.resolve();
+        } else {
+          deferred.reject(PERMISSION);
         }
       });
       return deferred.promise;
@@ -62,14 +70,14 @@
      * @returns {Promise}
      */
     function checkLocationEnabled() {
-      console.log('IN: ' + LocationSettings.ENABLED);
+      console.log('IN: ' + LOCATION);
       var deferred = $q.defer();
       cordova.plugins.diagnostic.isLocationEnabled(function(enabled) {
         if (enabled) {
           console.log('Location is enabled');
           deferred.resolve();
         } else {
-          deferred.reject(LocationSettings.ENABLED);
+          deferred.reject(LOCATION);
         }
       });
       return deferred.promise;
@@ -83,13 +91,13 @@
      * @returns {Promise}
      */
     function checkHighAccuracy() {
-      console.log('IN: ' + LocationSettings.HIGH_ACCURACY);
+      console.log('IN: ' + HIGH_ACCURACY);
       var deferred = $q.defer();
       if ($window.localStorage.getItem('platform') === 'Android') {
         cordova.plugins.diagnostic.getLocationMode(function(mode) {
           if (mode !== 'high_accuracy') {
             console.log('HIGH ACCURACY OFF');
-            deferred.reject(LocationSettings.HIGH_ACCURACY);
+            deferred.reject(HIGH_ACCURACY);
           } else {
             console.log('HIGH ACCURACY ON');
             deferred.resolve();

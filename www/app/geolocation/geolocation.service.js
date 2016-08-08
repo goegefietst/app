@@ -7,7 +7,6 @@
       var locations = [];
 
       var callbackFn = function(location) {
-        console.log(location);
         logLocation(location);
         locations.push({
           latitude: location.latitude,
@@ -46,6 +45,7 @@
         });
 
         backgroundGeoLocation.start();
+        return $q.resolve();
       };
 
       return {
@@ -71,23 +71,15 @@
           return locations;
         },
 
-        check: check,
+        check: function(callback) {
+          backgroundGeoLocation.isLocationEnabled(callback);
+        },
 
         locationSettings: function() {
           backgroundGeoLocation.showLocationSettings();
         }
       };
     }]);
-
-  function check(callback) {
-    backgroundGeoLocation.isLocationEnabled(function(enabled) {
-      if (enabled) {
-        callback(enabled);
-      } else {
-        callback(enabled);
-      }
-    });
-  }
 
   function logLocation(location) {
     var date = new Date(0);
