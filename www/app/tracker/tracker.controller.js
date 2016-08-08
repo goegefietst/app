@@ -88,7 +88,7 @@
     BackgroundGeolocationService.subscribe($scope, function dataUpdated() {
       var locations = BackgroundGeolocationService.getLocations();
       updateUI(locations);
-      if (isStationary(locations)) {
+      if (vm.tracking && isStationary(locations, 15)) {
         stopTracking();
         Popup.showStopped();
       }
@@ -332,8 +332,27 @@
       };
     }
 
-    function isStationary(locations) {
-      return false;
+    function isStationary(locations, minutes) {
+      if (locations.length < 10) {
+        return false;
+      }
+      var start = locations[0];
+      var end = locations[locations.length - 1];
+      var started = false;
+      var stationary = true;
+      for (var i = locations.length - 2; i > 0; i--) {
+        var loc = locations[i];
+        if (end.time - loc.time < minutes * 60 * 1000 &&
+          getDistance(loc.latitude, loc.longitude,
+            end.latitude, end.longitude) > 0.5) {
+          stationary = false;
+        }
+        if (getDistance(loc.latitude, loc.longitude,
+            start.latitude, start.longitude) > 0.5) {
+          started = true;
+        }
+      }
+      return stationary && started;
     }
 
     function clearRoutes() {
