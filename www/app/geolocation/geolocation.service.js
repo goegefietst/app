@@ -73,10 +73,6 @@
 
         check: function(callback) {
           backgroundGeoLocation.isLocationEnabled(callback);
-        },
-
-        locationSettings: function() {
-          backgroundGeoLocation.showLocationSettings();
         }
       };
     }]);
