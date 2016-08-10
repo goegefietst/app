@@ -1,6 +1,3 @@
-/**
- * @namespace Tracker
- */
 (function() {
   'use strict';
 
@@ -11,8 +8,8 @@
   Controller.$inject = [
     '$ionicPlatform',
     '$scope',
-    '$q',
     '$window',
+    '$q',
     '$state',
     '$ionicPopup',
     'leafletData',
@@ -23,15 +20,15 @@
   ];
 
   /**
-   * @class
-   * @name TrackerController
-   * @memberof Tracker
-   * @description Controller responsible for tracking tab
+   * @ngdoc controller
+   * @name app.tracker.controller:TrackerController
+   * @description
+   * Controller responsible for tracking.
    */
   /* @ngInject */
-  function Controller($ionicPlatform, $scope, $q, $window,
+  function Controller($ionicPlatform, $scope, $window, $q,
                       $state, $ionicPopup, leafletData,
-                      BackgroundGeolocationService, Database,
+                      Geolocation, Database,
                       LocationSettings, Popup) {
 
     var vm = this;
@@ -82,23 +79,25 @@
     var running = false; // Whether tracking is on or not
 
     // SERVICE STILL RUNNING AFTER APP WAS CLOSED
-    $ionicPlatform.ready().then(checkService);
+    $ionicPlatform.ready().then(recover);
 
     // SUBSCRIBE TO GEOLOCATION SERVICE AND UPDATE UI FOR EVERY LOCATION SAVED
-    BackgroundGeolocationService.subscribe($scope, function dataUpdated() {
-      var locations = BackgroundGeolocationService.getLocations();
+    Geolocation.subscribe($scope, function dataUpdated() {
+      var locations = Geolocation.getLocations();
       updateUI(locations);
-      if (vm.tracking && isStationary(locations, 15)) {
+      if (vm.tracking && isStationary(locations, 15, 0.5)) {
         stopTracking();
         Popup.showStopped();
       }
     });
 
     /**
-     * @function
+     * @ngdoc method
      * @name toggleTracking
-     * @memberof Tracker.TrackerController
-     * @description Toggles tracking on and off
+     * @methodOf app.tracker.controller:TrackerController
+     * @description
+     * Toggles tracking on and off. See startTracking and startTracking.
+     * @see stopTracking
      */
     function toggleTracking() {
       if (!vm.tracking) {
@@ -109,10 +108,16 @@
     }
 
     /**
-     * @function
+     * @ngdoc method
      * @name startTracking
-     * @memberof Tracker.TrackerController
-     * @description Promise chain for start tracking
+     * @methodOf app.tracker.controller:TrackerController
+     * @description
+     * Attempts to start tracking.
+     * 1. Checks if already tracking
+     * 2. Checks for location permission and asks for permission
+     * 3. Checks if location is enabled and redirects to settings
+     * 4. Checks if high accuracy is enabled (not mandatory) and redirects to settings
+     * 5. Start tracking with geolocation services and start stopwatch
      */
     function startTracking() {
       if (vm.tracking) {
@@ -135,7 +140,7 @@
             return settings ? $q.reject() : $q.resolve();
           });
         })
-        .then(BackgroundGeolocationService.start)
+        .then(Geolocation.start)
         .then(startStopwatch)
         .then(function() {
           vm.tracking = true;
@@ -153,17 +158,22 @@
     }
 
     /**
-     * @function
+     * @ngdoc method
      * @name stopTracking
-     * @memberof Tracker.TrackerController
-     * @description Promise chain for stop tracking
+     * @methodOf app.tracker.controller:TrackerController
+     * @description
+     * Attempts to stop tracking.
+     * 1. Checks if tracking
+     * 2. Stop tracking with geolocation services, clear map and reset stopwatch
+     * 3. Insert route in database
+     * 4. Redirect to performance tab
      */
     function stopTracking() {
       if (!vm.tracking) {
         console.log('CANNOT STOP TRACKING: IS NOT TRACKING');
         return;
       }
-      var route = BackgroundGeolocationService.stop();
+      var route = Geolocation.stop();
       console.log(route);
       vm.tracking = false;
       vm.distance = 0.0;
@@ -181,10 +191,11 @@
     }
 
     /**
-     * @function
+     * @ngdoc method
      * @name startStopwatch
-     * @memberof Tracker.TrackerController
-     * @description Set timestamp and start a time counter
+     * @methodOf app.tracker.controller:TrackerController
+     * @description
+     * Set timestamp and start a timeCounter.
      */
     function startStopwatch() {
       var now = new Date();
@@ -195,10 +206,11 @@
     }
 
     /**
-     * @function
+     * @ngdoc method
      * @name timeCounter
-     * @memberof Tracker.TrackerController
-     * @description Updates the stopwatch time every second
+     * @methodOf app.tracker.controller:TrackerController
+     * @description
+     * Updates the stopwatch time every second based on timestamp in startStopwatch.
      */
     function timeCounter() {
       var now = new Date();
@@ -216,10 +228,11 @@
     }
 
     /**
-     * @function
+     * @ngdoc method
      * @name stopStopwatch
-     * @memberof Tracker.TrackerController
-     * @description Stop time counter and reset stopwatch
+     * @methodOf app.tracker.controller:TrackerController
+     * @description
+     * Stop time counter and reset stopwatch.
      */
     function stopStopwatch() {
       running = false;
@@ -233,15 +246,15 @@
     }
 
     /**
-     * @function
-     * @name checkService
-     * @memberof Tracker.TrackerController
-     * @description Checks if a previous geolocation service was still running, if so it ends it and notifies the user.
+     * @ngdoc method
+     * @name recover
+     * @methodOf app.tracker.controller:TrackerController
+     * @description
+     * Recovers from closing previous tracking session and notifies the user that the previous session was lost.
      */
-    function checkService() {
-      var running = window.localStorage.getItem('bgGPS');
-      if (running === '1') {
-        console.log('PREVIOUS GEOLOCATION SERVICE STILL RUNNING');
+    function recover() {
+      if ($window.localStorage.getItem('bgGPS') === '1') {
+        $window.localStorage.setItem('bgGPS', false);
         $ionicPopup.show({
           title: 'Rit gestopt',
           template: 'De app werd afgesloten tijdens je meest recente rit.' +
@@ -251,23 +264,15 @@
             type: 'button-royal'
           }]
         });
-        BackgroundGeolocationService.start();
-        BackgroundGeolocationService.stop();
-        vm.tracking = false;
-        vm.textButton = 'Start route';
-        vm.distance = 0.0;
-      } else {
-        vm.tracking = false;
-        vm.textButton = 'Start route';
-        vm.distance = 0.0;
       }
     }
 
     /**
-     * @function
+     * @ngdoc method
      * @name updateUI
-     * @memberof Tracker.TrackerController
-     * @description Retrieves route from local db then updates the UI (map, distance, speed) to reflect changes
+     * @methodOf app.tracker.controller:TrackerController
+     * @description
+     * Retrieves route from local db then updates the UI (map, distance, speed) to reflect changes.
      */
     function updateUI(locations) {
       var latlngs = [];
@@ -308,11 +313,17 @@
     }
 
     /**
-     * @function
+     * @ngdoc method
      * @name formatTime
-     * @memberof Tracker.TrackerController
-     * @description Format ms to object with hour, minutes and seconds
-     * @returns {Object} hours, minutes and seconds
+     * @methodOf app.tracker.controller:TrackerController
+     * @description
+     * Format ms to object with hour, minutes and seconds.
+     * @returns {Object}
+     * {
+     *  hours,
+     *  minutes,
+     *  seconds
+     * }
      */
     function formatTime(ms) {
       var second = Math.floor(ms / 1000);
@@ -332,7 +343,19 @@
       };
     }
 
-    function isStationary(locations, minutes) {
+    /**
+     * @ngdoc method
+     * @name isStationary
+     * @methodOf app.tracker.controller:TrackerController
+     * @description
+     * Whether all locations recorded within 'minutes' before the last location are within 'radius'.<br/>
+     * Exception: if all location are within 'radius' of the first location it will not be considered stationary.
+     * @param {Array} locations array of locations which contain 'time', 'latitude' and 'longitude'
+     * @param {Number} minutes minutes before considered stationary
+     * @param {Number} radius radius in kilometer
+     * @returns {Boolean} stationary
+     */
+    function isStationary(locations, minutes, radius) {
       if (locations.length < 10) {
         return false;
       }
@@ -344,25 +367,47 @@
         var loc = locations[i];
         if (end.time - loc.time < minutes * 60 * 1000 &&
           getDistance(loc.latitude, loc.longitude,
-            end.latitude, end.longitude) > 0.5) {
+            end.latitude, end.longitude) > radius) {
           stationary = false;
         }
         if (getDistance(loc.latitude, loc.longitude,
-            start.latitude, start.longitude) > 0.5) {
+            start.latitude, start.longitude) > radius) {
           started = true;
         }
       }
       return stationary && started;
     }
 
+    /**
+     * @ngdoc method
+     * @name clearRoutes
+     * @methodOf app.tracker.controller:TrackerController
+     * @description
+     * Removes all paths from the map.
+     */
     function clearRoutes() {
       vm.paths = {};
     }
 
+    /**
+     * @ngdoc method
+     * @name clearRoutes
+     * @methodOf app.tracker.controller:TrackerController
+     * @description
+     * Removes all markers from the map.
+     */
     function clearMarkers() {
       vm.markers = [];
     }
 
+    /**
+     * @ngdoc method
+     * @name addMarker
+     * @methodOf app.tracker.controller:TrackerController
+     * @description
+     * Adds marker to the map.
+     * @param {Object} latlng { lat, lng }
+     */
     function addMarker(latlng) {
       vm.markers.push({
         lat: latlng.lat,
@@ -370,6 +415,14 @@
       });
     }
 
+    /**
+     * @ngdoc method
+     * @name moveViewTo
+     * @methodOf app.tracker.controller:TrackerController
+     * @description
+     * Moves map view to latitude and longitude, retains zoom level.
+     * @param {Object} latlng { lat, lng }
+     */
     function moveViewTo(latlng) {
       leafletData.getMap('map').then(
         function(map) {
@@ -382,8 +435,16 @@
       );
     }
 
-    function drawRoute(route) {
-      if (!route) {
+    /**
+     * @ngdoc method
+     * @name drawRoute
+     * @methodOf app.tracker.controller:TrackerController
+     * @description
+     * Moves map view to latitude and longitude, retains zoom level.
+     * @param {Array} latlngs [ lat, lng ]
+     */
+    function drawRoute(latlngs) {
+      if (!latlngs) {
         return;
       }
       clearRoutes();
@@ -393,22 +454,34 @@
         weight: 4,
         color: 'red',
         opacity: 0.5,
-        latlngs: route
+        latlngs: latlngs
       };
-      if (route.length > 0) {
+      if (latlngs.length > 0) {
         var lastPoint = {
-          lat: route[route.length - 1][0],
-          lng: route[route.length - 1][1]
+          lat: latlngs[latlngs.length - 1][0],
+          lng: latlngs[latlngs.length - 1][1]
         };
         addMarker(lastPoint);
         moveViewTo(lastPoint);
       }
     }
 
-    function getDistance(lat1, lon1, lat2, lon2) {
+    /**
+     * @ngdoc method
+     * @name getDistance
+     * @methodOf app.tracker.controller:TrackerController
+     * @description
+     * Calculates the distance between two locations.
+     * @param {Number} lat1 latitude of first location
+     * @param {Number} lng1 longitude of first location
+     * @param {Number} lat2 latitude of second location
+     * @param {Number} lng2 longitude of second location
+     * @returns {Number} distance in km
+     */
+    function getDistance(lat1, lng1, lat2, lng2) {
       var radlat1 = Math.PI * lat1 / 180;
       var radlat2 = Math.PI * lat2 / 180;
-      var theta = lon1 - lon2;
+      var theta = lng1 - lng2;
       var radtheta = Math.PI * theta / 180;
       var dist = Math.sin(radlat1) * Math.sin(radlat2) +
         Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
