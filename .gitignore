@@ -5,4 +5,5 @@ www/lib/
 node_modules/
 platforms/
 plugins/
+docs/
 .idea/

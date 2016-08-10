@@ -8,6 +8,9 @@ var sh = require('shelljs');
 var inject = require('gulp-inject');
 var angularFilesort = require('gulp-angular-filesort');
 var config = require('./gulp.config')();
+var ngDocs = require('gulp-ngdocs');
+var connect = require('connect');
+var serveStatic = require('serve-static');
 
 var paths = {
   sass: ['./scss/**/*.scss'],
@@ -71,9 +74,9 @@ gulp.task('watch', function() {
   'use strict';
   gulp.watch(paths.sass, ['sass']);
   gulp.watch([
-     paths.javascript,
-     paths.css
-   ], ['inject']);
+    paths.javascript,
+    paths.css
+  ], ['inject']);
 });
 
 gulp.task('install', ['git-check'], function() {
@@ -98,4 +101,19 @@ gulp.task('git-check', function(done) {
     process.exit(1);
   }
   done();
+});
+
+gulp.task('docs', function() {
+  'use strict';
+  return gulp.src('./www/app/**/*.js')
+    .pipe(ngDocs.process(config.getDocumentationOptions()))
+    .pipe(gulp.dest('./docs'));
+});
+
+gulp.task('serveDocs', ['docs'], function(cb) {
+  'use strict';
+  var app = connect().use(serveStatic('./docs'));
+  app.listen(8000);
+  cb();
+  console.log('Server started on http://localhost:8000');
 });

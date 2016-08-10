@@ -17,5 +17,11 @@ module.exports = function() {
     return options;
   };
 
+  config.getDocumentationOptions = function() {
+    return {
+      title: 'Goe Gefietst Docs'
+    };
+  };
+
   return config;
 };

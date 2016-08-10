@@ -79,7 +79,13 @@
     "validateParameterSeparator": ", ",
 
     "jsDoc": {
-        "checkAnnotations": "jsdoc3",
+        "checkAnnotations": {
+          "preset": "jsdoc3",
+          "extra": {
+            "ngdoc": true,
+            "methodOf": true
+          }
+        },
         "checkParamNames": true,
         "requireParamTypes": true,
         "checkRedundantParams": true,
