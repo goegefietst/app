@@ -9,6 +9,12 @@
     '$ionicPopup', '$window'
   ];
 
+  /**
+   * @ngdoc service
+   * @name app.tracker.service:PopupService
+   * @description
+   * Service responsible for popups related to tracking.
+   */
   function PopupService($ionicPopup, $window) {
 
     PopupService.PERMISSION = 0;
@@ -16,15 +22,46 @@
     PopupService.ACCURACY = 2;
     PopupService.STOPPED = 3;
 
+    /**
+     * @ngdoc method
+     * @name showPermission
+     * @methodOf app.tracker.service:PopupService
+     * @description
+     * Shows a popup to warn the user that location permission is needed.
+     */
     this.showPermission = function() {
       return showPopup(PopupService.PERMISSION);
     };
+
+    /**
+     * @ngdoc method
+     * @name showLocation
+     * @methodOf app.tracker.service:PopupService
+     * @description
+     * Shows a popup to warn the user that location needs to be enabled.
+     */
     this.showLocation = function() {
       return showPopup(PopupService.LOCATION);
     };
+
+    /**
+     * @ngdoc method
+     * @name showAccuracy
+     * @methodOf app.tracker.service:PopupService
+     * @description
+     * Shows a popup to warn the user that high accuracy mode is disabled.
+     */
     this.showAccuracy = function() {
       return showPopup(PopupService.ACCURACY);
     };
+
+    /**
+     * @ngdoc method
+     * @name showStopped
+     * @methodOf app.tracker.service:PopupService
+     * @description
+     * Shows a popup to warn the user that the previous session was stopped.
+     */
     this.showStopped = function() {
       return showPopup(PopupService.STOPPED);
     };
@@ -86,6 +123,18 @@
       [buttonConfirm]
     ];
 
+    /**
+     * @ngdoc function
+     * @name showPopup
+     * @methodOf app.tracker.service:PopupService
+     * @description
+     * Shows a popup based on type<br/>
+     * 0 Permission<br/>
+     * 1 Location<br/>
+     * 2 Accuracy<br/>
+     * 3 Stopped<br/>
+     * @param {Number} type type of popup
+     */
     function showPopup(type) {
       return $ionicPopup.show({
         template: texts[type],

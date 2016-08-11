@@ -1,29 +1,62 @@
-/**
- * @namespace LocationSettings
- */
 (function() {
   'use strict';
 
   angular
     .module('app.tracker')
-    .service('LocationSettings', LocationSettings);
+    .service('Location', LocationService);
 
-  LocationSettings.$inject = [
+  LocationService.$inject = [
     '$q', '$window'
   ];
 
   /**
-   * @class
-   * @name Service
-   * @memberof LocationSettings
-   * @description Service that is responsible for checking which location settings are enabled.
+   * @ngdoc service
+   * @name app.tracker.service:LocationService
+   * @description
+   * Service that is responsible for checking which location settings are enabled.
    */
-  function LocationSettings($q, $window) {
+  function LocationService($q, $window) {
 
+    /**
+     * @ngdoc method
+     * @name checkLocationPermission
+     * @methodOf app.tracker.service:LocationService
+     * @description
+     * Checks whether the app has location permission.
+     * @returns {Promise} promise resolved if permission granted
+     */
     this.checkLocationPermission = hasLocationPermission;
+
+    /**
+     * @ngdoc method
+     * @name requestLocationPermission
+     * @methodOf app.tracker.service:LocationService
+     * @description
+     * Requests location permission.
+     * @returns {Promise} promise resolved if permission granted
+     */
     this.requestLocationPermission = requestLocationPermission;
+
+    /**
+     * @ngdoc method
+     * @name checkLocationEnabled
+     * @methodOf app.tracker.service:LocationService
+     * @description
+     * Checks whether the location services are enabled.
+     * @returns {Promise} promise resolved if location services are enabled
+     */
     this.checkLocationEnabled = checkLocationEnabled;
+
+    /**
+     * @ngdoc method
+     * @name checkHighAccuracy
+     * @methodOf app.tracker.service:LocationService
+     * @description
+     * Checks whether location services are in high accuracy mode (Android only).
+     * @returns {Promise} promise resolved if high accuracy enabled or iOS
+     */
     this.checkHighAccuracy = checkHighAccuracy;
+
     var PERMISSION = 'PERMISSION';
     this.PERMISSION = PERMISSION;
     var LOCATION = 'LOCATION';
@@ -31,13 +64,6 @@
     var HIGH_ACCURACY = 'HIGH_ACCURACY';
     this.HIGH_ACCURACY = HIGH_ACCURACY;
 
-    /**
-     * @function
-     * @name hasLocationPermission
-     * @description Checks if the app is authorized to use location services
-     * @memberof LocationsSettings.Service
-     * @returns {Promise}
-     */
     function hasLocationPermission() {
       var deferred = $q.defer();
       cordova.plugins.diagnostic.isLocationAuthorized(function(enabled) {
@@ -62,13 +88,6 @@
       return deferred.promise;
     }
 
-    /**
-     * @function
-     * @name checkLocationEnabled
-     * @description Checks if location services are enabled
-     * @memberof LocationsSettings.Service
-     * @returns {Promise}
-     */
     function checkLocationEnabled() {
       console.log('IN: ' + LOCATION);
       var deferred = $q.defer();
@@ -83,13 +102,6 @@
       return deferred.promise;
     }
 
-    /**
-     * @function
-     * @name checkHighAccuracy
-     * @description Checks if high accuracy mode is enabled
-     * @memberof LocationsSettings.Service
-     * @returns {Promise}
-     */
     function checkHighAccuracy() {
       console.log('IN: ' + HIGH_ACCURACY);
       var deferred = $q.defer();

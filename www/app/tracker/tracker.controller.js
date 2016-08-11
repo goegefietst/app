@@ -15,7 +15,7 @@
     'leafletData',
     'BackgroundGeolocationService',
     'Database',
-    'LocationSettings',
+    'Location',
     'Popup'
   ];
 
@@ -29,7 +29,7 @@
   function Controller($ionicPlatform, $scope, $window, $q,
                       $state, $ionicPopup, leafletData,
                       Geolocation, Database,
-                      LocationSettings, Popup) {
+                      Location, Popup) {
 
     var vm = this;
 
@@ -124,16 +124,16 @@
         console.log('CANNOT START TRACKING: ALREADY TRACKING');
         return;
       }
-      LocationSettings.checkLocationPermission()
+      Location.checkLocationPermission()
         .catch(function() {
-          return LocationSettings.requestLocationPermission();
+          return Location.requestLocationPermission();
         })
-        .then(LocationSettings.checkLocationPermission)
-        .then(LocationSettings.checkLocationEnabled)
-        .then(LocationSettings.checkHighAccuracy)
+        .then(Location.checkLocationPermission)
+        .then(Location.checkLocationEnabled)
+        .then(Location.checkHighAccuracy)
         .catch(function(err) {
           // Only meant to catch high accuracy, rethrow if anything else
-          if (err !== LocationSettings.HIGH_ACCURACY) {
+          if (err !== Location.HIGH_ACCURACY) {
             return $q.reject(err);
           }
           return Popup.showAccuracy().then(function(settings) {
@@ -147,10 +147,10 @@
           vm.textButton = 'Stop route';
         }).catch(function(err) {
         switch (err) {
-          case LocationSettings.PERMISSION:
+          case Location.PERMISSION:
             Popup.showPermission();
             break;
-          case LocationSettings.LOCATION:
+          case Location.LOCATION:
             Popup.showLocation();
             break;
         }
@@ -273,6 +273,7 @@
      * @methodOf app.tracker.controller:TrackerController
      * @description
      * Retrieves route from local db then updates the UI (map, distance, speed) to reflect changes.
+     * @param {Array} locations array of locations which contain 'time', 'latitude' and 'longitude'
      */
     function updateUI(locations) {
       var latlngs = [];
@@ -318,6 +319,7 @@
      * @methodOf app.tracker.controller:TrackerController
      * @description
      * Format ms to object with hour, minutes and seconds.
+     * @param {Number} ms time in ms
      * @returns {Object}
      * {
      *  hours,
