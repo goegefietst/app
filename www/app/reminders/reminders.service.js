@@ -6,35 +6,62 @@
     .service('Reminders', Reminders);
 
   Reminders.$inject = [
-    '$q', '$ionicPopup', 'Database', 'ionicTimePicker'
+    '$q', '$window', '$ionicPopup', 'ionicTimePicker', 'Database'
   ];
 
+  /**
+   * @ngdoc service
+   * @name app.reminders.service:RemindersService
+   * @description
+   * Service responsible for adding, removing, editing and toggling reminders.
+   */
   /* @ngInject */
-  function Reminders($q, $ionicPopup, Database, ionicTimePicker) {
+  function Reminders($q, $window, $ionicPopup, ionicTimePicker, Database) {
 
+    /**
+     * @ngdoc method
+     * @name loadReminders
+     * @methodOf app.reminders.service:RemindersService
+     * @description
+     * Loads reminders from local database
+     * @return Promise promise promise resolved with reminders
+     */
     this.loadReminders = loadReminders;
+
+    /**
+     * @ngdoc method
+     * @name addReminder
+     * @methodOf app.reminders.service:RemindersService
+     * @description
+     * TODO
+     */
     this.addReminder = addReminder;
+
+    /**
+     * @ngdoc method
+     * @name addReminder
+     * @methodOf app.reminders.service:RemindersService
+     * @description
+     * TODO
+     * @param Object $scope scope
+     */
     this.editReminder = editReminder;
     this.deleteReminder = deleteReminder;
     this.toggleReminder = toggleReminder;
-    this.setMasterCheck = setMasterCheck;
+    this.isEnabled = isEnabled;
+    this.setEnabled = setEnabled;
 
+    // jscs:disable maximumLineLength
     var templatePopup =
       '<ion-list>' +
-      '<ion-checkbox class="checkbox-royal" ng-model="data.monday">' +
-      'maandag</ion-checkbox>' +
-      '<ion-checkbox class="checkbox-royal" ng-model="data.tuesday">' +
-      'dinsdag</ion-checkbox>' +
-      '<ion-checkbox class="checkbox-royal" ng-model="data.wednesday">' +
-      'woensdag</ion-checkbox>' +
-      '<ion-checkbox class="checkbox-royal" ng-model="data.thursday">' +
-      'donderdag</ion-checkbox>' +
-      '<ion-checkbox class="checkbox-royal" ng-model="data.friday">' +
-      'vrijdag</ion-checkbox>' +
-      '<ion-checkbox class="checkbox-royal" ng-model="data.saturday">' +
-      'zaterdag</ion-checkbox>' +
-      '<ion-checkbox class="checkbox-royal" ng-model="data.sunday">' +
-      'zondag</ion-checkbox></ion-list>';
+      '<ion-checkbox class="checkbox-royal" ng-model="data.monday">maandag</ion-checkbox>' +
+      '<ion-checkbox class="checkbox-royal" ng-model="data.tuesday">dinsdag</ion-checkbox>' +
+      '<ion-checkbox class="checkbox-royal" ng-model="data.wednesday">woensdag</ion-checkbox>' +
+      '<ion-checkbox class="checkbox-royal" ng-model="data.thursday">donderdag</ion-checkbox>' +
+      '<ion-checkbox class="checkbox-royal" ng-model="data.friday">vrijdag</ion-checkbox>' +
+      '<ion-checkbox class="checkbox-royal" ng-model="data.saturday">zaterdag</ion-checkbox>' +
+      '<ion-checkbox class="checkbox-royal" ng-model="data.sunday">zondag</ion-checkbox></ion-list>';
+    // jscs:enable maximumLineLength
 
     function loadReminders() {
       return Database.selectReminders().then(map);
@@ -42,14 +69,14 @@
 
     function addReminder($scope, reminders) {
       ionicTimePicker.openTimePicker({
-        inputTime: ((new Date()).getHours() * 60 * 60), //Optional
-        step: 5, //Optional
-        format: 24, //Optional
-        titleLabel: 'Kies een tijdstip', //Optional
-        setLabel: 'Kies', //Optional
-        closeLabel: 'Annuleer', //Optional
-        callback: function(val) { //Mandatory
-          timePickerCallback($scope, reminders, val);
+        inputTime: ((new Date()).getHours() * 60 * 60),
+        step: 5,
+        format: 24,
+        titleLabel: 'Kies een tijdstip',
+        setLabel: 'Kies',
+        closeLabel: 'Annuleer',
+        callback: function(timestamp) {
+          timePickerCallback($scope, reminders, timestamp);
         }
       });
     }
@@ -58,14 +85,14 @@
       ionicTimePicker.openTimePicker({
         //If hour when editing a reminder is incorrect, this is the place to check first
         inputTime: (parseInt(reminder.hour) * 60 * 60 +
-          parseInt(reminder.minutes) * 60), //Optional
-        step: 5, //Optional
-        format: 24, //Optional
-        titleLabel: 'Kies een tijdstip', //Optional
-        setLabel: 'Kies', //Optional
-        closeLabel: 'Annuleer', //Optional
-        callback: function(val) { //Mandatory
-          timePickerCallback($scope, reminders, val, reminder);
+        parseInt(reminder.minutes) * 60),
+        step: 5,
+        format: 24,
+        titleLabel: 'Kies een tijdstip',
+        setLabel: 'Kies',
+        closeLabel: 'Annuleer',
+        callback: function(timestamp) {
+          timePickerCallback($scope, reminders, timestamp, reminder);
         }
       });
     }
@@ -90,8 +117,7 @@
         $scope.data.saturday = reminder.days[5];
         $scope.data.sunday = reminder.days[6];
       }
-
-      var myPopup = $ionicPopup.show({
+      var daysPopup = $ionicPopup.show({
         template: templatePopup,
         title: 'Kies de dag(en)',
         scope: $scope,
@@ -116,7 +142,7 @@
         }]
       });
 
-      myPopup.then(function(res) {
+      daysPopup.then(function(res) {
         if (res !== undefined) {
           if (reminder) {
             reminder.hour = format(hour);
@@ -177,15 +203,11 @@
 
     function updateDatabase(newReminders) {
 
-      var deleteReminders = function() {
-        return Database.deleteReminders();
-      };
-
       var insertReminders = function() {
         return Database.insertReminders(newReminders);
       };
 
-      deleteReminders().then(insertReminders);
+      Database.deleteReminders().then(insertReminders);
     }
 
     function updateReminders(reminders) {
@@ -218,10 +240,7 @@
       reminders.splice(reminders.indexOf(reminder), 1);
       updateReminders(reminders);
       updateDatabase(reminders);
-      if (reminders.length === 0) {
-        return false;
-      }
-      return true;
+      return reminders.length !== 0;
     }
 
     function toggleReminder(reminder, reminders) {
@@ -235,8 +254,13 @@
       }
     }
 
-    function setMasterCheck(check, reminders) {
-      if (check) {
+    function isEnabled() {
+      return $window.localStorage.enabled !== 'false';
+    }
+
+    function setEnabled(enabled, reminders) {
+      $window.localStorage.enabled = enabled;
+      if (enabled) {
         updateReminders(reminders);
       } else {
         cordova.plugins.notification.local.cancelAll(function() {
@@ -326,29 +350,7 @@
       var now = new Date();
       var result = new Date();
       var dayOfWeek = now.getDay();
-      var date;
-
-      if (j === 0) {
-        date = now.getDate() + 8 - dayOfWeek;
-      }
-      if (j === 1) {
-        date = now.getDate() + 9 - dayOfWeek;
-      }
-      if (j === 2) {
-        date = now.getDate() + 10 - dayOfWeek;
-      }
-      if (j === 3) {
-        date = now.getDate() + 11 - dayOfWeek;
-      }
-      if (j === 4) {
-        date = now.getDate() + 12 - dayOfWeek;
-      }
-      if (j === 5) {
-        date = now.getDate() + 13 - dayOfWeek;
-      }
-      if (j === 6) {
-        date = now.getDate() + 14 - dayOfWeek;
-      }
+      var date = now.getDate() + 8 + j - dayOfWeek;
       var diff = (date - now.getDate());
       if (diff > 7) {
         date = date - 7;
@@ -375,8 +377,8 @@
         return 0;
       }
       return Math.max.apply(null, reminders.map(function(reminder) {
-        return reminder.id;
-      })) + 1;
+          return reminder.id;
+        })) + 1;
     }
   }
 })();

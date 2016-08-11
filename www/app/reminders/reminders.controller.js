@@ -5,28 +5,80 @@
     .module('app.reminders')
     .controller('RemindersController', Controller);
 
-  Controller.$inject = ['$ionicPopup', '$scope', '$window', 'Reminders'];
+  Controller.$inject = ['$scope', 'Reminders'];
 
+  /**
+   * @ngdoc controller
+   * @name app.reminders.controller:RemindersController
+   * @description
+   * Controller responsible for reminders.
+   */
   /* @ngInject */
-  function Controller($ionicPopup, $scope, $window, Reminders) {
+  function Controller($scope, Reminders) {
     var vm = this;
 
     vm.reminders = [];
 
     vm.showDelete = false;
     vm.showEdit = false;
-    vm.masterCheck =
-      $window.localStorage.masterCheck === 'false' ? false : true;
+    vm.enabled = Reminders.isEnabled();
 
+    /**
+     * @ngdoc method
+     * @name addReminder
+     * @methodOf app.reminders.controller:RemindersController
+     * @description
+     * Opens popup to add new reminder
+     */
+    vm.addReminder = addReminder;
+
+    /**
+     * @ngdoc method
+     * @name editReminder
+     * @methodOf app.reminders.controller:RemindersController
+     * @description
+     * Opens popup to edit reminder
+     * @param Object reminder reminder that is to be edited
+     */
     vm.editReminder = editReminder;
-    vm.toggleDelete = toggleDelete; //TURN ON/OFF DELETE OPTION
-    vm.toggleEdit = toggleEdit; //NOT USED ATM
-    vm.addReminder = addReminder; //ADD NEW REMINDER
 
-    vm.onItemDelete = onItemDelete; //DELETE REMINDER
-    vm.onItemEdit = onItemEdit; //EDIT REMINDER
-    vm.toggleReminder = toggleReminder; //TOGGLE REMINDER ON/OFF
-    vm.toggleMasterCheck = toggleMasterCheck; //TOGGLE ALL REMINDERS ON/OFF
+    /**
+     * @ngdoc method
+     * @name toggleDelete
+     * @methodOf app.reminders.controller:RemindersController
+     * @description
+     * Toggles display of delete button next to every reminder
+     */
+    vm.toggleDelete = toggleDelete;
+
+    /**
+     * @ngdoc method
+     * @name deleteReminder
+     * @methodOf app.reminders.controller:RemindersController
+     * @description
+     * Delete a reminder
+     * @param Object reminder reminder that is to be deleted
+     */
+    vm.deleteReminder = deleteReminder;
+
+    /**
+     * @ngdoc method
+     * @name toggleReminder
+     * @methodOf app.reminders.controller:RemindersController
+     * @description
+     * Toggle whether a reminder is active or not
+     * @param Object reminder reminder that is to enabled/disabled
+     */
+    vm.toggleReminder = toggleReminder;
+
+    /**
+     * @ngdoc method
+     * @name toggleEnabled
+     * @methodOf app.reminders.controller:RemindersController
+     * @description
+     * Toggle whether all reminders are enabled
+     */
+    vm.toggleEnabled = toggleEnabled;
 
     loadReminders();
 
@@ -48,28 +100,17 @@
       vm.showDelete = !vm.showDelete;
     }
 
-    //UNUSED
-    function toggleEdit() {
-      vm.showEdit = !vm.showEdit;
-    }
-
-    function onItemDelete(reminder) {
+    function deleteReminder(reminder) {
       vm.showDelete = Reminders.deleteReminder(reminder, vm.reminders);
-    }
-
-    //UNUSED
-    function onItemEdit(reminder) {
-      console.log(reminder);
     }
 
     function toggleReminder(reminder) {
       Reminders.toggleReminder(reminder, vm.reminders);
     }
 
-    function toggleMasterCheck() {
-      vm.masterCheck = !vm.masterCheck;
-      $window.localStorage.masterCheck = vm.masterCheck;
-      Reminders.setMasterCheck(vm.masterCheck, vm.reminders);
+    function toggleEnabled() {
+      vm.enabled = !vm.enabled;
+      Reminders.setEnabled(vm.enabled, vm.reminders);
     }
 
   }
