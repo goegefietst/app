@@ -24,7 +24,7 @@
      * @methodOf app.reminders.service:RemindersService
      * @description
      * Loads reminders from local database
-     * @return Promise promise promise resolved with reminders
+     * @return {Promise} promise promise resolved with reminders
      */
     this.loadReminders = loadReminders;
 
@@ -33,22 +33,76 @@
      * @name addReminder
      * @methodOf app.reminders.service:RemindersService
      * @description
-     * TODO
+     * 1. Show popup to choose time of reminder
+     * 2. Show popup to choose days at which reminder is active
+     * 3. Add reminder to cordova notifications
+     * 4. Add reminder to local database
+     * @param {Object} $scope scope
+     * @param {Array} reminders current reminders
      */
     this.addReminder = addReminder;
 
     /**
      * @ngdoc method
-     * @name addReminder
+     * @name editReminder
      * @methodOf app.reminders.service:RemindersService
      * @description
-     * TODO
-     * @param Object $scope scope
+     * 1. Show popup to edit time of reminder
+     * 2. Show popup to edit days at which reminder is active
+     * 3. Edit reminder in cordova notifications
+     * 4. Edit reminder in local database
+     * @param {Object} $scope scope
+     * @param {Array} reminders existing reminders
+     * @param {Object} reminder reminder to be edited
      */
     this.editReminder = editReminder;
+
+    /**
+     * @ngdoc method
+     * @name deleteReminder
+     * @methodOf app.reminders.service:RemindersService
+     * @description
+     * 1. Remove reminder from cordova notifications
+     * 2. Remove reminder from local database
+     * @param {Object} $scope scope
+     * @param {Object} reminder reminder to be deleted
+     * @param {Array} reminders current reminders
+     * @return {boolean} whether there are reminders left
+     */
     this.deleteReminder = deleteReminder;
+
+    /**
+     * @ngdoc method
+     * @name toggleReminder
+     * @methodOf app.reminders.service:RemindersService
+     * @description
+     * 1. Toggle active <-> inactive
+     * 2. Edit reminder in cordova notifications
+     * 3. Edit reminder in local database
+     * @param {Object} reminder reminder to be toggled
+     * @param {Array} reminders current reminders
+     */
     this.toggleReminder = toggleReminder;
+
+    /**
+     * @ngdoc method
+     * @name isEnabled
+     * @methodOf app.reminders.service:RemindersService
+     * @description
+     * Check whether reminders are enabled or not
+     * @return {boolean} enabled whether reminders are enabled
+     */
     this.isEnabled = isEnabled;
+
+    /**
+     * @ngdoc method
+     * @name setEnabled
+     * @methodOf app.reminders.service:RemindersService
+     * @description
+     * Set whether reminders are enabled
+     * @param {boolean} enabled whether reminders are to be enabled
+     * @param {Array} reminders current reminders
+     */
     this.setEnabled = setEnabled;
 
     // jscs:disable maximumLineLength

@@ -28,7 +28,7 @@
      * @name addReminder
      * @methodOf app.reminders.controller:RemindersController
      * @description
-     * Opens popup to add new reminder
+     * Calls {@link app.reminders.service:RemindersService ReminderService#addReminder()}
      */
     vm.addReminder = addReminder;
 
@@ -38,7 +38,7 @@
      * @methodOf app.reminders.controller:RemindersController
      * @description
      * Opens popup to edit reminder
-     * @param Object reminder reminder that is to be edited
+     * @param {Object} reminder reminder that is to be edited
      */
     vm.editReminder = editReminder;
 
@@ -57,7 +57,7 @@
      * @methodOf app.reminders.controller:RemindersController
      * @description
      * Delete a reminder
-     * @param Object reminder reminder that is to be deleted
+     * @param {Object} reminder reminder that is to be deleted
      */
     vm.deleteReminder = deleteReminder;
 
@@ -67,7 +67,7 @@
      * @methodOf app.reminders.controller:RemindersController
      * @description
      * Toggle whether a reminder is active or not
-     * @param Object reminder reminder that is to enabled/disabled
+     * @param {Object} reminder reminder that is to enabled/disabled
      */
     vm.toggleReminder = toggleReminder;
 
