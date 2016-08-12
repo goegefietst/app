@@ -22,6 +22,11 @@
     PopupService.ACCURACY = 2;
     PopupService.STOPPED = 3;
 
+    this.showPermission = showPermission;
+    this.showLocation = showLocation;
+    this.showAccuracy = showAccuracy;
+    this.showStopped = showStopped;
+
     /**
      * @ngdoc method
      * @name showPermission
@@ -29,9 +34,9 @@
      * @description
      * Shows a popup to warn the user that location permission is needed.
      */
-    this.showPermission = function() {
+    function showPermission() {
       return showPopup(PopupService.PERMISSION);
-    };
+    }
 
     /**
      * @ngdoc method
@@ -40,9 +45,9 @@
      * @description
      * Shows a popup to warn the user that location needs to be enabled.
      */
-    this.showLocation = function() {
+    function showLocation() {
       return showPopup(PopupService.LOCATION);
-    };
+    }
 
     /**
      * @ngdoc method
@@ -51,9 +56,9 @@
      * @description
      * Shows a popup to warn the user that high accuracy mode is disabled.
      */
-    this.showAccuracy = function() {
+    function showAccuracy() {
       return showPopup(PopupService.ACCURACY);
-    };
+    }
 
     /**
      * @ngdoc method
@@ -62,9 +67,9 @@
      * @description
      * Shows a popup to warn the user that the previous session was stopped.
      */
-    this.showStopped = function() {
+    function showStopped() {
       return showPopup(PopupService.STOPPED);
-    };
+    }
 
     var texts = [// jscs:disable maximumLineLength
       '<p>We kunnen enkel je route tracken als je toestemming geeft tot je locatie.</p>',

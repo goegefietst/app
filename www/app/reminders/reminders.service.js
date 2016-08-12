@@ -18,91 +18,12 @@
   /* @ngInject */
   function Reminders($q, $window, $ionicPopup, ionicTimePicker, Database) {
 
-    /**
-     * @ngdoc method
-     * @name loadReminders
-     * @methodOf app.reminders.service:RemindersService
-     * @description
-     * Loads reminders from local database
-     * @return {Promise} promise promise resolved with reminders
-     */
     this.loadReminders = loadReminders;
-
-    /**
-     * @ngdoc method
-     * @name addReminder
-     * @methodOf app.reminders.service:RemindersService
-     * @description
-     * 1. Show popup to choose time of reminder
-     * 2. Show popup to choose days at which reminder is active
-     * 3. Add reminder to cordova notifications
-     * 4. Add reminder to local database
-     * @param {Object} $scope scope
-     * @param {Array} reminders current reminders
-     */
     this.addReminder = addReminder;
-
-    /**
-     * @ngdoc method
-     * @name editReminder
-     * @methodOf app.reminders.service:RemindersService
-     * @description
-     * 1. Show popup to edit time of reminder
-     * 2. Show popup to edit days at which reminder is active
-     * 3. Edit reminder in cordova notifications
-     * 4. Edit reminder in local database
-     * @param {Object} $scope scope
-     * @param {Array} reminders existing reminders
-     * @param {Object} reminder reminder to be edited
-     */
     this.editReminder = editReminder;
-
-    /**
-     * @ngdoc method
-     * @name deleteReminder
-     * @methodOf app.reminders.service:RemindersService
-     * @description
-     * 1. Remove reminder from cordova notifications
-     * 2. Remove reminder from local database
-     * @param {Object} $scope scope
-     * @param {Object} reminder reminder to be deleted
-     * @param {Array} reminders current reminders
-     * @return {boolean} whether there are reminders left
-     */
     this.deleteReminder = deleteReminder;
-
-    /**
-     * @ngdoc method
-     * @name toggleReminder
-     * @methodOf app.reminders.service:RemindersService
-     * @description
-     * 1. Toggle active <-> inactive
-     * 2. Edit reminder in cordova notifications
-     * 3. Edit reminder in local database
-     * @param {Object} reminder reminder to be toggled
-     * @param {Array} reminders current reminders
-     */
     this.toggleReminder = toggleReminder;
-
-    /**
-     * @ngdoc method
-     * @name isEnabled
-     * @methodOf app.reminders.service:RemindersService
-     * @description
-     * Check whether reminders are enabled or not
-     * @return {boolean} enabled whether reminders are enabled
-     */
     this.isEnabled = isEnabled;
-
-    /**
-     * @ngdoc method
-     * @name setEnabled
-     * @methodOf app.reminders.service:RemindersService
-     * @description
-     * Set whether reminders are enabled
-     * @param {boolean} enabled whether reminders are to be enabled
-     * @param {Array} reminders current reminders
-     */
     this.setEnabled = setEnabled;
 
     // jscs:disable maximumLineLength
@@ -117,10 +38,30 @@
       '<ion-checkbox class="checkbox-royal" ng-model="data.sunday">zondag</ion-checkbox></ion-list>';
     // jscs:enable maximumLineLength
 
+    /**
+     * @ngdoc method
+     * @name loadReminders
+     * @methodOf app.reminders.service:RemindersService
+     * @description
+     * Loads reminders from local database
+     * @return {Promise} promise promise resolved with reminders
+     */
     function loadReminders() {
       return Database.selectReminders().then(map);
     }
 
+    /**
+     * @ngdoc method
+     * @name addReminder
+     * @methodOf app.reminders.service:RemindersService
+     * @description
+     * 1. Show popup to choose time of reminder
+     * 2. Show popup to choose days at which reminder is active
+     * 3. Add reminder to cordova notifications
+     * 4. Add reminder to local database
+     * @param {Object} $scope scope
+     * @param {Array} reminders current reminders
+     */
     function addReminder($scope, reminders) {
       ionicTimePicker.openTimePicker({
         inputTime: ((new Date()).getHours() * 60 * 60),
@@ -135,6 +76,19 @@
       });
     }
 
+    /**
+     * @ngdoc method
+     * @name editReminder
+     * @methodOf app.reminders.service:RemindersService
+     * @description
+     * 1. Show popup to edit time of reminder
+     * 2. Show popup to edit days at which reminder is active
+     * 3. Edit reminder in cordova notifications
+     * 4. Edit reminder in local database
+     * @param {Object} $scope scope
+     * @param {Array} reminders existing reminders
+     * @param {Object} reminder reminder to be edited
+     */
     function editReminder($scope, reminders, reminder) {
       ionicTimePicker.openTimePicker({
         //If hour when editing a reminder is incorrect, this is the place to check first
@@ -149,6 +103,79 @@
           timePickerCallback($scope, reminders, timestamp, reminder);
         }
       });
+    }
+
+    /**
+     * @ngdoc method
+     * @name deleteReminder
+     * @methodOf app.reminders.service:RemindersService
+     * @description
+     * 1. Remove reminder from cordova notifications
+     * 2. Remove reminder from local database
+     * @param {Object} $scope scope
+     * @param {Object} reminder reminder to be deleted
+     * @param {Array} reminders current reminders
+     * @return {boolean} whether there are reminders left
+     */
+    function deleteReminder(reminder, reminders) {
+      reminders.splice(reminders.indexOf(reminder), 1);
+      updateReminders(reminders);
+      updateDatabase(reminders);
+      return reminders.length !== 0;
+    }
+
+    /**
+     * @ngdoc method
+     * @name toggleReminder
+     * @methodOf app.reminders.service:RemindersService
+     * @description
+     * 1. Toggle active <-> inactive
+     * 2. Edit reminder in cordova notifications
+     * 3. Edit reminder in local database
+     * @param {Object} reminder reminder to be toggled
+     * @param {Array} reminders current reminders
+     */
+    function toggleReminder(reminder, reminders) {
+      reminder.active = !reminder.active;
+      if (reminder.active) {
+        updateReminders(reminders);
+        updateDatabase(reminders);
+      } else {
+        updateReminders(reminders);
+        updateDatabase(reminders);
+      }
+    }
+
+    /**
+     * @ngdoc method
+     * @name isEnabled
+     * @methodOf app.reminders.service:RemindersService
+     * @description
+     * Check whether reminders are enabled or not
+     * @return {boolean} enabled whether reminders are enabled
+     */
+    function isEnabled() {
+      return $window.localStorage.enabled !== 'false';
+    }
+
+    /**
+     * @ngdoc method
+     * @name setEnabled
+     * @methodOf app.reminders.service:RemindersService
+     * @description
+     * Set whether reminders are enabled
+     * @param {boolean} enabled whether reminders are to be enabled
+     * @param {Array} reminders current reminders
+     */
+    function setEnabled(enabled, reminders) {
+      $window.localStorage.enabled = enabled;
+      if (enabled) {
+        updateReminders(reminders);
+      } else {
+        cordova.plugins.notification.local.cancelAll(function() {
+          console.log('Cancelling all notifications');
+        });
+      }
     }
 
     function timePickerCallback($scope, reminders, val, reminder) {
@@ -288,39 +315,6 @@
       console.log('setting notifications');
       console.log(notifications);
       cordova.plugins.notification.local.schedule(notifications);
-    }
-
-    function deleteReminder(reminder, reminders) {
-      reminders.splice(reminders.indexOf(reminder), 1);
-      updateReminders(reminders);
-      updateDatabase(reminders);
-      return reminders.length !== 0;
-    }
-
-    function toggleReminder(reminder, reminders) {
-      reminder.active = !reminder.active;
-      if (reminder.active) {
-        updateReminders(reminders);
-        updateDatabase(reminders);
-      } else {
-        updateReminders(reminders);
-        updateDatabase(reminders);
-      }
-    }
-
-    function isEnabled() {
-      return $window.localStorage.enabled !== 'false';
-    }
-
-    function setEnabled(enabled, reminders) {
-      $window.localStorage.enabled = enabled;
-      if (enabled) {
-        updateReminders(reminders);
-      } else {
-        cordova.plugins.notification.local.cancelAll(function() {
-          console.log('Cancelling all notifications');
-        });
-      }
     }
 
     function format(number) {

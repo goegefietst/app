@@ -17,44 +17,9 @@
    */
   function LocationService($q, $window) {
 
-    /**
-     * @ngdoc method
-     * @name checkLocationPermission
-     * @methodOf app.tracker.service:LocationService
-     * @description
-     * Checks whether the app has location permission.
-     * @returns {Promise} promise resolved if permission granted
-     */
-    this.checkLocationPermission = hasLocationPermission;
-
-    /**
-     * @ngdoc method
-     * @name requestLocationPermission
-     * @methodOf app.tracker.service:LocationService
-     * @description
-     * Requests location permission.
-     * @returns {Promise} promise resolved if permission granted
-     */
+    this.checkLocationPermission = checkLocationPermission;
     this.requestLocationPermission = requestLocationPermission;
-
-    /**
-     * @ngdoc method
-     * @name checkLocationEnabled
-     * @methodOf app.tracker.service:LocationService
-     * @description
-     * Checks whether the location services are enabled.
-     * @returns {Promise} promise resolved if location services are enabled
-     */
     this.checkLocationEnabled = checkLocationEnabled;
-
-    /**
-     * @ngdoc method
-     * @name checkHighAccuracy
-     * @methodOf app.tracker.service:LocationService
-     * @description
-     * Checks whether location services are in high accuracy mode (Android only).
-     * @returns {Promise} promise resolved if high accuracy enabled or iOS
-     */
     this.checkHighAccuracy = checkHighAccuracy;
 
     var PERMISSION = 'PERMISSION';
@@ -64,7 +29,15 @@
     var HIGH_ACCURACY = 'HIGH_ACCURACY';
     this.HIGH_ACCURACY = HIGH_ACCURACY;
 
-    function hasLocationPermission() {
+    /**
+     * @ngdoc method
+     * @name checkLocationPermission
+     * @methodOf app.tracker.service:LocationService
+     * @description
+     * Checks whether the app has location permission.
+     * @returns {Promise} promise resolved if permission granted
+     */
+    function checkLocationPermission() {
       var deferred = $q.defer();
       cordova.plugins.diagnostic.isLocationAuthorized(function(enabled) {
         if (!enabled) {
@@ -76,6 +49,14 @@
       return deferred.promise;
     }
 
+    /**
+     * @ngdoc method
+     * @name requestLocationPermission
+     * @methodOf app.tracker.service:LocationService
+     * @description
+     * Requests location permission.
+     * @returns {Promise} promise resolved if permission granted
+     */
     function requestLocationPermission() {
       var deferred = $q.defer();
       cordova.plugins.diagnostic.requestLocationAuthorization(function(status) {
@@ -88,6 +69,14 @@
       return deferred.promise;
     }
 
+    /**
+     * @ngdoc method
+     * @name checkLocationEnabled
+     * @methodOf app.tracker.service:LocationService
+     * @description
+     * Checks whether the location services are enabled.
+     * @returns {Promise} promise resolved if location services are enabled
+     */
     function checkLocationEnabled() {
       console.log('IN: ' + LOCATION);
       var deferred = $q.defer();
@@ -102,6 +91,14 @@
       return deferred.promise;
     }
 
+    /**
+     * @ngdoc method
+     * @name checkHighAccuracy
+     * @methodOf app.tracker.service:LocationService
+     * @description
+     * Checks whether location services are in high accuracy mode (Android only).
+     * @returns {Promise} promise resolved if high accuracy enabled or iOS
+     */
     function checkHighAccuracy() {
       console.log('IN: ' + HIGH_ACCURACY);
       var deferred = $q.defer();
