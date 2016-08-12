@@ -13,7 +13,7 @@
     '$state',
     '$ionicPopup',
     'leafletData',
-    'BackgroundGeolocationService',
+    'Geolocation',
     'Database',
     'Location',
     'Popup'

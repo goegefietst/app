@@ -83,7 +83,8 @@
           "preset": "jsdoc3",
           "extra": {
             "ngdoc": true,
-            "methodOf": true
+            "methodOf": true,
+            "propertyOf": true
           }
         },
         "checkParamNames": true,
