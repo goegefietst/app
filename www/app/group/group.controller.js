@@ -5,10 +5,10 @@
     .module('app.group')
     .controller('GroupController', Controller);
 
-  Controller.$inject = ['$window', 'Groups'];
+  Controller.$inject = ['$window', 'Connection'];
 
   /* @ngInject */
-  function Controller($window, Groups) {
+  function Controller($window, Connection) {
     var vm = this;
     var CATEGORIES = ['School', 'Faculty', 'Association'];
     var storedTeams = JSON.parse($window.localStorage.getItem('userTeams'));
@@ -31,11 +31,17 @@
     init();
 
     function init() {
-      for (var i = 0; i < 3; i++) {
-        var category = CATEGORIES[i];
-        var data = {index: i, category: category};
-        Groups.getTeamsWithDistances(data).then(load);
-      }
+      Connection.getTeamDistances().then(function(teams) {
+        function filterByCategory(entry) {
+          return entry.category === data.category; //e.g. 'Association'
+        }
+        for (var i = 0; i < 3; i++) {
+          var category = CATEGORIES[i];
+          var data = {index: i, category: category};
+          data.teams = teams.filter(filterByCategory);
+          load(data);
+        }
+      });
     }
 
     function load(data) {
