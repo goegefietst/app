@@ -7,11 +7,12 @@
 
       this.getTeamsWithDistances = getTeamsWithDistances;
 
-      function getTeamsWithDistances(category) {
+      function getTeamsWithDistances(data) {
         return Connection.getTeamDistances().then(function(teams) {
-          return teams.filter(function(entry) {
-            return entry.category === category; //e.g. 'Association'
+          data.teams = teams.filter(function(entry) {
+            return entry.category === data.category; //e.g. 'Association'
           });
+          return data;
         });
       }
 

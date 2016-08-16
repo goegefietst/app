@@ -17,11 +17,11 @@
   function Connection($http, Helper) {
 
     this.makeAccount = makeAccount;
-    this.updateTeams = updateTeams;
     this.postRoute = postRoute;
     this.getTeamDistances = getTeamDistances;
 
     //UNUSED
+    this.updateTeams = updateTeams;
     this.getRoutes = getRoutes;
     this.getRoutesByUser = getRoutesByUser;
     this.getTeams = getTeams;
@@ -46,30 +46,6 @@
       return $http
         .post('https://goegefietst.gent/user')
         .then(success, error);
-    }
-
-    /**
-     * @ngdoc method
-     * @name updateTeams
-     * @methodOf connection.service:ConnectionService
-     * @description
-     * TODO
-     * @param {String} uuid user id
-     * @param {String} secret user secret
-     * @param {Array} teams teams array [school, faculty, association]
-     * @return {Promise} promise TODO
-     */
-    function updateTeams(uuid, secret, teams) {
-      var config = {
-        headers: {
-          'secret': secret
-        }
-      };
-      var data = {
-        teams: teams
-      };
-      return $http
-        .post('https://goegefietst.gent/user/' + uuid, data, config);
     }
 
     /**
@@ -121,6 +97,20 @@
         .then(function(response) {
           return response.data;
         });
+    }
+
+    // UNUSED
+    function updateTeams(uuid, secret, teams) {
+      var config = {
+        headers: {
+          'secret': secret
+        }
+      };
+      var data = {
+        teams: teams
+      };
+      return $http
+        .post('https://goegefietst.gent/user/' + uuid, data, config);
     }
 
     //UNUSED

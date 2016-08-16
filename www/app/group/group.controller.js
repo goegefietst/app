@@ -5,33 +5,22 @@
     .module('app.group')
     .controller('GroupController', Controller);
 
-  Controller.$inject = ['$scope', '$window', '$ionicPopup', 'Connection', 'Groups'];
+  Controller.$inject = ['$window', 'Groups'];
 
   /* @ngInject */
-  function Controller($scope, $window, $ionicPopup, Connection, Groups) {
+  function Controller($window, Groups) {
     var vm = this;
-    var uuid = $window.localStorage.getItem('uuid');
-    var secret = $window.localStorage.getItem('secret');
-    var userTeams = $window.localStorage.getItem('userTeams');
-    vm.userTeams = userTeams ? userTeams : [];
+    var CATEGORIES = ['School', 'Faculty', 'Association'];
+    var storedTeams = JSON.parse($window.localStorage.getItem('userTeams'));
+
+    vm.index = 0;
+    vm.listTeams = [[],[],[]];
+    vm.dropdownTeams = [[],[],[]];
+    vm.userTeams = [];
 
     vm.isActive = isActive;
-    vm.goToSchool = goToSchool;
-    vm.goToFaculty = goToFaculty;
-    vm.goToAssociation = goToAssociation;
-
-    vm.ListAssociation = [];
-    vm.ListFaculty = [];
-    vm.ListSchool = [];
-    vm.DropdownAssociation = [];
-    vm.DropdownFaculty = [];
-    vm.DropdownSchool = [];
-    vm.currentType = 'school';
-    vm.currentTeams = [];
-    vm.storedAssociation = $window.localStorage.getItem('currentAssociation');
-    vm.storedFaculty = $window.localStorage.getItem('currentFaculty');
-    vm.storedSchool = $window.localStorage.getItem('currentSchool');
-    vm.setGroup = setGroup;
+    vm.goToIndex = goToIndex;
+    vm.saveTeams = saveTeams;
 
     var contentHeight =
       angular.element(document.getElementById('groups'))[0].offsetHeight;
@@ -39,67 +28,51 @@
     vm.listHeight = contentHeight / 9 * 7;
     vm.dropdownHeight = contentHeight / 9 * 1;
 
-    ['Association', 'School', 'Faculty'].forEach(function(category) {
-      Groups.getTeamsWithDistances(category).then(function(teams) {
-        var teamsWithEmpty = teams.slice();
-        var emptyTeam = {
-          name: 'Geen team',
-          category: teams[0].category,
-          values: {
-            distance: 0
-          }
-        };
-        teamsWithEmpty.push(emptyTeam);
-        vm['List' + category] = teams;
-        vm['Dropdown' + category] = teamsWithEmpty;
-        var team = teams.find(function(team) {
-          return team.name === vm['stored' + category];
-        });
-        vm['current' + category] = team ? team : emptyTeam;
-        if (category === 'School') {
-          vm.currentTeams = teams;
-          vm.currentTeam = vm.currentSchool;
-          vm.currentDropdown = vm.DropdownSchool;
+    init();
+
+    function init() {
+      for (var i = 0; i < 3; i++) {
+        var category = CATEGORIES[i];
+        var data = {index: i, category: category};
+        Groups.getTeamsWithDistances(data).then(load);
+      }
+    }
+
+    function load(data) {
+      var index = data.index;
+      var teams = data.teams;
+      var teamsWithEmpty = teams.slice();
+      var emptyTeam = {
+        name: 'Geen team',
+        category: teams[0].category,
+        values: {
+          distance: 0
         }
-      });
-    });
-
-    function goToSchool() {
-      vm.currentType = 'school';
-      vm.currentTeams = vm.ListSchool;
-      vm.currentTeam = vm.currentSchool;
-      vm.currentDropdown = vm.DropdownSchool;
+      };
+      teamsWithEmpty.unshift(emptyTeam);
+      vm.listTeams[index] = teams;
+      vm.dropdownTeams[index] = teamsWithEmpty;
+      vm.userTeams[index] = teamsWithEmpty[0];
+      if (storedTeams && storedTeams[index]) {
+        var team = teamsWithEmpty.filter(function(team) {
+          return team.name === storedTeams[index].name;
+        });
+        if (team[0]) {
+          vm.userTeams[index] = team[0];
+        }
+      }
     }
 
-    function goToFaculty() {
-      vm.currentType = 'faculty';
-      vm.currentTeams = vm.ListFaculty;
-      vm.currentTeam = vm.currentFaculty;
-      vm.currentDropdown = vm.DropdownFaculty;
+    function goToIndex(index) {
+      vm.index = index;
     }
 
-    function goToAssociation() {
-      vm.currentType = 'association';
-      vm.currentTeams = vm.ListAssociation;
-      vm.currentTeam = vm.currentAssociation;
-      vm.currentDropdown = vm.DropdownAssociation;
+    function isActive(index) {
+      return vm.index === index;
     }
 
-    function isActive(value) {
-      return vm.currentType === value;
-    }
-
-    function setGroup() {
-      vm['current' + vm.currentTeam.category] = vm.currentTeam;
-      $window.localStorage
-        .setItem('current' + vm.currentTeam.category, vm.currentTeam.name);
-      updateTeams();
-    }
-
-    function updateTeams() {
-      var teams = [vm.currentSchool, vm.currentFaculty, vm.currentAssociation];
-      $window.localStorage.setItem('userTeams', teams);
-      Connection.updateTeams(uuid, secret, teams);
+    function saveTeams() {
+      $window.localStorage.setItem('userTeams', JSON.stringify(vm.userTeams));
     }
   }
 })();
