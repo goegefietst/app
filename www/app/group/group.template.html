@@ -1,9 +1,9 @@
 <ion-view hide-nav-bar="true">
   <ion-content id="groups" class="padding has-tabs-top">
     <div ng-style="{height: {{group.tabsHeight}} + 'px'}" class="button-bar">
-      <a class="button" ng-class="{'button-royal': group.isActive(0)}" ng-click="group.goToIndex(0)">School</a>
-      <a class="button" ng-class="{'button-royal': group.isActive(1)}" ng-click="group.goToIndex(1)">Faculteit</a>
-      <a class="button" ng-class="{'button-royal': group.isActive(2)}" ng-click="group.goToIndex(2)">Vereniging</a>
+      <a class="button" ng-class="{'button-royal': group.isActiveTab(0)}" ng-click="group.goToTab(0)">School</a>
+      <a class="button" ng-class="{'button-royal': group.isActiveTab(1)}" ng-click="group.goToTab(1)">Faculteit</a>
+      <a class="button" ng-class="{'button-royal': group.isActiveTab(2)}" ng-click="group.goToTab(2)">Vereniging</a>
     </div>
     <ion-scroll ng-style="{height: {{group.listHeight}} + 'px'}" zooming="false" direction="y" style="height: 100px">
       <ion-list class="list padding">
