@@ -16,7 +16,8 @@
     'Geolocation',
     'Database',
     'Location',
-    'Popup'
+    'Popup',
+    'Encouragement'
   ];
 
   /**
@@ -26,10 +27,9 @@
    * Controller responsible for tracking.
    */
   /* @ngInject */
-  function Controller($ionicPlatform, $scope, $window, $q,
-                      $state, $ionicPopup, leafletData,
-                      Geolocation, Database,
-                      Location, Popup) {
+  function Controller($ionicPlatform, $scope, $window, $q, $state,
+                      $ionicPopup, leafletData, Geolocation, Database,
+                      Location, Popup, Encouragement) {
 
     var vm = this;
 
@@ -175,6 +175,9 @@
       }
       var route = Geolocation.stop();
       console.log(route);
+
+      Encouragement.saveDistance(vm.distance);
+
       vm.tracking = false;
       vm.distance = 0.0;
       vm.speed = 0.0;
@@ -188,6 +191,8 @@
       $state.go('tab.performance.personal', {
         route: route
       });
+
+      Encouragement.showPopup();
     }
 
     /**
