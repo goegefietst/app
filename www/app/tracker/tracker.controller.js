@@ -17,7 +17,8 @@
     'Database',
     'Location',
     'Popup',
-    'Encouragement'
+    'Encouragement',
+    'Stats'
   ];
 
   /**
@@ -29,7 +30,7 @@
   /* @ngInject */
   function Controller($ionicPlatform, $scope, $window, $q, $state,
                       $ionicPopup, leafletData, Geolocation, Database,
-                      Location, Popup, Encouragement) {
+                      Location, Popup, Encouragement, Stats) {
 
     var vm = this;
 
@@ -177,6 +178,7 @@
       console.log(route);
 
       Encouragement.saveDistance(vm.distance);
+      Stats.invalidate();
 
       vm.tracking = false;
       vm.distance = 0.0;

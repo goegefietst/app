@@ -1,6 +1,6 @@
 /**
-* @namespace Stats
-*/
+ * @namespace Stats
+ */
 (function() {
   'use strict';
 
@@ -14,58 +14,80 @@
 
   /* @ngInject */
   /**
-  * @class
-  * @name StatsService
-  * @memberof Stats
-  * @description Service that is responsible for the stats.
-  */
+   * @class
+   * @name StatsService
+   * @memberof Stats
+   * @description Service that is responsible for the stats.
+   */
   function Stats($q, Database, Helper, Day, Week, Year) {
+
+    var dayCache = false;
+    var weekCache = false;
+    var yearCache = false;
 
     this.loadFor = function(timespan) {
       var date = new Date();
       switch (timespan) {
         case 'day': //show a 24 hour day
+          if (dayCache) {
+            console.log('DAY CACHE');
+            return $q.resolve(dayCache);
+          }
           return loadData({
             day: date.getDate(),
             month: date.getMonth(),
             year: date.getYear()
-          }, Day.setDefaultValues, Day.loadChart, Day.loadFooter);
+          }, Day.setDefaultValues, Day.loadChart, Day.loadFooter, timespan);
         case 'week': //show a 7 day week
+          if (weekCache) {
+            console.log('WEEK CACHE');
+            return $q.resolve(weekCache);
+          }
           return loadData({
             time: date.getTime()
-          }, Week.setDefaultValues, Week.loadChart, Week.loadFooter);
+          }, Week.setDefaultValues, Week.loadChart, Week.loadFooter, timespan);
         case 'year': //show a 12 month year
+          if (yearCache) {
+            console.log('YEAR CACHE');
+            return $q.resolve(yearCache);
+          }
           return loadData({
             year: date.getYear()
-          }, Year.setDefaultValues, Year.loadChart, Year.loadFooter);
+          }, Year.setDefaultValues, Year.loadChart, Year.loadFooter, timespan);
       }
     };
 
-    /**
-    * @callback loadChart
-    * @description Load data and draw chart.
-    */
+    this.invalidate = function() {
+      dayCache = false;
+      weekCache = false;
+      yearCache = false;
+    };
 
     /**
-    * @callback loadFooter
-    * @description Load footer.
-    */
+     * @callback loadChart
+     * @description Load data and draw chart.
+     */
 
     /**
-    * @callback setDefaultValues
-    * @description Set default values for statistics.
-    */
+     * @callback loadFooter
+     * @description Load footer.
+     */
 
     /**
-    * @function
-    * @name loadData
-    * @memberof Stats.StatsService
-    * @param {Object} options - options that determine what routes should be retrieved.
-    * @param {setDefaultValues} setDefaultValues - callback that sets default values for statistics.
-    * @param {loadChart} loadChart - callback that loads the chart.
-    * @param {loadFooter} loadFooter - callback that loads the footer.
-    */
-    function loadData(options, setDefaultValues, loadChart, loadFooter) {
+     * @callback setDefaultValues
+     * @description Set default values for statistics.
+     */
+
+    /**
+     * @function
+     * @name loadData
+     * @memberof Stats.StatsService
+     * @param {Object} options - options that determine what routes should be retrieved.
+     * @param {setDefaultValues} setDefaultValues - callback that sets default values for statistics.
+     * @param {loadChart} loadChart - callback that loads the chart.
+     * @param {loadFooter} loadFooter - callback that loads the footer.
+     */
+    function loadData(options, setDefaultValues, loadChart, loadFooter, timespan) {
 
       return Database.selectRoutes(options)
         .then(checkIfEmpty)
@@ -75,17 +97,20 @@
         .then(loadChart)
         .then(loadStats)
         .then(loadLatestRoute)
-        .then(loadFooter);
+        .then(loadFooter)
+        .then(function(values) {
+          return cache(values, timespan);
+        });
     }
 
     /**
-    * @function
-    * @name checkIfEmpty
-    * @description checks if the retrieved data is empty or not.
-    * @memberof Stats.StatsService
-    * @param {Object} values - routes retrieved from database.
-    * @returns {Promise}
-    */
+     * @function
+     * @name checkIfEmpty
+     * @description checks if the retrieved data is empty or not.
+     * @memberof Stats.StatsService
+     * @param {Object} values - routes retrieved from database.
+     * @returns {Promise}
+     */
     function checkIfEmpty(values) {
       var deferred = $q.defer();
       var routes = values.routes;
@@ -100,13 +125,13 @@
     }
 
     /**
-    * @function
-    * @name transformToRoutesAndDistances
-    * @description transforms points to routes and calculates distances.
-    * @memberof Stats.StatsService
-    * @param {Object} points - points retrieved from database.
-    * @returns {Promise}
-    */
+     * @function
+     * @name transformToRoutesAndDistances
+     * @description transforms points to routes and calculates distances.
+     * @memberof Stats.StatsService
+     * @param {Object} points - points retrieved from database.
+     * @returns {Promise}
+     */
     function transformToRoutesAndDistances(points) {
       var deferred = $q.defer();
       var routes = [];
@@ -127,13 +152,13 @@
     }
 
     /**
-    * @function
-    * @name loadStats
-    * @description sets the stats in table.
-    * @memberof Stats.StatsService
-    * @param {Object} values - points retrieved from database.
-    * @returns {Promise}
-    */
+     * @function
+     * @name loadStats
+     * @description sets the stats in table.
+     * @memberof Stats.StatsService
+     * @param {Object} values - points retrieved from database.
+     * @returns {Promise}
+     */
     function loadStats(values) {
       var deferred = $q.defer();
       if (values.distances.length < 1) {
@@ -160,13 +185,13 @@
     }
 
     /**
-    * @function
-    * @name loadLatestRoute
-    * @description Loads the latest route from the database.
-    * @memberof Stats.StatsService
-    * @param {Object} values - data retrieved from database.
-    * @returns {Promise}
-    */
+     * @function
+     * @name loadLatestRoute
+     * @description Loads the latest route from the database.
+     * @memberof Stats.StatsService
+     * @param {Object} values - data retrieved from database.
+     * @returns {Promise}
+     */
     function loadLatestRoute(values) {
       var deferred = $q.defer();
       if (values.routes.length < 1) {
@@ -175,11 +200,10 @@
       }
       var route = values.routes[values.routes.length - 1];
       var distance = 0;
-      var duration = 0;
 
       if (route === undefined || route === null || route.length < 1) {
         console.log('NO LAST ROUTE');
-        return;
+        return $q.reject(); //fixme test
       }
       for (var j = 0; j < route.length - 1; j++) {
         var first = route[j];
@@ -191,8 +215,7 @@
       }
       distance = Math.round(distance * 100) / 100;
       values.disDiff = distance;
-      duration = route[route.length - 1].time - route[0].time;
-      values.timDiff = duration;
+      values.timDiff = route[route.length - 1].time - route[0].time;
       var distanceOld = values.dis - values.disDiff;
       var timeOld = values.tim - values.timDiff;
       var speedOld =
@@ -211,6 +234,21 @@
         (values.timDiff / 1000 / 60 * intensity).toFixed(1);
       deferred.resolve(values);
       return deferred.promise;
+    }
+
+    function cache(values, timespan) {
+      switch (timespan) {
+        case 'day':
+          dayCache = values;
+          break;
+        case 'week':
+          weekCache = values;
+          break;
+        case 'year':
+          yearCache = values;
+          break;
+      }
+      return values;
     }
   }
 })();
