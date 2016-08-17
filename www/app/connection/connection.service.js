@@ -57,9 +57,10 @@
      * @param {String} uuid user id
      * @param {String} secret user secret
      * @param {Object} route route object { id, time, sent, points[] }
+     * @param {Array} teams teams that the user belongs to
      * @return {Promise} promise TODO
      */
-    function postRoute(uuid, secret, route) {
+    function postRoute(uuid, secret, route, teams) {
       var config = {
         headers: {
           'secret': secret
@@ -72,6 +73,7 @@
       data.time = route.time;
       data.sent = route.sent;
       data.points = Helper.trimRoute(route.points, 500);
+      data.teams = teams;
       console.log('TRIMMED ROUTE');
       console.log(data.points);
       return $http
