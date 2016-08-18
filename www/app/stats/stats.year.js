@@ -79,6 +79,9 @@
         bezierCurve: false,
         animation: false,
         pointHitDetectionRadius: 0.1,
+        tooltipTemplate: function(obj) {
+          return obj.value.toFixed(2) + ' km';
+        },
         multiTooltipTemplate: function(obj) {
           return obj.value.toFixed(2) + ' km';
         },

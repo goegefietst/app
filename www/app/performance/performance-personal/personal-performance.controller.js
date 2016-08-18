@@ -25,6 +25,7 @@
   /* @ngInject */
   function Controller(Stats) {
     var vm = this;
+    var cumulative = false; //whether to include cumulative in chart or not
 
     vm.timespan = 'day';
     vm.chartData = 'distance';
@@ -133,9 +134,9 @@
         vm.new.tim = values.timDiff;
         vm.new.spe = values.speDiff;
         vm.new.cal = values.calDiff;
-        vm.data[index] = values.data;
+        vm.data[index] = cumulative ? values.data : [values.data[0]];
         vm.labels[index] = values.labels;
-        vm.series[index] = values.series;
+        vm.series[index] = cumulative ? values.series : [values.series[0]];
         vm.options[index] = values.options;
         vm.footer = values.footer;
       });
