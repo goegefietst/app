@@ -40,6 +40,10 @@
       spe: 0,
       cal: 0
     };
+    vm.data = [false, false, false];
+    vm.labels = [false, false, false];
+    vm.series = [false, false, false];
+    vm.options = [false, false, false];
 
     //CHANGE BETWEEN DAY, WEEK OR YEAR STATISTICS
     vm.isActive = isActive;
@@ -60,19 +64,19 @@
 
     function goToDay() {
       vm.timespan = 'day';
-      loadStats(vm.timespan);
+      loadStats(vm.timespan, 0);
       console.log('test timespan changed to ' + vm.timespan);
     }
 
     function goToWeek() {
       vm.timespan = 'week';
-      loadStats(vm.timespan);
+      loadStats(vm.timespan, 1);
       console.log('test timespan changed to ' + vm.timespan);
     }
 
     function goToYear() {
       vm.timespan = 'year';
-      loadStats(vm.timespan);
+      loadStats(vm.timespan, 2);
       console.log('test timespan changed to ' + vm.timespan);
     }
 
@@ -114,8 +118,12 @@
       return vm.timespan === value;
     }
 
-    function loadStats(timespan) {
-      resetStats();
+    function loadStats(timespan, index) {
+      if (vm.data[index] && vm.labels[index] &&
+        vm.series[index] && vm.options[index]) {
+        return; //already loaded
+      }
+      resetStats(index);
       Stats.loadFor(timespan).then(function(values) {
         vm.dis = values.dis;
         vm.tim = values.tim;
@@ -125,15 +133,15 @@
         vm.new.tim = values.timDiff;
         vm.new.spe = values.speDiff;
         vm.new.cal = values.calDiff;
-        vm.data = values.data;
-        vm.labels = values.labels;
-        vm.series = values.series;
-        vm.options = values.options;
+        vm.data[index] = values.data;
+        vm.labels[index] = values.labels;
+        vm.series[index] = values.series;
+        vm.options[index] = values.options;
         vm.footer = values.footer;
       });
     }
 
-    function resetStats() {
+    function resetStats(index) {
       vm.dis = '0.0';
       vm.tim = 0;
       vm.spe = '0.0';
@@ -142,10 +150,10 @@
       vm.new.tim = 0;
       vm.new.spe = 0;
       vm.new.cal = 0;
-      vm.data = [];
-      vm.labels = [];
-      vm.series = [];
-      vm.options = [];
+      vm.data[index] = false;
+      vm.labels[index] = false;
+      vm.series[index] = false;
+      vm.options[index] = false;
     }
 
   }
