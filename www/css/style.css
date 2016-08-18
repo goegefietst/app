@@ -7,7 +7,12 @@
   margin: auto;
 }
 
+.no-padding {
+  padding: 0;
+}
+
 .newData {
+  white-space:pre;
   color: green;
 }
 

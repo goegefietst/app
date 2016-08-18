@@ -52,14 +52,6 @@
     vm.goToWeek = goToWeek;
     vm.goToYear = goToYear;
 
-    //CURRENTLY NOT USED
-    vm.goToDistance = goToDistance;
-    vm.goToTime = goToTime;
-    vm.goToSpeed = goToSpeed;
-    vm.goToCalories = goToCalories;
-    vm.goToPrevious = goToPrevious;
-    vm.goToNext = goToNext;
-
     //DEFAULT
     vm.goToDay();
 
@@ -79,40 +71,6 @@
       vm.timespan = 'year';
       loadStats(vm.timespan, 2);
       console.log('test timespan changed to ' + vm.timespan);
-    }
-
-    function goToDistance() {
-      //change chart data to distance
-      vm.chartData = 'distance';
-      console.log('test chartData changed to ' + vm.chartData);
-    }
-
-    function goToTime() {
-      //change chart data to time
-      vm.chartData = 'time';
-      console.log('test chartData changed to ' + vm.chartData);
-    }
-
-    function goToSpeed() {
-      //change chart data to speed
-      vm.chartData = 'speed';
-      console.log('test chartData changed to ' + vm.chartData);
-    }
-
-    function goToCalories() {
-      //change chart data to calories
-      vm.chartData = 'calories';
-      console.log('test chartData changed to ' + vm.chartData);
-    }
-
-    function goToPrevious() {
-      //select the previous day/week/year
-      console.log('test previous was clicked');
-    }
-
-    function goToNext() {
-      //select the next day/week/year
-      console.log('test next was clicked');
     }
 
     function isActive(value) {

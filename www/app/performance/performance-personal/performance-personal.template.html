@@ -6,32 +6,42 @@
       <a class="button" ng-class="{'button-royal': personal.isActive('year')}" ng-click="personal.goToYear()">Jaar</a>
     </div>
 
-    <ul class="list padding"  style="margin: 0;">
+    <div class="row no-padding" style="margin-top: 1em;">
+      <div class="col no-padding" style="width: 100%; text-align: center;">
+        <div style="display: inline-block;">
+          <div class="row" style="margin-bottom: 0.5em;">{{personal.dis}} km <span class="newData" ng-show="personal.new.dis !== 0 && personal.isActive('day')"> + {{personal.new.dis}} km</span></div>
+          <div class="row">{{personal.spe}} km/u <span class="newData" ng-show="personal.new.spe !== 0 && personal.isActive('day')"> {{personal.new.spe}} km/u</span></div>
+        </div>
+      </div>
+      <div class="col no-padding" style="width: 100%; text-align: center;">
+        <div style="display: inline-block;">
+          <div class="row" style="margin-bottom: 0.5em;">{{personal.tim | msToTimeFilter}} <span class="newData" ng-show="personal.new.tim !== 0 && personal.isActive('day')"> + {{personal.new.tim | msToTimeFilter}}</span></div>
+          <div class="row">{{personal.cal}} kcal <span class="newData" ng-show="personal.new.cal !== 0 && personal.isActive('day')"> {{personal.new.cal}} kcal</span></div>
+        </div>
+      </div>
+    </div>
+    <!--ul class="list padding"  style="margin: 0;">
       <li class="item item-button-right">
         {{personal.dis}}
         km
         <span class="newData" ng-show="personal.new.dis !== 0 && personal.isActive('day')"> + {{personal.new.dis}} km</span>
-        <!--<button class="button ion-chevron-right" ng-click="personal.goToDistance()"></button>-->
       </li>
       <li class="item item-button-right">
         {{personal.tim | msToTimeFilter}}
         <span class="newData" ng-show="personal.new.tim !== 0 && personal.isActive('day')"> + {{personal.new.tim | msToTimeFilter}}</span>
-        <!--<button class="button ion-chevron-right" ng-click="personal.goToTime()"></button>-->
       </li>
       <li class="item item-button-right">
         {{personal.spe}}
         km/u
         <span class="newData" ng-show="personal.new.spe !== 0 && personal.isActive('day')"> {{personal.new.spe}} km/u</span>
-        <!--<button class="button ion-chevron-right" ng-click="personal.goToSpeed()"></button>-->
       </li>
       <li class="item item-button-right">
         {{personal.cal}}
         kcal
         <span class="newData" ng-show="personal.new.cal !== 0 && personal.isActive('day')"> {{personal.new.cal}} kcal</span>
-        <!--<button class="button ion-chevron-right" ng-click="personal.goToCalories()"></button>-->
       </li>
-    </ul>
-    <canvas height="300" class="chart chart-line" ng-show="personal.isActive('day')" chart-data="personal.data[0]" chart-labels="personal.labels[0]" chart-legend="false" chart-series="personal.series[0]" chart-options="personal.options[0]" chart-click="onClick"></canvas>
+    </ul-->
+    <!--canvas height="300" class="chart chart-line" ng-show="personal.isActive('day')" chart-data="personal.data[0]" chart-labels="personal.labels[0]" chart-legend="false" chart-series="personal.series[0]" chart-options="personal.options[0]" chart-click="onClick"></canvas-->
     <canvas height="300" class="chart chart-line" ng-show="personal.isActive('week')" chart-data="personal.data[1]" chart-labels="personal.labels[1]" chart-legend="false" chart-series="personal.series[1]" chart-options="personal.options[1]" chart-click="onClick"></canvas>
     <canvas height="300" class="chart chart-line" ng-show="personal.isActive('year')" chart-data="personal.data[2]" chart-labels="personal.labels[2]" chart-legend="false" chart-series="personal.series[2]" chart-options="personal.options[2]" chart-click="onClick"></canvas>
   </ion-content>
