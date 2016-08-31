@@ -31,7 +31,7 @@
     "cordova-plugin-device@1.1.2",
     "cordova-plugin-console@1.0.3",
     {
-      "locator": "https://github.com/apache/cordova-plugin-whitelist#1.2.3-dev",
+      "locator": "https://github.com/apache/cordova-plugin-whitelist#1.2.2",
       "id": "cordova-plugin-whitelist"
     },
     "cordova-plugin-splashscreen@3.2.2",

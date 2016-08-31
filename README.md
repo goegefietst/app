@@ -20,22 +20,15 @@ Clone the project and resolve dependencies. Then install cordova plugins by rest
     $ git clone https://github.com/Buccaneer/goegefietst.git goegefietst
     $ cd goegefietst
     $ npm install
-    $ bower install
+    $ bower install --force
     $ ionic state restore
 
 The following step shouldn't be required, but if you encounter angular related dependency errors: manually run the injection task then try to run the app again.
 
     $ gulp inject
 
-Run the project in your browser.  
-Note: cordova plugins such as geolocation and notifications have native dependencies and don't work in your browser.
-
-    $ ionic serve
-
 Run the project on an android device (to run on ios, replace 'android' with 'ios').  
-Adding the platform is only necessary the first time you run that platform.
 
-    $ ionic platform add android
     $ ionic run android
 
 ### Version
