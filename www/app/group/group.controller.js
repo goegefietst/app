@@ -5,7 +5,7 @@
     .module('app.group')
     .controller('GroupController', Controller);
 
-  Controller.$inject = ['$window', 'Connection'];
+  Controller.$inject = ['$window', '$timeout', 'Connection'];
 
   /**
    * @ngdoc controller
@@ -14,7 +14,7 @@
    * Controller responsible for displaying groups.
    */
   /* @ngInject */
-  function Controller($window, Connection) {
+  function Controller($window, $timeout, Connection) {
     var vm = this;
 
     /**
@@ -109,6 +109,9 @@
      */
     vm.userTeams = [];
 
+    var valid = false;
+    var initialising = false;
+
     vm.isActiveTab = isActiveTab;
     vm.goToTab = goToTab;
     vm.saveTeams = saveTeams;
@@ -120,19 +123,33 @@
     vm.dropdownHeight = contentHeight / 9 * 1;
 
     init();
+    $timeout(invalidate, 60 * 1000);
 
     function init() {
+      if (initialising || valid) {
+        return;
+      }
+      initialising = true;
       Connection.getTeams().then(function(teams) {
         for (var i = 0; i < 3; i++) {
           var category = CATEGORIES[i];
           var data = {index: i, category: category};
           data.teams = teams.filter(filterByCategory);
           load(data);
+          initialising = false;
+          valid = true;
         }
         function filterByCategory(entry) {
           return entry.category === data.category; //e.g. 'Association'
         }
+      }).catch(function() {
+        initialising = false;
       });
+    }
+
+    function invalidate() {
+      valid = false;
+      $timeout(invalidate, 60 * 1000);
     }
 
     function load(data) {
@@ -167,6 +184,7 @@
      * @param {Number} index index of tab
      */
     function goToTab(index) {
+      init();
       vm.index = index;
     }
 
