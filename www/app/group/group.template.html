@@ -9,7 +9,7 @@
       <ion-list class="list padding">
         <ion-item class="item" ng-repeat="team in group.listTeams[group.index]">
           <span class="align-left">{{$index + 1}}. {{team.name}}</span>
-          <span class="align-right">{{team.values.distance}} km</span>
+          <span class="align-right">{{team.distance | number: 2}} km</span>
         </ion-item>
       </ion-list>
     </ion-scroll>

@@ -58,7 +58,7 @@
      * </table>
      * Example: listTeams[0] (School teams)
      * <table>
-     *   <tr><th>index</th><th>team</th><th>team.name</th><th>team.values.distance</th></tr>
+     *   <tr><th>index</th><th>team</th><th>team.name</th><th>team.distance</th></tr>
      *   <tr><td>0</td><td>{Object} HoGent team</td><td>{String} HoGent</td><td>{Number} 0</td></tr>
      *   <tr><td>1</td><td>{Object} UGent team</td><td>{String} UGent</td><td>{Number} 0</td></tr>
      *   <tr><td>2</td><td>{Object} Odisee team</td><td>{String} Odisee</td><td>{Number} 0</td></tr>
@@ -83,7 +83,7 @@
      * </table>
      * Example: dropdownTeams[0] (School teams)
      * <table>
-     *   <tr><th>index</th><th>team</th><th>team.name</th><th>team.values.distance</th></tr>
+     *   <tr><th>index</th><th>team</th><th>team.name</th><th>team.distance</th></tr>
      *   <tr><td>0</td><td>{Object} No team</td><td>{String} Geen team</td><td>{Number} 0</td></tr>
      *   <tr><td>1</td><td>{Object} HoGent team</td><td>{String} HoGent</td><td>{Number} 0</td></tr>
      *   <tr><td>2</td><td>{Object} UGent team</td><td>{String} UGent</td><td>{Number} 0</td></tr>
@@ -122,15 +122,15 @@
     init();
 
     function init() {
-      Connection.getTeamDistances().then(function(teams) {
-        function filterByCategory(entry) {
-          return entry.category === data.category; //e.g. 'Association'
-        }
+      Connection.getTeams().then(function(teams) {
         for (var i = 0; i < 3; i++) {
           var category = CATEGORIES[i];
           var data = {index: i, category: category};
           data.teams = teams.filter(filterByCategory);
           load(data);
+        }
+        function filterByCategory(entry) {
+          return entry.category === data.category; //e.g. 'Association'
         }
       });
     }
@@ -142,9 +142,7 @@
       var emptyTeam = {
         name: 'Geen team',
         category: teams[0].category,
-        values: {
-          distance: 0
-        }
+        distance: 0
       };
       teamsWithEmpty.unshift(emptyTeam);
       vm.listTeams[index] = teams;

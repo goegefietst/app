@@ -18,13 +18,10 @@
 
     this.makeAccount = makeAccount;
     this.postRoute = postRoute;
-    this.getTeamDistances = getTeamDistances;
+    this.getTeams = getTeams;
 
     //UNUSED
-    this.updateTeams = updateTeams;
-    this.getRoutes = getRoutes;
     this.getRoutesByUser = getRoutesByUser;
-    this.getTeams = getTeams;
 
     /**
      * @ngdoc method
@@ -44,7 +41,7 @@
         console.log('MAKE ACCOUNT ERROR');
       };
       return $http
-        .post('https://goegefietst.gent/user')
+        .post('https://goegefietst.gent/users')
         .then(success, error);
     }
 
@@ -69,15 +66,16 @@
       console.log('UNTRIMMED ROUTE');
       console.log(route.points);
       var data = {};
-      data.id = route.id;
+      data.uuid = uuid;
       data.time = route.time;
-      data.sent = route.sent;
-      data.points = Helper.trimRoute(route.points, 500);
+      data.points = Helper.trimRoute(route.points, 250);
       data.teams = teams;
       console.log('TRIMMED ROUTE');
       console.log(data.points);
+      console.log('BODY');
+      console.log(data);
       return $http
-        .post('https://goegefietst.gent/route/' + uuid, data, config)
+        .post('https://goegefietst.gent/routes', data, config)
         .then(function(response) {
           console.log('POST ROUTE RESPONSE');
           console.log(response);
@@ -87,41 +85,16 @@
 
     /**
      * @ngdoc method
-     * @name getTeamDistances
+     * @name getTeams
      * @methodOf connection.service:ConnectionService
      * @description
      * TODO
      * @return {Promise} promise TODO
      */
-    function getTeamDistances() {
+    function getTeams() {
       return $http
-        .get('https://goegefietst.gent/teams/distances')
+        .get('https://goegefietst.gent/teams')
         .then(function(response) {
-          return response.data;
-        });
-    }
-
-    // UNUSED
-    function updateTeams(uuid, secret, teams) {
-      var config = {
-        headers: {
-          'secret': secret
-        }
-      };
-      var data = {
-        teams: teams
-      };
-      return $http
-        .post('https://goegefietst.gent/user/' + uuid, data, config);
-    }
-
-    //UNUSED
-    function getRoutes() {
-      return $http
-        .get('https://goegefietst.gent/routes')
-        .then(function(response) {
-          console.log('GET ROUTES RESPONSE');
-          console.log(response);
           return response.data;
         });
     }
@@ -134,19 +107,10 @@
         }
       };
       return $http
-        .get('https://goegefietst.gent/route/' + uuid, config)
+        .get('https://goegefietst.gent/routes/' + uuid, config)
         .then(function(response) {
           console.log('GET ROUTES BY USER RESPONSE');
           console.log(response);
-          return response.data;
-        });
-    }
-
-    //UNUSED
-    function getTeams() {
-      return $http
-        .get('https://goegefietst.gent/teams/names')
-        .then(function(response) {
           return response.data;
         });
     }

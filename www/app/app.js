@@ -44,7 +44,7 @@
       var storedTeams = $window.localStorage.getItem('userTeams');
       var teams = [];
       if (storedTeams) {
-        teams = storedTeams;
+        teams = JSON.parse(storedTeams);
       }
       if (uuid === null || secret === null) {
         Connection.makeAccount().then(function(data) {
