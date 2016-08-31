@@ -202,13 +202,13 @@
     * @returns {object[]} array that is trimmed.
     */
     function trimRoute(points, radius) {
-      if (points.length < 10) {
+      if (points.length < 1) {
         return points;
       }
       var start = points[0];
-      var startIndex = 0;
+      var startIndex = points.length - 1;
       var end = points[points.length - 1];
-      var endIndex = points.length - 1;
+      var endIndex = 0;
       var i;
       var lat;
       var lng;
