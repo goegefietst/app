@@ -1,22 +1,31 @@
 {
   "name": "goegefietst",
   "version": "1.1.1",
-  "description": "goegefietst: An Ionic project",
+  "description": "Goe Gefietst app",
+  "author": "TreinTramBus",
+  "license": "GNU GPLv3",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/goegefietst/app.git"
+  },
+  "bugs": {
+    "url": "https://github.com/goegefietst/app/issues"
+  },
   "devDependencies": {
-    "bower": "^1.3.3",
+    "bower": "^1.7.9",
     "connect": "^3.4.1",
-    "gulp": "^3.5.6",
+    "gulp": "^3.9.1",
     "gulp-angular-filesort": "^1.1.1",
-    "gulp-concat": "^2.2.0",
+    "gulp-concat": "^2.6.0",
     "gulp-inject": "^3.0.0",
-    "gulp-minify-css": "^0.3.0",
+    "gulp-minify-css": "^0.3.13",
     "gulp-ngdocs": "https://github.com/nikhilmodak/gulp-ngdocs.git",
-    "gulp-rename": "^1.2.0",
-    "gulp-sass": "^2.0.4",
-    "gulp-util": "^2.2.14",
+    "gulp-rename": "^1.2.2",
+    "gulp-sass": "^2.3.2",
+    "gulp-util": "^2.2.20",
     "serve-static": "^1.11.1",
     "shelljs": "^0.3.0",
-    "wiredep": "^3.0.0"
+    "wiredep": "^3.0.1"
   },
   "cordovaPlugins": [
     "cordova-plugin-device@1.1.2",
