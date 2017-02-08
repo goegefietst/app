@@ -20,6 +20,8 @@
     this.postRoute = postRoute;
     this.getTeams = getTeams;
 
+    var cutoff = 100; // amount of meter to be cut off at start and end of route
+
     //UNUSED
     this.getRoutesByUser = getRoutesByUser;
 
@@ -68,7 +70,7 @@
       var data = {};
       data.uuid = uuid;
       data.time = route.time;
-      data.points = Helper.trimRoute(route.points, 250);
+      data.points = Helper.trimRoute(route.points, cutoff);
       data.teams = teams;
       console.log('TRIMMED ROUTE');
       console.log(data.points);

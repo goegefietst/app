@@ -33,6 +33,8 @@
                       Location, Popup, Encouragement, Stats) {
 
     var vm = this;
+    var stationarySteps = 15; // amount of last points to be used to determine if stationary
+    var stationaryRadius = 0.1; // radius at which you are considered stationary
 
     // RELATIVE HEIGHT OF THE MAP, STATS AND BUTTON
     var contentHeight =
@@ -86,7 +88,7 @@
     Geolocation.subscribe($scope, function dataUpdated() {
       var locations = Geolocation.getLocations();
       updateUI(locations);
-      if (vm.tracking && isStationary(locations, 15, 0.5)) {
+      if (vm.tracking && isStationary(locations, stationarySteps, stationaryRadius)) {
         stopTracking();
         Popup.showStopped();
       }
