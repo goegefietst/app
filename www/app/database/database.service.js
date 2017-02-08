@@ -5,7 +5,7 @@
     .module('database')
     .service('Database', Database);
 
-  Database.$inject = ['$q', '$cordovaSQLite'];
+  Database.$inject = ['$q', '$ionicPlatform', '$cordovaSQLite'];
 
   /**
    * @ngdoc service
@@ -14,7 +14,7 @@
    * Service responsible for interacting with the local database.
    */
   /* @ngInject */
-  function Database($q, $cordovaSQLite) {
+  function Database($q, $ionicPlatform, $cordovaSQLite) {
 
     this.insertReminders = insertReminders;
     this.deleteReminders = deleteReminders;
@@ -29,12 +29,14 @@
     this.insertReminder = insertReminder;
     this.insertPoint = insertPoint;
 
-    var db = $cordovaSQLite.openDB({
-      name: 'goegefietst.db',
-      iosDatabaseLocation: 'default'
-    });
+    var db;
 
-    (function createTables() {
+    $ionicPlatform.ready(function() {
+      db = $cordovaSQLite.openDB({
+        name: 'goegefietst.db',
+        iosDatabaseLocation: 'default'
+      });
+
       $cordovaSQLite.execute(db,
         'CREATE TABLE IF NOT EXISTS points ' +
         '(id integer primary key, routeId integer, lat real, lng real, ' +
@@ -49,7 +51,7 @@
         ' mon integer, tue integer, wed integer, thu integer, fri integer' +
         ', sat integer, sun integer)'
       );
-    })();
+    });
 
     /**
      * @ngdoc method
