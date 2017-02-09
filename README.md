@@ -17,7 +17,7 @@ First make sure you have [node.js] 4 installed. Then install [ionic], [cordova],
 
 Clone the project and resolve dependencies. Then install cordova plugins by restoring the state.
 
-    $ git clone https://github.com/Buccaneer/goegefietst.git goegefietst
+    $ git clone https://github.com/goegefietst/app.git goegefietst
     $ cd goegefietst
     $ npm install
     $ bower install --force
