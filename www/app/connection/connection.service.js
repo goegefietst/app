@@ -43,7 +43,7 @@
         console.log('MAKE ACCOUNT ERROR');
       };
       return $http
-        .post('https://goegefietst.be/users')
+        .post('https://goegefietst.gent/users')
         .then(success, error);
     }
 
@@ -77,7 +77,7 @@
       console.log('BODY');
       console.log(data);
       return $http
-        .post('https://goegefietst.be/routes', data, config)
+        .post('https://goegefietst.gent/routes', data, config)
         .then(function(response) {
           console.log('POST ROUTE RESPONSE');
           console.log(response);
@@ -95,7 +95,7 @@
      */
     function getTeams() {
       return $http
-        .get('https://goegefietst.be/teams')
+        .get('https://goegefietst.gent/teams')
         .then(function(response) {
           return response.data;
         });
@@ -109,7 +109,7 @@
         }
       };
       return $http
-        .get('https://goegefietst.be/routes/' + uuid, config)
+        .get('https://goegefietst.gent/routes/' + uuid, config)
         .then(function(response) {
           console.log('GET ROUTES BY USER RESPONSE');
           console.log(response);

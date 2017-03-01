@@ -4,11 +4,11 @@
   <description>
     Goe Gefietst, de vré wijze fietsapp voor Gentse studenten.
   </description>
-  <author email="pieter-jan.pauwels@okfn.org" href="http://goegefietst.be/">
+  <author email="pieter-jan.pauwels@okfn.org" href="http://goegefietst.gent/">
     Pieter-Jan Pauwels
   </author>
   <content src="index.html"/>
-  <access origin="https://goegefietst.be"/>
+  <access origin="https://goegefietst.gent"/>
   <access origin="http://*.openstreetmap.org"/>
   <preference name="webviewbounce" value="false"/>
   <preference name="UIWebViewBounce" value="false"/>
