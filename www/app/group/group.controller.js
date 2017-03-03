@@ -1,4 +1,4 @@
-(function() {
+(function () {
   'use strict';
 
   angular
@@ -30,7 +30,7 @@
      * <tr><td>2</td><td>Association</td></tr>
      * </table>
      */
-    var CATEGORIES = ['School', 'Faculty', 'Association'];
+    var CATEGORIES = ['School', 'Association', 'Faculty'];
     var storedTeams = JSON.parse($window.localStorage.getItem('userTeams'));
 
     /**
@@ -41,6 +41,16 @@
      * Index of the current tab.
      */
     vm.index = 0;
+
+
+    /**
+   * @ngdoc property
+   * @name createmode
+   * @propertyOf app.group.controller:GroupController
+   * @description
+   * True or false for creating a new team
+   */
+    vm.createmode = 'false';
 
     /**
      * @ngdoc property
@@ -116,6 +126,10 @@
     vm.goToTab = goToTab;
     vm.saveTeams = saveTeams;
 
+    vm.toggleCreateMode = toggleCreateMode;
+    vm.addTeam = addTeam;
+    vm.inputTeam = "";
+
     var contentHeight =
       angular.element(document.getElementById('groups'))[0].offsetHeight;
     vm.tabsHeight = contentHeight / 9 * 0.8;
@@ -130,10 +144,10 @@
         return;
       }
       initialising = true;
-      Connection.getTeams().then(function(teams) {
+      Connection.getTeams().then(function (teams) {
         for (var i = 0; i < 3; i++) {
           var category = CATEGORIES[i];
-          var data = {index: i, category: category};
+          var data = { index: i, category: category };
           data.teams = teams.filter(filterByCategory);
           load(data);
           initialising = false;
@@ -142,7 +156,7 @@
         function filterByCategory(entry) {
           return entry.category === data.category; //e.g. 'Association'
         }
-      }).catch(function() {
+      }).catch(function () {
         initialising = false;
       });
     }
@@ -157,7 +171,7 @@
       var teams = data.teams;
       var teamsWithEmpty = teams.slice();
       var emptyTeam = {
-        name: 'Geen team',
+        name: 'Nog geen gekozen...',
         category: teams[0].category,
         distance: 0
       };
@@ -166,12 +180,53 @@
       vm.dropdownTeams[index] = teamsWithEmpty;
       vm.userTeams[index] = teamsWithEmpty[0];
       if (storedTeams && storedTeams[index]) {
-        var team = teamsWithEmpty.filter(function(team) {
+        var team = teamsWithEmpty.filter(function (team) {
           return team.name === storedTeams[index].name;
         });
         if (team[0]) {
           vm.userTeams[index] = team[0];
         }
+      }
+    }
+
+    /**
+     * @ngdoc method
+     * @name toggleCreateMode
+     * @methodOf app.group.controller:GroupController
+     * @description
+     */
+    function toggleCreateMode() {
+      if (vm.createmode == 'true') vm.createmode = 'false';
+      else vm.createmode = 'true';
+    }
+
+    /**
+     * @ngdoc method
+     * @name toggleCreateMode
+     * @methodOf app.group.controller:GroupController
+     * @description
+     */
+    function addTeam() {
+      let isok = true;
+      if (vm.inputTeam.lenght < 1) isok = false;
+      vm.dropdownTeams.forEach(function (element) {
+        if (element == vm.inputTeam) isok = false;
+      }, this);
+      if (vm.inputTeam.lenght < 1) isok = false;
+
+      if (isok) {
+        var newTeam = {
+          name: vm.inputTeam,
+          category: CATEGORIES[vm.index],
+          distance: 0
+        };
+
+        vm.dropdownTeams.concat(newTeam);
+
+        console.log(newTeam);
+
+        // Close create mode
+        toggleCreateMode();
       }
     }
 
@@ -185,6 +240,7 @@
      */
     function goToTab(index) {
       init();
+      vm.createmode = false;
       vm.index = index;
     }
 

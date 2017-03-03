@@ -2,8 +2,24 @@
   <ion-content id="groups" class="padding has-tabs-top">
     <div class="button-bar">
       <a class="button" ng-class="{'button-royal': group.isActiveTab(0)}" ng-click="group.goToTab(0)">School</a>
-      <a class="button" ng-class="{'button-royal': group.isActiveTab(1)}" ng-click="group.goToTab(1)">Faculteit</a>
-      <a class="button" ng-class="{'button-royal': group.isActiveTab(2)}" ng-click="group.goToTab(2)">Vereniging</a>
+      <a class="button" ng-class="{'button-royal': group.isActiveTab(1)}" ng-click="group.goToTab(1)">Vereniging</a>
+      <a class="button" ng-class="{'button-royal': group.isActiveTab(2)}" ng-click="group.goToTab(2)">Teams</a>
+    </div>
+    <button class="button button-large button-block button-inline button-royal" style="margin: 0;" ng-click="group.toggleCreateMode()">
+        Voeg één nieuw team toe...
+    </button>
+    
+    <span ng-show="group.createmode == 'true'" class="animate-if">
+        <input for="inputTeam" ng-model="group.inputTeam"></input>
+        <button class="button button-large button-block button-inline button-royal" style="margin: 0;" ng-click="group.addTeam()">
+            Ok
+        </button>
+    </span>
+    <div ng-style="{height: {{group.dropdownHeight}} + 'px'}" class="list">
+      <label ng-style="{height: ({{group.dropdownHeight}} - 10)  + 'px'}" class="item item-input item-select">
+        <select class="customDropdown" ng-model="group.userTeams[group.index]" ng-options="team.name for team in group.dropdownTeams[group.index] | orderBy: 'name'" ng-change="group.saveTeams()">
+        </select>
+      </label>
     </div>
     <ion-scroll ng-style="{height: {{group.listHeight}} + 'px'}" zooming="false" direction="y" style="height: 100px">
       <ion-list class="list padding">
@@ -13,11 +29,5 @@
         </ion-item>
       </ion-list>
     </ion-scroll>
-    <div ng-style="{height: {{group.dropdownHeight}} + 'px'}" class="list">
-      <label ng-style="{height: ({{group.dropdownHeight}} - 10)  + 'px'}" class="item item-input item-select">
-        <select class="customDropdown" ng-model="group.userTeams[group.index]" ng-options="team.name for team in group.dropdownTeams[group.index] | orderBy: 'name'" ng-change="group.saveTeams()">
-        </select>
-      </label>
-    </div>
   </ion-content>
 </ion-view>
