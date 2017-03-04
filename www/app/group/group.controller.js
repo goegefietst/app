@@ -221,13 +221,17 @@
           distance: 0
         };
 
-        vm.dropdownTeams.concat(newTeam);
-
-        console.log(newTeam);
-
-        // Close create mode
-        toggleCreateMode();
+        // Add the new team to db
+        Connection.postTeam(newTeam).then(function () {
+            // Refresh 
+            init();
+        });
       }
+
+      
+        // Close create mode
+        vm.inputTeam = "";
+        toggleCreateMode();
     }
 
     /**
@@ -240,7 +244,8 @@
      */
     function goToTab(index) {
       init();
-      vm.createmode = false;
+      vm.inputTeam = "";
+      vm.createmode = 'false';
       vm.index = index;
     }
 

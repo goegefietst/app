@@ -5,12 +5,12 @@
       <a class="button" ng-class="{'button-royal': group.isActiveTab(1)}" ng-click="group.goToTab(1)">Vereniging</a>
       <a class="button" ng-class="{'button-royal': group.isActiveTab(2)}" ng-click="group.goToTab(2)">Teams</a>
     </div>
-    <button class="button button-large button-block button-inline button-royal" style="margin: 0;" ng-click="group.toggleCreateMode()">
+    <button class="button button-large button-block button-inline button-royal" ng-show="group.createmode == 'false'" style="margin: 0;" ng-click="group.toggleCreateMode()">
         Voeg één nieuw team toe...
     </button>
     
     <span ng-show="group.createmode == 'true'" class="animate-if">
-        <input for="inputTeam" ng-model="group.inputTeam"></input>
+        <input type="text" for="inputTeam" class="form-control" ng-model="group.inputTeam" placeholder="Naam team"></input>
         <button class="button button-large button-block button-inline button-royal" style="margin: 0;" ng-click="group.addTeam()">
             Ok
         </button>

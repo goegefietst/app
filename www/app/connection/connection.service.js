@@ -19,6 +19,7 @@
     this.makeAccount = makeAccount;
     this.postRoute = postRoute;
     this.getTeams = getTeams;
+    this.postTeam = postTeam;
 
     var cutoff = 100; // amount of meter to be cut off at start and end of route
 
@@ -83,6 +84,39 @@
           console.log(response);
           return response.data;
         });
+    }
+
+    /**
+     * @ngdoc method
+     * @name postTeam
+     * @methodOf connection.service:ConnectionService
+     * @description
+     * TODO
+     * @param {Object} team team object { name, category }
+     * @return {Promise} promise TODO
+     */
+    function postTeam(team) {
+      var config = {
+        headers: {
+          'Content-Type': 'application/json',
+          'login': 'admin',
+          'password': 'pjisdemaxmaat'
+        }
+      };
+      var data = {};
+      data.name = team.name;
+      data.category = team.category;
+      console.log('BODY');
+      console.log(data);
+      return $http
+        .post('https://goegefietst.gent/teams', JSON.stringify(data), config);
+        /*
+        .then(function(response) {
+          console.log('POST ROUTE RESPONSE');
+          console.log(response);
+          return response.data;
+        });
+        */
     }
 
     /**
