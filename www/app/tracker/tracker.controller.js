@@ -1,4 +1,4 @@
-(function() {
+(function () {
   'use strict';
 
   angular
@@ -29,8 +29,8 @@
    */
   /* @ngInject */
   function Controller($ionicPlatform, $scope, $window, $q, $state,
-                      $ionicPopup, leafletData, Geolocation, Database,
-                      Location, Popup, Encouragement, Stats) {
+    $ionicPopup, leafletData, Geolocation, Database,
+    Location, Popup, Encouragement, Stats) {
 
     var vm = this;
     var stationarySteps = 15; // amount of last points to be used to determine if stationary
@@ -128,36 +128,36 @@
         return;
       }
       Location.checkLocationPermission()
-        .catch(function() {
+        .catch(function () {
           return Location.requestLocationPermission();
         })
         .then(Location.checkLocationPermission)
         .then(Location.checkLocationEnabled)
         .then(Location.checkHighAccuracy)
-        .catch(function(err) {
+        .catch(function (err) {
           // Only meant to catch high accuracy, rethrow if anything else
           if (err !== Location.HIGH_ACCURACY) {
             return $q.reject(err);
           }
-          return Popup.showAccuracy().then(function(settings) {
+          return Popup.showAccuracy().then(function (settings) {
             return settings ? $q.reject() : $q.resolve();
           });
         })
         .then(Geolocation.start)
         .then(startStopwatch)
-        .then(function() {
+        .then(function () {
           vm.tracking = true;
           vm.textButton = 'Stop route';
-        }).catch(function(err) {
-        switch (err) {
-          case Location.PERMISSION:
-            Popup.showPermission();
-            break;
-          case Location.LOCATION:
-            Popup.showLocation();
-            break;
-        }
-      });
+        }).catch(function (err) {
+          switch (err) {
+            case Location.PERMISSION:
+              Popup.showPermission();
+              break;
+            case Location.LOCATION:
+              Popup.showLocation();
+              break;
+          }
+        });
     }
 
     /**
@@ -229,7 +229,7 @@
         vm.stopwatch.hours = time.hours;
         vm.stopwatch.minutes = time.minutes;
         vm.stopwatch.seconds = time.seconds;
-        setTimeout(function() {
+        setTimeout(function () {
           timeCounter();
           $scope.$apply();
         }, 1000);
@@ -382,7 +382,7 @@
           stationary = false;
         }
         if (getDistance(loc.latitude, loc.longitude,
-            start.latitude, start.longitude) > radius) {
+          start.latitude, start.longitude) > radius) {
           started = true;
         }
       }
@@ -436,7 +436,7 @@
      */
     function moveViewTo(latlng) {
       leafletData.getMap('map').then(
-        function(map) {
+        function (map) {
           vm.location = {
             lat: latlng.lat,
             lng: latlng.lng,
@@ -501,6 +501,39 @@
       dist = dist * 60 * 1.1515;
       dist = dist * 1.609344;
       return dist;
+    }
+
+    vm.showAlertFirsttime = function () {
+
+      var alertPopup = $ionicPopup.alert({
+        title: 'Welkom!',
+        templateUrl: 'app/tracker/firsttime.template.html',
+        buttons: [
+          {
+            text: "Ok",
+            onTap: function (e) {
+              return false;
+            }
+          },
+          {
+            text: "Open website",
+            onTap: function (e) {
+              window.open('https://goegefietst.gent/', '_blank', 'location=no');
+              return true;
+            }
+          },
+        ]
+      });
+
+      alertPopup.then(function (res) {
+        // Custom functionality....
+      });
+    };
+
+    // Init first time screen
+    if ($window.localStorage.getItem('firsttime') == null) {
+      $window.localStorage.setItem('firsttime', 'false');
+      vm.showAlertFirsttime();
     }
   }
 })();

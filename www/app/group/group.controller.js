@@ -224,11 +224,12 @@
         // Add the new team to db
         Connection.postTeam(newTeam).then(function () {
             // Refresh 
+            valid = false;
+            initialising = false;
             init();
         });
       }
 
-      
         // Close create mode
         vm.inputTeam = "";
         toggleCreateMode();

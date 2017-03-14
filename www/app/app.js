@@ -1,4 +1,4 @@
-(function() {
+(function () {
   'use strict';
 
   angular.module('app', [
@@ -11,10 +11,10 @@
     'ionic-timepicker',
     'database',
     'connection'
-  ]).run(function($ionicPlatform, $cordovaNetwork, $cordovaDevice,
-                  $cordovaSplashscreen, $window, $q, Database, Connection) {
+  ]).run(function ($ionicPlatform, $cordovaNetwork, $cordovaDevice,
+    $cordovaSplashscreen, $window, $q, Database, Connection) {
 
-    $ionicPlatform.ready(function() {
+    $ionicPlatform.ready(function () {
       // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
       // for form inputs)
       if ($window.cordova && $window.cordova.plugins &&
@@ -32,7 +32,7 @@
       $cordovaSplashscreen.hide();
     });
 
-    $ionicPlatform.on('pause', function() {
+    $ionicPlatform.on('pause', function () {
       if (
         $cordovaNetwork.getNetwork() !== 'wifi' ||
         $cordovaNetwork.isOnline() === false
@@ -47,7 +47,7 @@
         teams = JSON.parse(storedTeams);
       }
       if (uuid === null || secret === null) {
-        Connection.makeAccount().then(function(data) {
+        Connection.makeAccount().then(function (data) {
           uuid = data.uuid;
           secret = data.secret;
           $window.localStorage.setItem('uuid', data.uuid);
@@ -81,9 +81,9 @@
           promises.push(getPoints(routes[i]));
         }
 
-        $q.all(promises).then(function() {
+        $q.all(promises).then(function () {
           deferred.resolve(routes);
-        }, function(reason) {
+        }, function (reason) {
           deferred.reject(reason);
         });
 
@@ -91,10 +91,10 @@
           var deferred = $q.defer();
           Database
             .selectPoints([route.id])
-            .then(function(points) {
+            .then(function (points) {
               route.points = points;
               deferred.resolve(points);
-            }, function(error) {
+            }, function (error) {
               deferred.reject(error);
             });
           return deferred.promise;
@@ -114,9 +114,9 @@
 
         function postRoute(uuid, secret, route, teams) {
           var deferred = $q.defer();
-          Connection.postRoute(uuid, secret, route, teams).then(function() {
+          Connection.postRoute(uuid, secret, route, teams).then(function () {
             deferred.resolve(route);
-          }, function() {
+          }, function () {
             deferred.reject();
           });
           return deferred.promise;
@@ -124,17 +124,17 @@
 
         function sentRoute(route) {
           var deferred = $q.defer();
-          Database.sentRoute(route).then(function() {
+          Database.sentRoute(route).then(function () {
             deferred.resolve();
-          }, function() {
+          }, function () {
             deferred.reject();
           });
           return deferred.promise;
         }
 
-        $q.all(promises).then(function() {
+        $q.all(promises).then(function () {
           deferred.resolve(routes);
-        }, function(reason) {
+        }, function (reason) {
           deferred.reject(reason);
         });
 
