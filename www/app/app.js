@@ -32,6 +32,7 @@
       $cordovaSplashscreen.hide();
     });
 
+
     $ionicPlatform.on('pause', function () {
       if (
         $cordovaNetwork.getNetwork() !== 'wifi' ||
@@ -142,5 +143,33 @@
       }
 
     });
-  });
+  })
+  /*
+    .controller('MyCtrl',['$scope', '$rootScope', function ($scope, $cordovaNetwork, $rootScope) {
+      document.addEventListener("deviceready", function () {
+
+        $scope.network = $cordovaNetwork.getNetwork();
+        $scope.isOnline = $cordovaNetwork.isOnline();
+        $scope.$apply();
+
+        // listen for Online event
+        $rootScope.$on('$cordovaNetwork:online', function (event, networkState) {
+          $scope.isOnline = true;
+          $scope.network = $cordovaNetwork.getNetwork();
+
+          $scope.$apply();
+        })
+
+        // listen for Offline event
+        $rootScope.$on('$cordovaNetwork:offline', function (event, networkState) {
+          console.log("got offline");
+          $scope.isOnline = false;
+          $scope.network = $cordovaNetwork.getNetwork();
+
+          $scope.$apply();
+        })
+
+      }, false);
+    }])
+    */
 })();

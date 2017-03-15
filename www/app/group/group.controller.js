@@ -5,7 +5,7 @@
     .module('app.group')
     .controller('GroupController', Controller);
 
-  Controller.$inject = ['$window', '$timeout', 'Connection'];
+  Controller.$inject = ['$window', '$timeout', 'Connection', '$scope', '$cordovaNetwork', '$rootScope'];
 
   /**
    * @ngdoc controller
@@ -14,8 +14,37 @@
    * Controller responsible for displaying groups.
    */
   /* @ngInject */
-  function Controller($window, $timeout, Connection) {
+  function Controller($window, $timeout, Connection, $scope, $cordovaNetwork, $rootScope) {
     var vm = this;
+    vm.isOnline = false;
+
+    document.addEventListener("deviceready", function () {
+
+        vm.network = $cordovaNetwork.getNetwork();
+        vm.isOnline = $cordovaNetwork.isOnline();
+        //vm.$apply();
+
+        // listen for Online event
+        $rootScope.$on('$cordovaNetwork:online', function (event, networkState) {
+          vm.isOnline = true;
+          vm.network = $cordovaNetwork.getNetwork();
+          valid = false;
+          initialising = false;
+          init();
+
+          //$scope.$apply();
+        })
+
+        // listen for Offline event
+        $rootScope.$on('$cordovaNetwork:offline', function (event, networkState) {
+          console.log("got offline");
+          vm.isOnline = false;
+          vm.network = $cordovaNetwork.getNetwork();
+
+          //$scope.$apply();
+        })
+
+      }, false);
 
     /**
      * @ngdoc const

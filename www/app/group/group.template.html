@@ -1,36 +1,51 @@
 <ion-view hide-nav-bar="true">
   <ion-content id="groups" class="padding has-tabs-top">
-    <div class="button-bar">
-      <a class="button" ng-class="{'button-royal': group.isActiveTab(0)}" ng-click="group.goToTab(0)">School</a>
-      <a class="button" ng-class="{'button-royal': group.isActiveTab(1)}" ng-click="group.goToTab(1)">Vereniging</a>
-      <a class="button" ng-class="{'button-royal': group.isActiveTab(2)}" ng-click="group.goToTab(2)">Teams</a>
-    </div>
-    <div ng-if="group.isActiveTab(2)">
-      <button class="button button-large button-block button-inline button-royal" ng-show="group.createmode == 'false'" style="margin: 0;"
-        ng-click="group.toggleCreateMode()">
+    <div ng-show="group.isOnline">
+      <div class="button-bar">
+        <a class="button" ng-class="{'button-royal': group.isActiveTab(0)}" ng-click="group.goToTab(0)">School</a>
+        <a class="button" ng-class="{'button-royal': group.isActiveTab(1)}" ng-click="group.goToTab(1)">Vereniging</a>
+        <a class="button" ng-class="{'button-royal': group.isActiveTab(2)}" ng-click="group.goToTab(2)">Teams</a>
+      </div>
+      <div ng-if="group.isActiveTab(2)">
+        <button class="button button-large button-block button-inline button-royal" ng-show="group.createmode == 'false'" style="margin: 0;"
+          ng-click="group.toggleCreateMode()">
         Voeg één nieuw team toe...
     </button>
 
-      <span ng-show="group.createmode == 'true'" class="animate-if">
+        <span ng-show="group.createmode == 'true'" class="animate-if">
         <input type="text" for="inputTeam" class="form-control" ng-model="group.inputTeam" placeholder="Naam team"></input>
         <button class="button button-large button-block button-inline button-royal" style="margin: 0;" ng-click="group.addTeam()">
             Ok
         </button>
     </span>
-    </div>
-    <div ng-style="{height: {{group.dropdownHeight}} + 'px'}" class="list">
-      <label ng-style="{height: ({{group.dropdownHeight}} - 10)  + 'px'}" class="item item-input item-select">
+      </div>
+      <div ng-style="{height: {{group.dropdownHeight}} + 'px'}" class="list">
+        <label ng-style="{height: ({{group.dropdownHeight}} - 10)  + 'px'}" class="item item-input item-select">
         <select class="customDropdown" ng-model="group.userTeams[group.index]" ng-options="team.name for team in group.dropdownTeams[group.index] | orderBy: 'name'" ng-change="group.saveTeams()">
         </select>
       </label>
+      </div>
+      <ion-scroll ng-style="{height: {{group.listHeight}} + 'px'}" zooming="false" direction="y" style="height: 100px">
+        <ion-list class="list padding">
+          <ion-item class="item" ng-repeat="team in group.listTeams[group.index]">
+            <span class="align-left">{{$index + 1}}. {{team.name}}</span>
+            <span class="align-right">{{team.distance | number: 2}} km</span>
+          </ion-item>
+        </ion-list>
+      </ion-scroll>
     </div>
-    <ion-scroll ng-style="{height: {{group.listHeight}} + 'px'}" zooming="false" direction="y" style="height: 100px">
-      <ion-list class="list padding">
-        <ion-item class="item" ng-repeat="team in group.listTeams[group.index]">
-          <span class="align-left">{{$index + 1}}. {{team.name}}</span>
-          <span class="align-right">{{team.distance | number: 2}} km</span>
-        </ion-item>
-      </ion-list>
-    </ion-scroll>
+    <div ng-show="!group.isOnline">
+      <div class="card">
+        <div class="item item-divider">
+          Informatie
+        </div>
+        <div class="item item-text-wrap">
+          Ge hebt internet connectie nodig om een team te kiezen :)
+        </div>
+        <div class="item item-divider">
+          Om verder te gaan, zet je internet aan
+        </div>
+      </div>
+    </div>
   </ion-content>
 </ion-view>
