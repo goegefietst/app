@@ -510,7 +510,7 @@
         templateUrl: 'app/tracker/firsttime.template.html',
         buttons: [
           {
-            text: "Ok",
+            text: "Nee bedankt",
             onTap: function (e) {
               return false;
             }
@@ -529,6 +529,7 @@
         // Custom functionality....
       });
     };
+
 
     // Init first time screen
     if ($window.localStorage.getItem('firsttime') == null) {
