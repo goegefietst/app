@@ -19,11 +19,8 @@
     vm.isOnline = false;
 
     document.addEventListener("deviceready", function () {
-
         vm.network = $cordovaNetwork.getNetwork();
         vm.isOnline = $cordovaNetwork.isOnline();
-        //vm.$apply();
-
         // listen for Online event
         $rootScope.$on('$cordovaNetwork:online', function (event, networkState) {
           vm.isOnline = true;
@@ -31,8 +28,6 @@
           valid = false;
           initialising = false;
           init();
-
-          //$scope.$apply();
         })
 
         // listen for Offline event
@@ -40,8 +35,6 @@
           console.log("got offline");
           vm.isOnline = false;
           vm.network = $cordovaNetwork.getNetwork();
-
-          //$scope.$apply();
         })
 
       }, false);
@@ -59,7 +52,7 @@
      * <tr><td>2</td><td>Association</td></tr>
      * </table>
      */
-    var CATEGORIES = ['School', 'Association', 'Faculty'];
+    var CATEGORIES = ['School', 'Association', 'Team'];
     var storedTeams = JSON.parse($window.localStorage.getItem('userTeams'));
 
     /**

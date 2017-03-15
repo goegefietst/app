@@ -7,56 +7,68 @@
   },
   {
     "distance": 2,
-    "title": "Woop woop",
-    "text": "Je hebt meer dan 2 km gereden!",
+    "title": "You...",
+    "text": "CAN do it!",
     "button": "Ok"
   },
   {
     "distance": 3,
-    "title": "Woop woop",
-    "text": "Je hebt meer dan 3 km gereden!",
+    "title": "Hé jij!",
+    "text": "Je doet het fantastisch!",
     "button": "Ok"
   },
   {
     "distance": 4,
-    "title": "Woop woop",
-    "text": "Je hebt meer dan 4 km gereden!",
+    "title": "Wist je dat...",
+    "text": "je door te sporten slimmer wordt?",
     "button": "Ok"
   },
   {
     "distance": 5,
-    "title": "Woop woop",
-    "text": "Je hebt meer dan 5 km gereden!",
+    "title": "O jo",
+    "text": "die kont wordt al strakker!",
     "button": "Ok"
   },
   {
     "distance": 6,
-    "title": "Woop woop",
-    "text": "Je hebt meer dan 6 km gereden!",
+    "title": "Goe bezig!",
+    "text": "6 kilometer gefietst!",
     "button": "Ok"
   },
   {
     "distance": 7,
-    "title": "Woop woop",
-    "text": "Je hebt meer dan 7 km gereden!",
+    "title": "Rock...",
+    "text": "your body!",
     "button": "Ok"
   },
   {
     "distance": 8,
-    "title": "Woop woop",
-    "text": "Je hebt meer dan 8 km gereden!",
+    "title": "Mensen die sporten...",
+    "text": "leven langer!",
     "button": "Ok"
   },
   {
     "distance": 9,
-    "title": "Woop woop",
-    "text": "Je hebt meer dan 9 km gereden!",
+    "title": "Get fit for life",
+    "text": "not just for summer",
     "button": "Ok"
   },
   {
     "distance": 10,
-    "title": "Woop woop",
-    "text": "Je hebt meer dan 10 km gereden!",
+    "title": "Work...",
+    "text": "that ass!",
+    "button": "Ok"
+  },
+    {
+    "distance": 11,
+    "title": "Zot goe bezig",
+    "text": "proficiat!",
+    "button": "Go go go go goo!!!"
+  },
+      {
+    "distance": 12,
+    "title": "Life is like riding a bicycle",
+    "text": "To keep your balance you must keep moving",
     "button": "Ok"
   }
 ]
