@@ -5,7 +5,7 @@
     .module('app.group')
     .controller('GroupController', Controller);
 
-  Controller.$inject = ['$window', '$timeout', 'Connection', '$scope', '$cordovaNetwork', '$rootScope'];
+  Controller.$inject = ['$window', '$timeout', 'Connection', '$scope', '$cordovaNetwork', '$rootScope', '$ionicPopup'];
 
   /**
    * @ngdoc controller
@@ -14,30 +14,30 @@
    * Controller responsible for displaying groups.
    */
   /* @ngInject */
-  function Controller($window, $timeout, Connection, $scope, $cordovaNetwork, $rootScope) {
+  function Controller($window, $timeout, Connection, $scope, $cordovaNetwork, $rootScope, $ionicPopup) {
     var vm = this;
     vm.isOnline = false;
 
     document.addEventListener("deviceready", function () {
+      vm.network = $cordovaNetwork.getNetwork();
+      vm.isOnline = $cordovaNetwork.isOnline();
+      // listen for Online event
+      $rootScope.$on('$cordovaNetwork:online', function (event, networkState) {
+        vm.isOnline = true;
         vm.network = $cordovaNetwork.getNetwork();
-        vm.isOnline = $cordovaNetwork.isOnline();
-        // listen for Online event
-        $rootScope.$on('$cordovaNetwork:online', function (event, networkState) {
-          vm.isOnline = true;
-          vm.network = $cordovaNetwork.getNetwork();
-          valid = false;
-          initialising = false;
-          init();
-        })
+        valid = false;
+        initialising = false;
+        init();
+      })
 
-        // listen for Offline event
-        $rootScope.$on('$cordovaNetwork:offline', function (event, networkState) {
-          console.log("got offline");
-          vm.isOnline = false;
-          vm.network = $cordovaNetwork.getNetwork();
-        })
+      // listen for Offline event
+      $rootScope.$on('$cordovaNetwork:offline', function (event, networkState) {
+        console.log("got offline");
+        vm.isOnline = false;
+        vm.network = $cordovaNetwork.getNetwork();
+      })
 
-      }, false);
+    }, false);
 
     /**
      * @ngdoc const
@@ -151,6 +151,9 @@
     vm.toggleCreateMode = toggleCreateMode;
     vm.addTeam = addTeam;
     vm.inputTeam = "";
+    //The mvp team that will be used for registering (school < vereniging < team)
+    vm.lastTeam = "";
+
 
     var contentHeight =
       angular.element(document.getElementById('groups'))[0].offsetHeight;
@@ -208,6 +211,7 @@
         if (team[0]) {
           vm.userTeams[index] = team[0];
         }
+        getMvpTeam();
       }
     }
 
@@ -245,16 +249,16 @@
 
         // Add the new team to db
         Connection.postTeam(newTeam).then(function () {
-            // Refresh 
-            valid = false;
-            initialising = false;
-            init();
+          // Refresh 
+          valid = false;
+          initialising = false;
+          init();
         });
       }
 
-        // Close create mode
-        vm.inputTeam = "";
-        toggleCreateMode();
+      // Close create mode
+      vm.inputTeam = "";
+      toggleCreateMode();
     }
 
     /**
@@ -294,6 +298,77 @@
      */
     function saveTeams() {
       $window.localStorage.setItem('userTeams', JSON.stringify(vm.userTeams));
+      getMvpTeam();
+    }
+
+    /**
+     * @ngdoc method
+     * @name saveTeams
+     * @methodOf app.group.controller:GroupController
+     * @description
+     * Gets the most valuable chosen team (School < Assocation(vereniging) < Team)
+     */
+    function getMvpTeam() {
+      var lastone = "";
+      vm.userTeams.forEach(function (element) {
+        if (element.name.toLowerCase().indexOf("nog geen gekozen") === -1) {
+          lastone = element.name;
+        }
+      }, this);
+      vm.lastTeam = lastone;
+    }
+
+    vm.showRegister = function () {
+      $scope.data = {};
+      var alertPopup = $ionicPopup.alert({
+        title: 'Registratie',
+        subTitle: 'Prijzen winnen? Vul hier uw emailadres in.',
+        template: 'Huidige team: "' + vm.lastTeam + '"<br><input type="email" ng-model="data.email">',
+        scope: $scope,
+        buttons: [
+          { text: 'Annuleer' },
+          {
+            text: '<b>Ik doe mee!</b>',
+            type: 'button-positive',
+            onTap: function (e) {
+              if (!$scope.data.email) {
+                //don't allow the user to close unless he enters wifi password
+                e.preventDefault();
+              } else {
+                var email = $scope.data.email;
+
+                return email;
+              }
+            }
+          }
+        ]
+      });
+
+      //alertPopup.then(function (res) { vm.lastTeam = "test " + $scope.data.email });
+    }
+
+    vm.showAlertFirsttimegroup = function () {
+      var alertPopup = $ionicPopup.alert({
+        title: 'Informatie',
+        templateUrl: 'app/group/firsttime.template.html',
+        buttons: [
+          {
+            text: "Ok super!",
+            onTap: function (e) {
+              return false;
+            }
+          },
+        ]
+      });
+
+      alertPopup.then(function (res) { });
+    };
+
+
+    // Init first time screen
+    if ($window.localStorage.getItem('firsttimegroup') == null) {
+      $window.localStorage.setItem('firsttimegroup', 'false');
+      vm.showAlertFirsttimegroup();
     }
   }
 })();

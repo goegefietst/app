@@ -1,5 +1,17 @@
 <ion-view hide-nav-bar="true">
+  <button class="button button-float" ng-click="group.showRegister()" ng-if="group.lastTeam.length > 0">
+    <i class="icon ion-paper-airplane"></i>
+  </button>
   <ion-content id="groups" class="padding has-tabs-top">
+    <div class="card">
+      <div class="item item-divider" ng-if="group.lastTeam.length > 0">
+        Je gekozen team is "{{ group.lastTeam }}"
+      </div>
+      <div class="item item-divider" ng-if="group.lastTeam.length <= 0">
+        Je hebt nog geen team gekozen
+      </div>
+    </div>
+    </div>
     <div ng-show="group.isOnline">
       <div class="button-bar">
         <a class="button" ng-class="{'button-royal': group.isActiveTab(0)}" ng-click="group.goToTab(0)">School</a>
@@ -9,15 +21,14 @@
       <div ng-if="group.isActiveTab(2)">
         <button class="button button-large button-block button-inline button-royal" ng-show="group.createmode == 'false'" style="margin: 0;"
           ng-click="group.toggleCreateMode()">
-        Voeg één nieuw team toe...
-    </button>
-
+        Voeg één nieuw team toe..
+        </button>
         <span ng-show="group.createmode == 'true'" class="animate-if">
         <input type="text" for="inputTeam" class="form-control" ng-model="group.inputTeam" placeholder="Naam team"></input>
         <button class="button button-large button-block button-inline button-royal" style="margin: 0;" ng-click="group.addTeam()">
             Ok
         </button>
-    </span>
+        </span>
       </div>
       <div ng-style="{height: {{group.dropdownHeight}} + 'px'}" class="list">
         <label ng-style="{height: ({{group.dropdownHeight}} - 10)  + 'px'}" class="item item-input item-select">

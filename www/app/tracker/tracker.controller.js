@@ -510,16 +510,9 @@
         templateUrl: 'app/tracker/firsttime.template.html',
         buttons: [
           {
-            text: "Nee bedankt",
+            text: "Ok",
             onTap: function (e) {
               return false;
-            }
-          },
-          {
-            text: "Open website",
-            onTap: function (e) {
-              window.open('https://goegefietst.gent/', '_blank', 'location=no');
-              return true;
             }
           },
         ]

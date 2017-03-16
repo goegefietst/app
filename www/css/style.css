@@ -63,3 +63,30 @@
   max-width: 100% !important;
   direction: ltr !important;
 }
+
+
+.button-float{
+  background: #ee6e35 !important;
+  color:#e4e1e1 !important;
+  z-index: 12 !important;
+  position: absolute !important; 
+  bottom: 2em !important;
+  right: 1em !important;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26) !important;
+  -webkit-transform: translate3d(0, 0, 0) !important;
+  transform: translate3d(0, 0, 0) !important;
+  -webkit-transition: 0.2s linear !important;
+  transition: 0.2s linear !important;
+  -webkit-transition-property: -webkit-transform, all !important;
+  transition-property: transform, all !important;
+
+}
+
+.button-float:active{
+  -webkit-transform: translate3d(0, -1px, 0)  !important;
+  transform: translate3d(0, -1px, 0) !important;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.4) !important;
+  background: darken(#ee6e35, 10%) !important;
+  color:white !important;
+
+}
