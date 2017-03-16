@@ -10,6 +10,8 @@
   <content src="index.html"/>
   <access origin="https://goegefietst.gent"/>
   <access origin="http://*.openstreetmap.org"/>
+  <access origin="https://*.google.com"/>
+  <access origin="https://docs.google.com"/>
   <preference name="webviewbounce" value="false"/>
   <preference name="UIWebViewBounce" value="false"/>
   <preference name="DisallowOverscroll" value="true"/>

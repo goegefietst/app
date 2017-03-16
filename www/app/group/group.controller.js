@@ -5,7 +5,7 @@
     .module('app.group')
     .controller('GroupController', Controller);
 
-  Controller.$inject = ['$window', '$timeout', 'Connection', '$scope', '$cordovaNetwork', '$rootScope', '$ionicPopup'];
+  Controller.$inject = ['$window', '$timeout', 'Connection', '$scope', '$cordovaNetwork', '$rootScope', '$ionicPopup', '$http'];
 
   /**
    * @ngdoc controller
@@ -14,7 +14,7 @@
    * Controller responsible for displaying groups.
    */
   /* @ngInject */
-  function Controller($window, $timeout, Connection, $scope, $cordovaNetwork, $rootScope, $ionicPopup) {
+  function Controller($window, $timeout, Connection, $scope, $cordovaNetwork, $rootScope, $ionicPopup, $http) {
     var vm = this;
     vm.isOnline = false;
 
@@ -332,10 +332,37 @@
             type: 'button-positive',
             onTap: function (e) {
               if (!$scope.data.email) {
-                //don't allow the user to close unless he enters wifi password
+                //don't allow the user to close unless he enters valid email
                 e.preventDefault();
               } else {
                 var email = $scope.data.email;
+
+
+                /*
+                var config = {
+                  headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                  },
+
+                };
+
+                
+                var data = {};
+                data['entry.2093823223'] = email;
+                data['entry.196600770'] = vm.lastTeam;
+                
+                var data = { 'entry.2093823223': email, 'entry.196600770': vm.lastTeam };
+                $http.post('https://docs.google.com/forms/d/e/1FAIpQLSfLYC-nK97C4E2HXeAN85VylcPfm0cLUyqGHkoiZmiZmFHGNw/formResponse', JSON.stringify(data), config);
+*/
+
+                var config = {
+                  headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                  },
+
+                };
+                $http.post("https://docs.google.com/forms/d/e/1FAIpQLSf5p4LNe3v0Zu7MN61vDxs95p5vasTKZDXLkqJ4wZny8AMICA/formResponse", "entry.1107950909=" + encodeURIComponent(vm.lastTeam) +
+                     "&entry.94539310=" + encodeURIComponent(email), config);
 
                 return email;
               }
