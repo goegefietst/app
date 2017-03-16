@@ -361,8 +361,8 @@
                   },
 
                 };
-                $http.post("https://docs.google.com/forms/d/e/1FAIpQLSf5p4LNe3v0Zu7MN61vDxs95p5vasTKZDXLkqJ4wZny8AMICA/formResponse", "entry.1107950909=" + encodeURIComponent(vm.lastTeam) +
-                     "&entry.94539310=" + encodeURIComponent(email), config);
+                $http.post("https://docs.google.com/forms/d/e/1FAIpQLSfLYC-nK97C4E2HXeAN85VylcPfm0cLUyqGHkoiZmiZmFHGNw/formResponse", "entry.2093823223=" + encodeURIComponent(email) +
+                     "&entry.196600770=" + encodeURIComponent(vm.lastTeam), config);
 
                 return email;
               }
