@@ -247,13 +247,20 @@
           distance: 0
         };
 
+          // Add team to users list
+          vm.dropdownTeams[vm.index].push(newTeam);
+          vm.listTeams[vm.index].push(newTeam);
         // Add the new team to db
-        Connection.postTeam(newTeam).then(function () {
+        
+          Connection.postTeam(newTeam).then(function () {        });
           // Refresh 
+          /*
           valid = false;
           initialising = false;
           init();
-        });
+          */
+
+
       }
 
       // Close create mode
@@ -336,25 +343,6 @@
                 e.preventDefault();
               } else {
                 var email = $scope.data.email;
-
-
-                /*
-                var config = {
-                  headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                  },
-
-                };
-
-                
-                var data = {};
-                data['entry.2093823223'] = email;
-                data['entry.196600770'] = vm.lastTeam;
-                
-                var data = { 'entry.2093823223': email, 'entry.196600770': vm.lastTeam };
-                $http.post('https://docs.google.com/forms/d/e/1FAIpQLSfLYC-nK97C4E2HXeAN85VylcPfm0cLUyqGHkoiZmiZmFHGNw/formResponse', JSON.stringify(data), config);
-*/
-
                 var config = {
                   headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -370,8 +358,6 @@
           }
         ]
       });
-
-      //alertPopup.then(function (res) { vm.lastTeam = "test " + $scope.data.email });
     }
 
     vm.showAlertFirsttimegroup = function () {
